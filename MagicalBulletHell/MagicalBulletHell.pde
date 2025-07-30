@@ -212,10 +212,11 @@ void drawTitle() {
   
   textSize(16);
   text("Arrow Keys: Move", width/2, height/2 + 100);
-  text("Z: Shoot", width/2, height/2 + 130);
-  text("X: Bomb (2 uses)", width/2, height/2 + 160);
+  text("Z: Shoot", width/2, height/2 + 125);
+  text("X: Bomb (2 uses)", width/2, height/2 + 150);
+  text("Shift: Focus Mode (Slow)", width/2, height/2 + 175);
   
-  text("High Score: " + highScore, width/2, height/2 + 200);
+  text("High Score: " + highScore, width/2, height/2 + 215);
 }
 
 void drawGameOver() {

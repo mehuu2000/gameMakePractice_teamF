@@ -2,15 +2,18 @@
 class Player {
   float x, y;
   float speed = 5;
+  float currentSpeed = 5;
   int hp = 5;
   int maxHp = 5;
-  boolean[] keys = new boolean[6]; // LEFT, RIGHT, UP, DOWN, SHOOT, BOMB
+  boolean[] keys = new boolean[7]; // LEFT, RIGHT, UP, DOWN, SHOOT, BOMB, FOCUS
   int shootCooldown = 0;
   float animTime = 0;
   int bombs = 2;
   int maxBombs = 2;
   boolean bombActive = false;
   int bombTimer = 0;
+  boolean focusMode = false;
+  float hitboxRadius = 5; // 当たり判定の半径
   
   Player(float x, float y) {
     this.x = x;
@@ -18,16 +21,20 @@ class Player {
   }
   
   void update() {
+    // 集弾モード（フォーカスモード）の処理
+    focusMode = keys[6];
+    currentSpeed = focusMode ? speed * 0.4 : speed; // 集弾モード時は40%の速度
+    
     // 移動処理
-    if (keys[0] && x > 20) x -= speed;
-    if (keys[1] && x < width - 20) x += speed;
-    if (keys[2] && y > 20) y -= speed;
-    if (keys[3] && y < height - 20) y += speed;
+    if (keys[0] && x > 20) x -= currentSpeed;
+    if (keys[1] && x < width - 20) x += currentSpeed;
+    if (keys[2] && y > 20) y -= currentSpeed;
+    if (keys[3] && y < height - 20) y += currentSpeed;
     
     // 射撃処理
     if (keys[4] && shootCooldown <= 0) {
       shoot();
-      shootCooldown = 5;
+      shootCooldown = focusMode ? 3 : 5; // 集弾モード時は連射速度アップ
     }
     if (shootCooldown > 0) shootCooldown--;
     
@@ -100,13 +107,48 @@ class Player {
     ellipse(0, 0, 50 + sin(animTime) * 5, 50 + sin(animTime) * 5);
     
     popMatrix();
+    
+    // 当たり判定の可視化
+    drawHitbox();
+  }
+  
+  void drawHitbox() {
+    // 集弾モード時は当たり判定をより明確に表示
+    if (focusMode) {
+      // 外側の円（警告エリア）
+      noFill();
+      stroke(0, 80, 100, 100);
+      strokeWeight(2);
+      ellipse(x, y, hitboxRadius * 6, hitboxRadius * 6);
+      
+      // 中間の円
+      stroke(30, 80, 100, 150);
+      strokeWeight(1.5);
+      ellipse(x, y, hitboxRadius * 4, hitboxRadius * 4);
+    }
+    
+    // コアの当たり判定（常に表示）
+    fill(0, 80, 100, focusMode ? 200 : 100);
+    noStroke();
+    ellipse(x, y, hitboxRadius * 2, hitboxRadius * 2);
+    
+    // 中心点
+    fill(0, 0, 100);
+    ellipse(x, y, 2, 2);
   }
   
   void shoot() {
-    // 3方向ショット
-    playerBullets.add(new Bullet(x, y - 20, 0, -10, 5, color(300, 80, 100)));
-    playerBullets.add(new Bullet(x - 10, y - 20, -2, -10, 5, color(300, 80, 100)));
-    playerBullets.add(new Bullet(x + 10, y - 20, 2, -10, 5, color(300, 80, 100)));
+    if (focusMode) {
+      // 集弾モード：前方集中ショット
+      playerBullets.add(new Bullet(x, y - 20, 0, -12, 6, color(320, 80, 100)));
+      playerBullets.add(new Bullet(x - 5, y - 20, 0, -12, 5, color(320, 80, 100)));
+      playerBullets.add(new Bullet(x + 5, y - 20, 0, -12, 5, color(320, 80, 100)));
+    } else {
+      // 通常モード：3方向ショット
+      playerBullets.add(new Bullet(x, y - 20, 0, -10, 5, color(300, 80, 100)));
+      playerBullets.add(new Bullet(x - 10, y - 20, -2, -10, 5, color(300, 80, 100)));
+      playerBullets.add(new Bullet(x + 10, y - 20, 2, -10, 5, color(300, 80, 100)));
+    }
   }
   
   void activateBomb() {
@@ -116,7 +158,7 @@ class Player {
   }
   
   boolean checkHit(float bx, float by, float bsize) {
-    return dist(x, y, bx, by) < 15 + bsize/2;
+    return dist(x, y, bx, by) < hitboxRadius + bsize/2;
   }
   
   void keyPressed() {
@@ -126,6 +168,7 @@ class Player {
     if (keyCode == DOWN) keys[3] = true;
     if (key == 'z' || key == 'Z') keys[4] = true;
     if (key == 'x' || key == 'X') keys[5] = true;
+    if (keyCode == SHIFT) keys[6] = true;
   }
   
   void keyReleased() {
@@ -135,6 +178,7 @@ class Player {
     if (keyCode == DOWN) keys[3] = false;
     if (key == 'z' || key == 'Z') keys[4] = false;
     if (key == 'x' || key == 'X') keys[5] = false;
+    if (keyCode == SHIFT) keys[6] = false;
   }
 }
 
