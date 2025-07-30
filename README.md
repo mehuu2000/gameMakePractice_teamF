@@ -49,14 +49,13 @@ git push origin main
 git branch
 
 # 新しいブランチを作成して切り替え
-git checkout -b 新しいブランチ名
+git checkout -b feature/<新しいブランチ名>
 
 # 既存のブランチに切り替え
 git checkout ブランチ名
 
 # ブランチをマージ
-git checkout main  # mainブランチに移動
-git merge ブランチ名
+git merge feature/<現在のブランチ名>
 ```
 
 ### 変更の取り消し
@@ -91,6 +90,10 @@ git config --global alias.cm commit
 # 使用例
 git st  # git status と同じ
 ```
+
+### push後
+プルリクで変更を通知
+developブランチに対してプルリクを行う
 
 ## 注意事項
 - コミットメッセージは変更内容が分かりやすいように書く
