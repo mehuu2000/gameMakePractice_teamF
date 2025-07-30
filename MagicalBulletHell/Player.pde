@@ -63,7 +63,7 @@ class Player {
     ellipse(0, 0, 30, 30);
     
     // 目
-    fill(200, 80, 80);
+    fill(0, 0, 100);
     ellipse(-7, -2, 8, 10);
     ellipse(7, -2, 8, 10);
     fill(0, 0, 0);
