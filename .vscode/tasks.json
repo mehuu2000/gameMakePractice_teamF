@@ -1,0 +1,44 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run Processing Sketch",
+            "type": "shell",
+            "command": "processing-java",
+            "args": [
+                "--force",
+                "--sketch=${fileDirname}",
+                "--run"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Export Processing Sketch",
+            "type": "shell",
+            "command": "processing-java",
+            "args": [
+                "--force",
+                "--sketch=${fileDirname}",
+                "--export"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "problemMatcher": []
+        }
+    ]
+}
