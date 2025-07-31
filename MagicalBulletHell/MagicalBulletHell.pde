@@ -1,4 +1,5 @@
 // 魔法少女弾幕ゲーム - メインファイル
+//チームメンバー : 秋田,濱田,湊
 Player player;
 Enemy boss;
 ArrayList<Bullet> playerBullets;
