@@ -1,6 +1,4 @@
 <!-- I want to review in Japanese. -->
-## タイトル
-
 ## 概要/目的
 
 ## 変更/更新内容の詳細
