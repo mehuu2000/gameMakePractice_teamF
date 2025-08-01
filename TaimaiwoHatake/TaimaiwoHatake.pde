@@ -26,7 +26,7 @@ void setup() {
   size(1280, 720);
   
   // フォント設定
-  gameFont = createFont("Arial", 16, true);
+  gameFont = createFont("Meiryo", 16, true);
   textFont(gameFont);
   
   // ゲーム初期化
