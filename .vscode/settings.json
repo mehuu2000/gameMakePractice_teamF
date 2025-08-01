@@ -1,12 +1,13 @@
 {
-    "code-runner.executorMap": {
-        "processing": "processing-java --sketch=$dir --run",
-        "pde": "processing-java --sketch=$dir --run"
+      "code-runner.executorMap": {
+          "processing": "processing-java --sketch=$dir --run",
+          "pde": "processing-java --sketch=$dir --run"
+      },
+      "code-runner.languageIdToFileExtensionMap": {
+          "processing": ".pde"
+      },
+      "files.associations": {
+        "*.pde": "pde"
     },
-    "code-runner.languageIdToFileExtensionMap": {
-        "processing": ".pde"
-    },
-    "files.associations": {
-        "*.pde": "processing"
-    }
+      "processing.path": "/Applications/Processing.app/Contents/MacOS/Processing"
 }
