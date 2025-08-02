@@ -73,7 +73,7 @@ void selectBrand(int brand) {
     selectedBrand = brand;
 }
 
-public void settings() {
+void settings() {
   size(WINDOW_WIDTH, WINDOW_HEIGHT);
 }
 

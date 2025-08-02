@@ -12,7 +12,7 @@ class CardVisual {
     // カードの描画
     void drawCard() {}
 
-    // カードの裏面描画(AIが出したつ)
+    // カードの裏面描画(AIが出したやつ)
     void drawCardBack() {}
 
     // 複数米時のカードを描画
