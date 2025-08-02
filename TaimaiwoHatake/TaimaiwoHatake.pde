@@ -65,12 +65,12 @@ void restartGame() {
 
 // ========== カード選択 ==========
 void selectCard(RiceCard card) {
-    selectedCard = card;
-    selectedAmount = 1;
+  selectedCard = card;
+  selectedAmount = 1;
 }
 
 void selectBrand(int brand) {
-    selectedBrand = brand;
+  selectedBrand = brand;
 }
 
 void settings() {
@@ -81,7 +81,7 @@ void setup() {
   background(255);
 
   // フォント設定
-  gameFont = createFont("Meiryo", 16, true);
+  gameFont = createFont("HGSGyoshotai", 16, true);
   textFont(gameFont);
   textAlign(CENTER, CENTER);
 
@@ -98,34 +98,33 @@ void initGame() {
   ai = new AI();
 
   // UI系
-  ui = new UI();
+  ui = new UI(gameState);
   leftPanel = new LeftPanel();
   rightPanel = new RightPanel();
-  popup = new Popup();   
-  cardVisual = new CardVisual();   
+  popup = new Popup();
+  cardVisual = new CardVisual();
 
   currentTurn = 1;
-  
+
   // AIの初回出荷準備関数
   // これは予定
   // gameLogic.dealInitialCards();
-
 }
 
 // メイン描画ループ
 // ここでゲームの状態に応じた描画を行う
 void draw() {
   background(240);
-  
+
   switch(gameState.currentState) {
-    case TEST:
-      ui.draw_UHO(textFlag);
-      break;
-    case PLAYING:
-      drawGameScreen();
-      break;
+  case TEST:
+    ui.drawTitleScreen();
+    break;
+  case PLAYING:
+    drawGameScreen();
+    break;
   }
-  
+
   // ポップアップ制御
   if (showingPopup) {
     popup.drawPopup(popupType);
@@ -137,19 +136,14 @@ void draw() {
 void drawGameScreen() {
   // 左側エリア（30%）
   leftPanel.drawLeftPanel();
-  
+
   // 右側エリア（70%）
   rightPanel.drawRightPanel();
 }
 
 void keyPressed() {
-  if(keyPressed == true){
+  if (keyPressed == true) {
     background(255);
     textFlag = 1;
-  }
-}
-void mousePressed() {
-  if (gameState.currentState == State.TEST) {
-    gameState.currentState = State.PLAYING;
   }
 }
