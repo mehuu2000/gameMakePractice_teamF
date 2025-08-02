@@ -5,7 +5,8 @@
 // PLAYING：ゲームプレイ中の状態
 // FINISHED：ゲーム終了状態
 enum State {
-  TEST,
+  TITLE,
+  DESCRIBE,
   START,
   PLAYING,
   FINISHED,
@@ -16,7 +17,7 @@ class GameState {
   
   // コンストラクタ
   GameState() {
-    currentState = State.TEST; // 初期状態をTESTに設定
+    currentState = State.TITLE; // 初期状態をに設定
   }
   
   // 状態を変更するメソッド
