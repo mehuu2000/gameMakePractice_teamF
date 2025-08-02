@@ -118,7 +118,7 @@ void draw() {
   background(240);
   
   switch(gameState.currentState) {
-    case TEST:
+    case TITLE:
       ui.draw_UHO(textFlag);
       break;
     case PLAYING:
