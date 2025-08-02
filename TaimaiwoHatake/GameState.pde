@@ -17,7 +17,7 @@ class GameState {
   
   // コンストラクタ
   GameState() {
-    currentState = State.TITLE; // 初期状態をに設定
+    currentState = State.TITLE; // 初期状態をTITLEに設定
   }
   
   // 状態を変更するメソッド
