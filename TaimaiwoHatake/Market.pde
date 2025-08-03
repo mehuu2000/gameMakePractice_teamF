@@ -9,8 +9,24 @@ class Market {
     // ========== 環境効果 ==========
     String currentEnvironment;  // 現在の環境（豊作、不作など)
 
+    // ========== 定数 ==========
+    // 供給上限の範囲
+    final int MIN_SUPPLY_LIMIT = 50;
+    final int MAX_SUPPLY_LIMIT = 100;
+
+    // 初期在庫生成の割合
+    final float INIT_STOCK_MIN_RATIO = 0.25;  // 供給上限の1/4
+    final float INIT_STOCK_MAX_RATIO = 0.75;  // 供給上限の3/4
+
+    // 消費率
+    final float CONSUME_MIN_RATIO = 0.2;  // 最小20%消費
+    final float CONSUME_MAX_RATIO = 0.6;  // 最大60%消費
+
+    // ブランド数
+    final int BRAND_COUNT = 4;
+
     Market() {
-        marketStock = new int[4]; // 4つのブランドの在庫
+        marketStock = new int[BRAND_COUNT]; // 4つのブランドの在庫
         setSupplyLimit(); // 供給上限を設定
         initStockGeneration(supplyLimit); // 初期在庫を生成
         currentEnvironment = "NORMAL"; // 初期環境は通常
@@ -19,14 +35,14 @@ class Market {
     // ========== 市場在庫の初期化 ==========
     // 初期供給上限を50-100の間でランダムに生成
     void setSupplyLimit() {
-        supplyLimit = int(random(50, 101));
+        supplyLimit = int(random(MIN_SUPPLY_LIMIT, MAX_SUPPLY_LIMIT+1));
     }
 
     // 初期のブランド在庫を設定
     // ここでは、各ブランドの初期在庫を供給上限を参考にして設定
     void initStockGeneration(int supplyLimit) {
-        int startCount = supplyLimit/4;
-        int finishCount = supplyLimit/4 * 3;
+        int startCount = int(supplyLimit * INIT_STOCK_MIN_RATIO);
+        int finishCount = int(supplyLimit * INIT_STOCK_MAX_RATIO);
         int initTotalCount = int(random(startCount, finishCount));
         for (int i=0; i<initTotalCount; i++) {
             // ランダムでインデックスを選択
@@ -101,9 +117,11 @@ class Market {
         shuffleArray(brandIds);
 
         // 消費数を決定
-        int startCount = int(getTotalStock() * 0.2); // 20%を消費
-        int finishCount = int(getTotalStock() * 0.6); // 60%を消費
+        int startCount = int(getTotalStock() * CONSUME_MIN_RATIO); // 20%を消費
+        int finishCount = int(getTotalStock() * CONSUME_MAX_RATIO); // 60%を消費
         int consumeCount = int(random(startCount, finishCount)); // 全体数の2割から6割の間でランダムに消費数を決定
+        // consumeCountがbrandIds.lengthを超えないようにする
+        consumeCount = min(consumeCount, brandIds.length);
 
         // 消費処理(配列の先頭からconsumeCount個を消費)
         for (int i=0; i<consumeCount; i++) {
