@@ -174,32 +174,36 @@ class Market {
     // 各ブランドの在庫に応じて価格を変動 BASE_CARD_POINTが基準
     // 一番在庫があるものはBASE_CARD_POINTの0.5倍、次に在庫があるものはBASE_CARD_POINTの1倍、残りは1.5倍
     void updateBrandPoint() {
-        int[] brandIds = marketStock.clone();
-        // 在庫数でソート(降順)
-        Arrays.sort(brandIds);
-        // 在庫数の多い順にブランドのポイントを更新
-        for (int i=0; i<brandIds.length; i++) {
-            if (i == 0) {
-                riceBrandsInfo[i].point = BASE_CARD_POINT * 0.5; // 一番在庫が多いブランド
-            } else if (i == 1) {
-                riceBrandsInfo[i].point = BASE_CARD_POINT; // 次に在庫が多いブランド
-            } else {
-                riceBrandsInfo[i].point = BASE_CARD_POINT * 1.5; // 残りのブランド
-            }
-        }
-    }
+        // 各ブランドの順位を格納する配列（1位、2位、3位...）
+        int[] rankings = new int[BRAND_COUNT];
 
-    // 利益計算
-    int calculateProfit(int[] brands) {
-        int profit = 0;
-        for (int i=0; i<brands.length; i++) {
-            if (i < 0 || i >= marketStock.length) {
-                println("無効なブランドインデックス: " + i);
-                continue;
+        // 各ブランドの在庫数を確認して順位を決定
+        for (int i = 0; i < BRAND_COUNT; i++) {
+            int rank = 1; // 初期順位は1位
+
+            // 他のブランドと比較
+            for (int j = 0; j < BRAND_COUNT; j++) {
+                if (i != j && marketStock[j] > marketStock[i]) {
+                    rank++; // 自分より在庫が多いブランドがあれば順位を下げる
+                }
             }
-            profit += riceBrandsInfo[i].point * brands[i];
+
+            rankings[i] = rank;
         }
-        return profit;
+
+        // 順位に基づいてポイントを更新
+        for (int i = 0; i < BRAND_COUNT; i++) {
+            if (rankings[i] == 1) {
+                // 1位（一番在庫が多い）
+                riceBrandsInfo[i].point = int(BASE_CARD_POINT * 0.5);
+            } else if (rankings[i] == 2) {
+                // 2位（二番目に在庫が多い）
+                riceBrandsInfo[i].point = BASE_CARD_POINT;
+            } else {
+                // 3位以下（その他）
+                riceBrandsInfo[i].point = int(BASE_CARD_POINT * 1.5);
+            }
+        }
     }
 
 
