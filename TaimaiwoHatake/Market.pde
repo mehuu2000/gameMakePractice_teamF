@@ -92,13 +92,12 @@ class Market {
         // 各ブランドの在庫を更新
         // brandsはインデックスに対応するブランドの在庫数を表す
         for (int i=0; i < brands.length; i++) {
-            int brandIndex = i;
             int amount = brands[i];
-            if (brandIndex < 0 || brandIndex >= marketStock.length) {
-                println("無効なブランドインデックス: " + brandIndex);
+            if (i < 0 || i >= marketStock.length) {
+                println("無効なブランドインデックス: " + i);
                 continue;
             }
-            updateBrandStock(brandIndex, amount);
+            updateBrandStock(i, amount);
         }
     }
 
