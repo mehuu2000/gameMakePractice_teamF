@@ -75,7 +75,7 @@ class Market {
         if (brandIndex < 0 || brandIndex >= marketStock.length) {
             return;
         }
-        if(marketStock[brandIndex] + changeAmount < 0) {
+        if (marketStock[brandIndex] + changeAmount < 0) {
             println("error: updateBrandStock()で在庫が負になろうとしています。");
             return; // 在庫が負にならないように制御
         }
