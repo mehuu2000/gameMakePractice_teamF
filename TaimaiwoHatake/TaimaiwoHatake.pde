@@ -102,7 +102,7 @@ void initGame() {
     new RiceBrand("ほしひかり", color(200, 200, 255), 10000),
     new RiceBrand("ゆめごこち", color(200, 255, 200), 10000),
     new RiceBrand("つやおうじ", color(255, 255, 200), 10000)
-  }
+  };
 
   // UI系
   ui = new UI(gameState);
