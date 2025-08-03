@@ -16,6 +16,7 @@ class Broker {
     //メンバ変数の初期設定
     handRices = new int[riceBrandsInfo.length][RICE_DECAY_LIMIT];
     loadRices = new int[riceBrandsInfo.length][RICE_DECAY_LIMIT];
+    sumLoadRices = new int[riceBrandsInfo.length];
     this.wallet = wallet;
   }
   
@@ -53,7 +54,7 @@ class Broker {
   
   //米を買う関数　引数:米のid, 個数　返り値:購入成功->true 購入失敗->false
   boolean buyRice(int riceID, int count) {
-    int cost = (riceBrandsInfo[riceID].point * RICE_BUY_RATIO) * count;
+    int cost = int(riceBrandsInfo[riceID].point * RICE_BUY_RATIO) * count;
     if (cost > wallet) {
       return false;
     }else{
@@ -107,8 +108,8 @@ class Broker {
   
   //米を出荷する関数
   void shipRice() {
-    sumLoadRices = new int[RICE_DECAY_LIMIT];
-    for (int i = 0; i < RICE_DECAY_LIMIT; i++) {
+    sumLoadRices = new int[riceBrandsInfo.length];
+    for (int i = 0; i < riceBrandsInfo.length; i++) {
       sumLoadRices[i] = getSumLoadRice(i);
     }
     Market.ship(sumLoadRices);
