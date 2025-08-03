@@ -102,7 +102,7 @@ void initGame() {
 
   // UI系
   ui = new UI(gameState);
-  leftPanel = new LeftPanel();
+  leftPanel = new LeftPanel(ui);
   rightPanel = new RightPanel();
   popup = new Popup();
   cardVisual = new CardVisual();
@@ -123,6 +123,9 @@ void draw() {
   case TITLE:
     ui.drawTitleScreen();
     break;
+   case START:
+    ui.drawStartScreen(market.supplyLimit);
+    break;
   case PLAYING:
     drawGameScreen();
     break;
@@ -139,6 +142,7 @@ void draw() {
 void drawGameScreen() {
   // 左側エリア（30%）
   leftPanel.drawLeftPanel();
+  leftPanel.drawMarketInfo();
 
   // 右側エリア（70%）
   rightPanel.drawRightPanel();
