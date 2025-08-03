@@ -19,6 +19,8 @@ CardVisual cardVisual;
 // ========== ゲーム進行変数 ==========
 int currentTurn = 1;
 int maxTurns = 11; // 要相談
+int pMoney = 40;
+int eMoney = 40;
 
 // ========== UI状態変数 ==========
 boolean showingPopup = false; // ポップアップ表示フラグ
@@ -123,7 +125,7 @@ void draw() {
   case TITLE:
     ui.drawTitleScreen();
     break;
-   case START:
+  case START:
     ui.drawStartScreen(market.supplyLimit);
     break;
   case PLAYING:
@@ -143,9 +145,14 @@ void drawGameScreen() {
   // 左側エリア（30%）
   leftPanel.drawLeftPanel();
   leftPanel.drawMarketInfo();
+  leftPanel.drawEnvironment();
 
   // 右側エリア（70%）
   rightPanel.drawRightPanel();
+  rightPanel.drawTurnInfo(currentTurn);
+  rightPanel.drawMoneyInfo(pMoney, eMoney);
+  rightPanel.drawShippingArea();
+  rightPanel.drawAIShippingArea();
 }
 
 void keyPressed() {

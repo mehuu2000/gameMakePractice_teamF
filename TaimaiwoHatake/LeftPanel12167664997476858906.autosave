@@ -7,8 +7,9 @@ class LeftPanel {
   }
   // 左側のパネル全体管理
   void drawLeftPanel() {
-    fill(250);
-    rect(0, 0, width * 0.3, height);
+    background(250);
+    //fill(200);
+    //rect(0, 0, width * 0.3, height);
 
     fill(0);
     textAlign(CENTER);
@@ -20,14 +21,14 @@ class LeftPanel {
 
   // 市場の情報を描画
   void drawMarketInfo() {
+    noStroke();
     fill(240);
     rect(10, 10, (width * 0.3) - 20, height/2);
 
     fill(0);
     textSize(48);
     text("市場", 90, 50);
-    
-    textSize(48);
+
     fill(255, 0, 0);
     text(ui.supplyLimitX + " ～ " + (ui.supplyLimitX + 10), 250, 50);
   }
@@ -40,14 +41,16 @@ class LeftPanel {
   void drawEnvironment() {
     fill(240);
     rect(10, height/2 + 20, (width * 0.3) - 20, height/2 - 30);
-    
+
+    fill(0);
+    rect(20, height/2 + 90, (width * 0.3) - 40, height/2 - 110);
+
+    fill(240);
+    rect(23, height/2 + 93, (width * 0.3) - 46, height/2 - 116);
+
     fill(0);
     textSize(56);
     text("効果名", (width*0.3)/2, 430);
-    
-    rect(20, height/2 + 80, (width * 0.3) - 40, height/2 - 100);
-    
-    fill(240);
-    rect(23, height/2 + 83, (width * 0.3) - 46, height/2 - 106);
+    text("効果内容", (width*0.3)/2, 600);
   }
 }
