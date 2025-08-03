@@ -24,9 +24,8 @@ int maxTurns = 11; // 要相談
 // ========== UI状態変数 ==========
 boolean showingPopup = false; // ポップアップ表示フラグ
 String popupType = ""; // ポップアップの種類
-RiceCard selectedCard = null; // 選択されたカード(手札など)
+int selectedBrandId = -1; // 選択されたブランド(買い付けフェーズなど)
 int selectedAmount = 1; // 選択されたカードの数量
-int selectedBrand = 0; // 選択されたブランド(買い付けフェーズなど)
 
 // ========== 定数 ==========
 final String[] RICE_BRANDS = {"りょうおもい", "ほしひかり", "ゆめごこち", "つやおうじ"};
@@ -45,9 +44,8 @@ void showPopup(String type) {
 void closePopup() {
   showingPopup = false;
   popupType = "";
-  selectedCard = null;
+  selectedBrandId = -1;
   selectedAmount = 1;
-  selectedBrand = 0;
 }
 
 // ========== ターン管理 ==========
@@ -65,13 +63,9 @@ void restartGame() {
 }
 
 // ========== カード選択 ==========
-void selectCard(RiceCard card) {
-  selectedCard = card;
+void selectBrand(int riceBrandId) {
+  selectedBrandId = riceBrandId;
   selectedAmount = 1;
-}
-
-void selectBrand(int brand) {
-  selectedBrand = brand;
 }
 
 void settings() {
