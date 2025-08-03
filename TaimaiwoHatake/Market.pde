@@ -16,7 +16,7 @@ class Market {
 
     // 初期在庫生成の割合
     final float INIT_STOCK_MIN_RATIO = 0.1;  // 供給上限の1/10
-    final float INIT_STOCK_MAX_RATIO = 0.75;  // 供給上限の1/4
+    final float INIT_STOCK_MAX_RATIO = 0.25;  // 供給上限の1/4
 
     // 消費率
     final float CONSUME_MIN_RATIO = 0.2;  // 最小20%消費
