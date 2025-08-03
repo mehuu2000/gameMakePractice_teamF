@@ -8,7 +8,6 @@ Market market;
 Player player;
 AI ai;
 GameLogic gameLogic;
-RiceBrand[] RICE_BRANDS_INFO;
 
 // UI系オブジェクト
 UI ui;
@@ -24,9 +23,8 @@ int maxTurns = 11; // 要相談
 // ========== UI状態変数 ==========
 boolean showingPopup = false; // ポップアップ表示フラグ
 String popupType = ""; // ポップアップの種類
-RiceCard selectedCard = null; // 選択されたカード(手札など)
+int selectedBrandId = -1; // 選択されたブランド(買い付けフェーズなど)
 int selectedAmount = 1; // 選択されたカードの数量
-int selectedBrand = 0; // 選択されたブランド(買い付けフェーズなど)
 
 // ========== 定数 ==========
 final String[] RICE_BRANDS = {"りょうおもい", "ほしひかり", "ゆめごこち", "つやおうじ"};
@@ -34,6 +32,9 @@ final int WINDOW_WIDTH = 1280;
 final int WINDOW_HEIGHT = 720;
 final float LEFT_PANEL_WIDTH = 0.3;   // 左パネルの幅（30%）
 final float RIGHT_PANEL_WIDTH = 0.7;  // 右パネルの幅（70%）
+
+// ========== 変数（変更可能） ==========
+RiceBrand[] riceBrandsInfo;
 
 // ========== ポップアップ管理 ==========
 void showPopup(String type) {
@@ -45,9 +46,8 @@ void showPopup(String type) {
 void closePopup() {
   showingPopup = false;
   popupType = "";
-  selectedCard = null;
+  selectedBrandId = -1;
   selectedAmount = 1;
-  selectedBrand = 0;
 }
 
 // ========== ターン管理 ==========
@@ -65,13 +65,9 @@ void restartGame() {
 }
 
 // ========== カード選択 ==========
-void selectCard(RiceCard card) {
-  selectedCard = card;
+void selectBrand(int riceBrandId) {
+  selectedBrandId = riceBrandId;
   selectedAmount = 1;
-}
-
-void selectBrand(int brand) {
-  selectedBrand = brand;
 }
 
 void settings() {
@@ -97,12 +93,12 @@ void initGame() {
   gameLogic = new GameLogic();
   player = new Player();
   ai = new AI();
-  RICE_BRANDS_INFO = new RiceBrand[] {
+  riceBrandsInfo = new RiceBrand[] {
     new RiceBrand("りょうおもい", color(255, 200, 200), 10000),
     new RiceBrand("ほしひかり", color(200, 200, 255), 10000),
     new RiceBrand("ゆめごこち", color(200, 255, 200), 10000),
     new RiceBrand("つやおうじ", color(255, 255, 200), 10000)
-  }
+  };
 
   // UI系
   ui = new UI(gameState);
