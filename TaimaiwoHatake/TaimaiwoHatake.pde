@@ -8,6 +8,7 @@ Market market;
 Player player;
 AI ai;
 GameLogic gameLogic;
+RiceBrand[] RICE_BRANDS_INFO;
 
 // UI系オブジェクト
 UI ui;
@@ -96,6 +97,12 @@ void initGame() {
   gameLogic = new GameLogic();
   player = new Player();
   ai = new AI();
+  RICE_BRANDS_INFO = new RiceBrand[] {
+    new RiceBrand("りょうおもい", color(255, 200, 200), 10000),
+    new RiceBrand("ほしひかり", color(200, 200, 255), 10000),
+    new RiceBrand("ゆめごこち", color(200, 255, 200), 10000),
+    new RiceBrand("つやおうじ", color(255, 255, 200), 10000)
+  }
 
   // UI系
   ui = new UI(gameState);
