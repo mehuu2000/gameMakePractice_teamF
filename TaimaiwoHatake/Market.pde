@@ -15,17 +15,19 @@ class Market {
     final int MAX_SUPPLY_LIMIT = 100;
 
     // 初期在庫生成の割合
-    final float INIT_STOCK_MIN_RATIO = 0.25;  // 供給上限の1/4
-    final float INIT_STOCK_MAX_RATIO = 0.75;  // 供給上限の3/4
+    final float INIT_STOCK_MIN_RATIO = 0.1;  // 供給上限の1/10
+    final float INIT_STOCK_MAX_RATIO = 0.75;  // 供給上限の1/4
 
     // 消費率
     final float CONSUME_MIN_RATIO = 0.2;  // 最小20%消費
-    final float CONSUME_MAX_RATIO = 0.6;  // 最大60%消費
+    final float CONSUME_MAX_RATIO = 0.4;  // 最大40%消費
 
     // ブランド数
     final int BRAND_COUNT = 4;
 
+    // コンストラクタ
     Market() {
+        ship();
         marketStock = new int[BRAND_COUNT]; // 4つのブランドの在庫
         setSupplyLimit(); // 供給上限を設定
         initStockGeneration(supplyLimit); // 初期在庫を生成
@@ -85,6 +87,7 @@ class Market {
     // ========== 市場のアクション ==========
     // 出荷処理
     void ship(int[] brands) {
+        // 在庫更新処理
         if (brands.length != marketStock.length) {
             println("受け取ったブランドの数が市場のブランド数と一致しません。");
             return;
@@ -98,7 +101,22 @@ class Market {
                 continue;
             }
             updateBrandStock(i, amount);
+        } 
+        // 在庫に応じて価値を更新
+        updateBrandPoint();
+    }
+
+    // 利益計算
+    int calculateProfit(int[] brands) {
+        int profit = 0;
+        for (int i=0; i<brands.length; i++) {
+            if (i < 0 || i >= marketStock.length) {
+                println("無効なブランドインデックス: " + i);
+                continue;
+            }
+            profit += riceBrandsInfo[i].point * brands[i];
         }
+        return profit;
     }
 
     // 市場の消費
@@ -116,9 +134,9 @@ class Market {
         shuffleArray(brandIds);
 
         // 消費数を決定
-        int startCount = int(getTotalStock() * CONSUME_MIN_RATIO); // 20%を消費
-        int finishCount = int(getTotalStock() * CONSUME_MAX_RATIO); // 60%を消費
-        int consumeCount = int(random(startCount, finishCount)); // 全体数の2割から6割の間でランダムに消費数を決定
+        int startCount = int(getTotalStock() * CONSUME_MIN_RATIO);
+        int finishCount = int(getTotalStock() * CONSUME_MAX_RATIO);
+        int consumeCount = int(random(startCount, finishCount)); // 全体数の2割から4割の間でランダムに消費数を決定
         // consumeCountがbrandIds.lengthを超えないようにする
         consumeCount = min(consumeCount, brandIds.length);
 
@@ -153,12 +171,39 @@ class Market {
         }
     }
 
-    // 利益計算
-
     // ブランド価格計算
-
-    void marketAction() {
+    // 各ブランドの在庫に応じて価格を変動 BASE_CARD_POINTが基準
+    // 一番在庫があるものはBASE_CARD_POINTの0.5倍、次に在庫があるものはBASE_CARD_POINTの1倍、残りは1.5倍
+    void updateBrandPoint() {
+        int[] brandIds = marketStock.clone();
+        // 在庫数でソート(降順)
+        Arrays.sort(brandIds);
+        // 在庫数の多い順にブランドのポイントを更新
+        for (int i=0; i<brandIds.length; i++) {
+            if (i == 0) {
+                riceBrandsInfo[i].point = BASE_CARD_POINT * 0.5; // 一番在庫が多いブランド
+            } else if (i == 1) {
+                riceBrandsInfo[i].point = BASE_CARD_POINT; // 次に在庫が多いブランド
+            } else {
+                riceBrandsInfo[i].point = BASE_CARD_POINT * 1.5; // 残りのブランド
+            }
+        }
     }
+
+    // 利益計算
+    int calculateProfit(int[] brands) {
+        int profit = 0;
+        for (int i=0; i<brands.length; i++) {
+            if (i < 0 || i >= marketStock.length) {
+                println("無効なブランドインデックス: " + i);
+                continue;
+            }
+            profit += riceBrandsInfo[i].point * brands[i];
+        }
+        return profit;
+    }
+
+
     void environmentAction() {
     }
 }
