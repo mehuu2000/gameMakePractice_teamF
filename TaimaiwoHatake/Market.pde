@@ -27,7 +27,6 @@ class Market {
 
     // コンストラクタ
     Market() {
-        ship();
         marketStock = new int[BRAND_COUNT]; // 4つのブランドの在庫
         setSupplyLimit(); // 供給上限を設定
         initStockGeneration(supplyLimit); // 初期在庫を生成
