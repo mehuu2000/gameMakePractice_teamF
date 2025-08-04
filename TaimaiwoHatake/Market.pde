@@ -15,16 +15,17 @@ class Market {
     final int MAX_SUPPLY_LIMIT = 100;
 
     // 初期在庫生成の割合
-    final float INIT_STOCK_MIN_RATIO = 0.25;  // 供給上限の1/4
-    final float INIT_STOCK_MAX_RATIO = 0.75;  // 供給上限の3/4
+    final float INIT_STOCK_MIN_RATIO = 0.1;  // 供給上限の1/10
+    final float INIT_STOCK_MAX_RATIO = 0.25;  // 供給上限の1/4
 
     // 消費率
     final float CONSUME_MIN_RATIO = 0.2;  // 最小20%消費
-    final float CONSUME_MAX_RATIO = 0.6;  // 最大60%消費
+    final float CONSUME_MAX_RATIO = 0.4;  // 最大40%消費
 
     // ブランド数
     final int BRAND_COUNT = 4;
 
+    // コンストラクタ
     Market() {
         marketStock = new int[BRAND_COUNT]; // 4つのブランドの在庫
         setSupplyLimit(); // 供給上限を設定
@@ -69,6 +70,26 @@ class Market {
         return marketStock[brandIndex];
     }
 
+    // 各種ブランドの在庫ランキングを取得(インデックス = 順位, 値 = ブランドID)
+    int[] getBrandRanking() {
+        int[] rankings = new int[BRAND_COUNT];
+        for (int i = 0; i < BRAND_COUNT; i++) {
+            rankings[i] = i; // インデックスを順位として使用し、値をブランドIDとする
+        }
+        for (int i = 0; i < BRAND_COUNT - 1; i++) {
+          for (int j = 0; j < BRAND_COUNT - 1 - i; j++) {
+              // 在庫数を比較（降順）
+              if (marketStock[rankings[j]] < marketStock[rankings[j + 1]]) {
+                  // ブランドIDを交換
+                  int temp = rankings[j];
+                  rankings[j] = rankings[j + 1];
+                  rankings[j + 1] = temp;
+              }
+          }
+      }
+        return rankings;
+    }
+
     // ========== 市場の在庫を更新 ==========
     // ブランドの在庫を更新
     void updateBrandStock(int brandIndex, int changeAmount) {
@@ -85,6 +106,7 @@ class Market {
     // ========== 市場のアクション ==========
     // 出荷処理
     void ship(int[] brands) {
+        // 在庫更新処理
         if (brands.length != marketStock.length) {
             println("受け取ったブランドの数が市場のブランド数と一致しません。");
             return;
@@ -98,7 +120,22 @@ class Market {
                 continue;
             }
             updateBrandStock(i, amount);
+        } 
+        // 在庫に応じて価値を更新
+        updateBrandPoint();
+    }
+
+    // 利益計算
+    int calculateProfit(int[] brands) {
+        int profit = 0;
+        for (int i=0; i<brands.length; i++) {
+            if (i < 0 || i >= marketStock.length) {
+                println("無効なブランドインデックス: " + i);
+                continue;
+            }
+            profit += riceBrandsInfo[i].point * brands[i];
         }
+        return profit;
     }
 
     // 市場の消費
@@ -116,9 +153,9 @@ class Market {
         shuffleArray(brandIds);
 
         // 消費数を決定
-        int startCount = int(getTotalStock() * CONSUME_MIN_RATIO); // 20%を消費
-        int finishCount = int(getTotalStock() * CONSUME_MAX_RATIO); // 60%を消費
-        int consumeCount = int(random(startCount, finishCount)); // 全体数の2割から6割の間でランダムに消費数を決定
+        int startCount = int(getTotalStock() * CONSUME_MIN_RATIO);
+        int finishCount = int(getTotalStock() * CONSUME_MAX_RATIO);
+        int consumeCount = int(random(startCount, finishCount));
         // consumeCountがbrandIds.lengthを超えないようにする
         consumeCount = min(consumeCount, brandIds.length);
 
@@ -153,12 +190,43 @@ class Market {
         }
     }
 
-    // 利益計算
-
     // ブランド価格計算
+    // 各ブランドの在庫に応じて価格を変動 BASE_CARD_POINTが基準
+    // 一番在庫があるものはBASE_CARD_POINTの0.5倍、次に在庫があるものはBASE_CARD_POINTの1倍、残りは1.5倍
+    void updateBrandPoint() {
+        // 各ブランドの順位を格納する配列（1位、2位、3位...）
+        int[] rankings = new int[BRAND_COUNT];
 
-    void marketAction() {
+        // 各ブランドの在庫数を確認して順位を決定
+        for (int i = 0; i < BRAND_COUNT; i++) {
+            int rank = 1; // 初期順位は1位
+
+            // 他のブランドと比較
+            for (int j = 0; j < BRAND_COUNT; j++) {
+                if (i != j && marketStock[j] > marketStock[i]) {
+                    rank++; // 自分より在庫が多いブランドがあれば順位を下げる
+                }
+            }
+
+            rankings[i] = rank;
+        }
+
+        // 順位に基づいてポイントを更新
+        for (int i = 0; i < BRAND_COUNT; i++) {
+            if (rankings[i] == 1) {
+                // 1位（一番在庫が多い）
+                riceBrandsInfo[i].point = int(BASE_CARD_POINT * 0.5);
+            } else if (rankings[i] == 2) {
+                // 2位（二番目に在庫が多い）
+                riceBrandsInfo[i].point = BASE_CARD_POINT;
+            } else {
+                // 3位以下（その他）
+                riceBrandsInfo[i].point = int(BASE_CARD_POINT * 1.5);
+            }
+        }
     }
+
+
     void environmentAction() {
     }
 }

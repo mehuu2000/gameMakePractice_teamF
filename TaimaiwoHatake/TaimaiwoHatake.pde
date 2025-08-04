@@ -32,6 +32,7 @@ final int WINDOW_WIDTH = 1280;
 final int WINDOW_HEIGHT = 720;
 final float LEFT_PANEL_WIDTH = 0.3;   // 左パネルの幅（30%）
 final float RIGHT_PANEL_WIDTH = 0.7;  // 右パネルの幅（70%）
+final int BASE_CARD_POINT = 100; // 基本のカードポイント
 
 // ========== 変数（変更可能） ==========
 RiceBrand[] riceBrandsInfo;
@@ -94,10 +95,10 @@ void initGame() {
   player = new Player();
   ai = new AI();
   riceBrandsInfo = new RiceBrand[] {
-    new RiceBrand("りょうおもい", color(255, 200, 200), 10000),
-    new RiceBrand("ほしひかり", color(200, 200, 255), 10000),
-    new RiceBrand("ゆめごこち", color(200, 255, 200), 10000),
-    new RiceBrand("つやおうじ", color(255, 255, 200), 10000)
+    new RiceBrand("りょうおもい", color(255, 200, 200), BASE_CARD_POINT),
+    new RiceBrand("ほしひかり", color(200, 200, 255), BASE_CARD_POINT),
+    new RiceBrand("ゆめごこち", color(200, 255, 200), BASE_CARD_POINT),
+    new RiceBrand("つやおうじ", color(255, 255, 200), BASE_CARD_POINT)
   };
 
   // UI系
@@ -108,10 +109,6 @@ void initGame() {
   cardVisual = new CardVisual();
 
   currentTurn = 1;
-
-  // AIの初回出荷準備関数
-  // これは予定
-  // gameLogic.dealInitialCards();
 }
 
 // メイン描画ループ
