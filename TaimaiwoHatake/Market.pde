@@ -135,7 +135,7 @@ class Market {
         // 消費数を決定
         int startCount = int(getTotalStock() * CONSUME_MIN_RATIO);
         int finishCount = int(getTotalStock() * CONSUME_MAX_RATIO);
-        int consumeCount = int(random(startCount, finishCount)); // 全体数の2割から4割の間でランダムに消費数を決定
+        int consumeCount = int(random(startCount, finishCount));
         // consumeCountがbrandIds.lengthを超えないようにする
         consumeCount = min(consumeCount, brandIds.length);
 
