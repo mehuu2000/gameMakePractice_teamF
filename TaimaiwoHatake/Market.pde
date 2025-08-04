@@ -70,6 +70,26 @@ class Market {
         return marketStock[brandIndex];
     }
 
+    // 各種ブランドの在庫ランキングを取得(インデックス = 順位, 値 = ブランドID)
+    int[] getBrandRanking() {
+        int[] rankings = new int[BRAND_COUNT];
+        for (int i = 0; i < BRAND_COUNT; i++) {
+            rankings[i] = i; // インデックスを順位として使用し、値をブランドIDとする
+        }
+        for (int i = 0; i < BRAND_COUNT - 1; i++) {
+          for (int j = 0; j < BRAND_COUNT - 1 - i; j++) {
+              // 在庫数を比較（降順）
+              if (marketStock[rankings[j]] < marketStock[rankings[j + 1]]) {
+                  // ブランドIDを交換
+                  int temp = rankings[j];
+                  rankings[j] = rankings[j + 1];
+                  rankings[j + 1] = temp;
+              }
+          }
+      }
+        return rankings;
+    }
+
     // ========== 市場の在庫を更新 ==========
     // ブランドの在庫を更新
     void updateBrandStock(int brandIndex, int changeAmount) {
