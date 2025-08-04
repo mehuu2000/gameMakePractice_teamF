@@ -112,13 +112,13 @@ class Broker {
     for (int i = 0; i < riceBrandsInfo.length; i++) {
       sumLoadRices[i] = getSumLoadRice(i);
     }
-    Market.ship(sumLoadRices);
+    market.ship(sumLoadRices);
   }
   
   //米を売る関数
   void sellRice() {
-    int profit = caluculateProfit(sumLoadRices);
+    int profit = market.calculateProfit(sumLoadRices);
     wallet += profit;
-    loadRices = new int[RiceBrandsInfo.length][RICE_DECAY_LIMIT];
+    loadRices = new int[riceBrandsInfo.length][RICE_DECAY_LIMIT];
   }
 }

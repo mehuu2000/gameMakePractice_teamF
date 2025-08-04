@@ -8,7 +8,7 @@ class AI extends Broker {
   // AIの行動を定義するメソッド
   void aiAction() {
     // AIの行動ロジックをここに実装
-    for (int i = 0; i < riceBrandInfo.length; i++){
+    for (int i = 0; i < riceBrandsInfo.length; i++){
       
     }
   }
