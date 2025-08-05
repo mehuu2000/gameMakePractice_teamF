@@ -28,8 +28,10 @@ int selectedAmount = 1; // 選択されたカードの数量
 
 // ========== 定数 ==========
 final String[] RICE_BRANDS = {"りょうおもい", "ほしひかり", "ゆめごこち", "つやおうじ"};
-final int WINDOW_WIDTH = 1280;
-final int WINDOW_HEIGHT = 720;
+final int WINDOW_WIDTH = 1280; // ウィンドウ幅
+final int WINDOW_HEIGHT = 720; // ウィンドウ高さ
+final int PLAYER_POINT = 40; // プレイヤー初期所持金
+final int ENEMY_POINT = 40; // AI初期所持金
 final float LEFT_PANEL_WIDTH = 0.3;   // 左パネルの幅（30%）
 final float RIGHT_PANEL_WIDTH = 0.7;  // 右パネルの幅（70%）
 final int BASE_CARD_POINT = 100; // 基本のカードポイント
@@ -103,7 +105,7 @@ void initGame() {
 
   // UI系
   ui = new UI(gameState);
-  leftPanel = new LeftPanel();
+  leftPanel = new LeftPanel(ui);
   rightPanel = new RightPanel();
   popup = new Popup();
   cardVisual = new CardVisual();
@@ -119,6 +121,9 @@ void draw() {
   switch(gameState.currentState) {
   case TITLE:
     ui.drawTitleScreen();
+    break;
+  case START:
+    ui.drawStartScreen(market.supplyLimit);
     break;
   case PLAYING:
     drawGameScreen();
@@ -136,9 +141,15 @@ void draw() {
 void drawGameScreen() {
   // 左側エリア（30%）
   leftPanel.drawLeftPanel();
+  leftPanel.drawMarketInfo();
+  leftPanel.drawEnvironment();
 
   // 右側エリア（70%）
   rightPanel.drawRightPanel();
+  rightPanel.drawTurnInfo(currentTurn);
+  rightPanel.drawPointInfo(PLAYER_POINT, ENEMY_POINT);
+  rightPanel.drawShippingArea();
+  rightPanel.drawAIShippingArea();
 }
 
 void keyPressed() {
