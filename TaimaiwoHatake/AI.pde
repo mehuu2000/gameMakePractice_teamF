@@ -13,23 +13,44 @@ class AI extends Broker {
   void aiAction() {
     // 購入プロセス ランキング順に安い方から買っていく
     int[] ranking = market.getBrandRanking();
-    for (int i = riceBrandsInfo.length - 1; i >= 0; i--) {
+    for (int i = 0; i < riceBrandsInfo.length; i++) {
       int riceID = ranking[i];
       int countRice = getSumHandRice(riceID);
       int canBuyCount = riceBrandsInfo[riceID].point / wallet; // 全額使ったら買える個数
       if (i!=0) {
-        this.buyRice(riceID, canBuyCount/2);
+        buyRice(riceID, canBuyCount/2);
         buyCostAverages[riceID] = (countRice * getSumHandRice(riceID)
                                           + riceBrandsInfo[riceID].point * canBuyCount/2)
                                           / (countRice + canBuyCount/2);
       }else{
-        this.buyRice(riceID, canBuyCount);
+        buyRice(riceID, canBuyCount);
         buyCostAverages[riceID] = (countRice * getSumHandRice(riceID)
                                           + riceBrandsInfo[riceID].point * canBuyCount)
                                           / (countRice + canBuyCount);
       }
     }
     
-    //出荷場に置くプロセス　
+    //出荷場に置くプロセス
+    //次腐ってしまう米を全て出荷場に出す
+    for (int i = 0; i < riceBrandsInfo.length; i++) {
+      int oldestRice = handRices[i][RICE_DECAY_LIMIT - 1];
+      if (oldestRice > 0)
+        loadRice(i, oldestRice);
+    }
+    //価値の高い方から1/2, 3/8, 1/4, 1/8の順に出荷場に出す
+    for (int i = 0; i < riceBrandsInfo.length; i++) {
+      int riceID = ranking[i];
+      int countRice = getSumHandRice(riceID);
+      switch(4 - ranking[i]) {
+        case 1:
+          loadRice(riceID, countRice/8);
+        case 2:
+          loadRice(riceID, countRice/8);
+        case 3:
+          loadRice(riceID, countRice/8);
+        case 4:
+          loadRice(riceID, countRice/8); 
+      }
+    }
   }
 }
