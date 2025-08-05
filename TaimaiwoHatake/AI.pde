@@ -16,17 +16,17 @@ class AI extends Broker {
     for (int i = 0; i < riceBrandsInfo.length; i++) {
       int riceID = ranking[i];
       int countRice = getSumHandRice(riceID);
-      int canBuyCount = riceBrandsInfo[riceID].point / wallet; // 全額使ったら買える個数
+      int canBuyCount = wallet / riceBrandsInfo[riceID].point; // 全額使ったら買える個数
       if (i!=0) {
         buyRice(riceID, canBuyCount/2);
         buyCostAverages[riceID] = (countRice * getSumHandRice(riceID)
                                           + riceBrandsInfo[riceID].point * canBuyCount/2)
-                                          / (countRice + canBuyCount/2);
+                                          / float(countRice + canBuyCount/2);
       }else{
         buyRice(riceID, canBuyCount);
         buyCostAverages[riceID] = (countRice * getSumHandRice(riceID)
                                           + riceBrandsInfo[riceID].point * canBuyCount)
-                                          / (countRice + canBuyCount);
+                                          / float(countRice + canBuyCount);
       }
     }
     
@@ -41,15 +41,19 @@ class AI extends Broker {
     for (int i = 0; i < riceBrandsInfo.length; i++) {
       int riceID = ranking[i];
       int countRice = getSumHandRice(riceID);
-      switch(4 - ranking[i]) {
+      switch(4 - i) {
         case 1:
-          loadRice(riceID, countRice/8);
+          loadRice(riceID, countRice/2);
+          break;
         case 2:
-          loadRice(riceID, countRice/8);
+          loadRice(riceID, countRice*3/8);
+          break;
         case 3:
-          loadRice(riceID, countRice/8);
+          loadRice(riceID, countRice/4);
+          break;
         case 4:
-          loadRice(riceID, countRice/8); 
+          loadRice(riceID, countRice/8);
+          break;
       }
     }
   }
