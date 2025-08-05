@@ -147,7 +147,7 @@ void drawGameScreen() {
   // 右側エリア（70%）
   rightPanel.drawRightPanel();
   rightPanel.drawTurnInfo(currentTurn);
-  rightPanel.drawPointInfo(PLAYER_POINT, ENEMY_POINT);
+  rightPanel.drawPointInfo();
   rightPanel.drawShippingArea();
   rightPanel.drawAIShippingArea();
 }
