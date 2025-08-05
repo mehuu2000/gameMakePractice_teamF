@@ -24,7 +24,7 @@ class Market {
 
     // コンストラクタ
     Market() {
-        marketStock = new int[riceBrandsInfo.length]; // 4つのブランドの在庫
+        marketStock = new int[riceBrandsInfo.length]; // ブランドの在庫 (riceBrandsInfo配列のサイズ分)
         setSupplyLimit(); // 供給上限を設定
         initStockGeneration(supplyLimit); // 初期在庫を生成
         currentEnvironment = "NORMAL"; // 初期環境は通常
