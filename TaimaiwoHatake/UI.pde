@@ -46,8 +46,9 @@ class UI {
       isMessageDisplay[2] = true;
     }
 
-    if (elapsedTime >= 5000) {
+    if (elapsedTime >= 4000) {
       gameState.changeState(State.PLAYING);
+      showPopup("year");
     }
 
     if (isMessageDisplay[0]) {

@@ -11,6 +11,10 @@ class LeftPanel {
     rect(0, 0, width * 0.3, height);
 
     textAlign(CENTER);
+
+    drawMarketInfo();
+    drawSupply();
+    drawEnvironment();
   }
 
   /* 以下は実装例 */
@@ -31,6 +35,48 @@ class LeftPanel {
 
   // 供給量の描画
   void drawSupply() {
+    fill(0);
+    textSize(24);
+    strokeWeight(2);
+    textAlign(CENTER, CENTER);
+    text("枚数", 66, 100);
+
+    // ブランドのカード (デモ用)
+    fill(250);
+    for (int i=0; i<riceBrandsInfo.length; i++) {
+      stroke(riceBrandsInfo[riceBrandRanking[i]].brandColor);
+      rect(15, 130 + (i * 60), 30, 45); // デモ用のカード
+    }
+    stroke(0);
+    
+    // ×の描画
+    fill(0);
+    for (int i=0; i<riceBrandsInfo.length; i++) {
+      textSize(28);
+      text("×", 60, 150 + (i * 60));
+    }
+
+    // 供給数の描画
+    for (int i=0; i<riceBrandsInfo.length; i++) {
+      text(market.marketStock[riceBrandRanking[i]], 95, 151 + (i * 60));
+    }
+
+    // ブランド名の描画
+    text("品種名", 205, 100);
+    for (int i=0; i<riceBrandsInfo.length; i++) {
+        text(riceBrandsInfo[riceBrandRanking[i]].name, 205, 152 + (i * 60));
+    }
+
+    // ブランドの価値の描画
+    textSize(24);
+    text("価値", (width * 0.3) - 50, 100);
+    textAlign(RIGHT, CENTER);
+    for (int i=0; i<riceBrandsInfo.length; i++) {
+      text(riceBrandsInfo[riceBrandRanking[i]].point + "pt", (width * 0.3) - 20, 151 + (i * 60));
+    }
+
+    textAlign(CENTER, CENTER);
+    noStroke();
   }
 
   // 環境の描画

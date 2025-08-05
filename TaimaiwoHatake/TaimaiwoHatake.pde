@@ -28,20 +28,22 @@ TriangleButton[] brandPlus1Buttons; // 購入の際に特定のブランドの�
 TriangleButton[] brandMinus1Buttons; // 購入の際に特定のブランドの選択数を1減らすボタン
 
 EllipseButton closePopupButton; // ポップアップを閉じるボタン
-EllipseButton submitButton; // ポップアップの提出ボタン
+EllipseButton loadButton; // ポップアップの提出ボタン
 
 EllipseButton buyButton; // 購入ボタン
+
+EllipseButton playDescribeButton; // 説明画面に移動するボタン
+EllipseButton submitButton; // 出荷ボタン
+
 
 // ========== ゲーム進行変数 ==========
 int currentTurn = 1;
 int maxTurns = 11; // 要相談
 
 // ========== UI状態変数 ==========
-boolean showingPopup = true; // ポップアップ表示フラグ
-String popupType = "buy"; // ポップアップの種類
+boolean showingPopup = false; // ポップアップ表示フラグ
+String popupType = ""; // ポップアップの種類
 int selectedBrandId = 0; // 選択されたブランド(買い付けフェーズなど)
-int[] selectedAmounts; // 選択されたカードの数量。インデックス = ブランドID
-int[] riceBrandRanking; // ブランドの供給数ランキング（重複なし）
 int totalPrice = 0; // 購入合計金額
 
 // ========== 定数 ==========
@@ -56,6 +58,8 @@ final int BASE_CARD_POINT = 100; // 基本のカードポイント
 
 // ========== 変数（変更可能） ==========
 RiceBrand[] riceBrandsInfo;
+int[] selectedAmounts; // 選択されたカードの数量。インデックス = ブランドID
+int[] riceBrandRanking; // ブランドの供給数ランキング（重複なし）
 
 int sumBrandCount = 0; // 総数を管理する変数
 boolean isFirst = false; // 初回フラグ
@@ -194,14 +198,24 @@ void initButton() {
   closePopupButton = new EllipseButton((width * 0.3) + 350, height - 100, 150, 70, color(0), color(100, 150, 230), color(85, 130, 215), "戻る", 32, () -> {
     closePopup();
   });
-  submitButton = new EllipseButton((width * 0.3) + 630, height - 100, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "提出", 32, () -> {
+  loadButton = new EllipseButton((width * 0.3) + 630, height - 100, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "提出", 32, () -> {
     // 提出処理をここに追加
+    player.loadRice(selectedBrandId, selectedAmounts[selectedBrandId]);
     closePopup();
   });
 
   buyButton = new EllipseButton((width * 0.3) + 680, height - 170, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "購入", 32, () -> {
     // 購入処理をここに追加
     closePopup();
+  });
+
+  playDescribeButton = new EllipseButton(width - 100, height - 180, 150, 70, color(0), color(100, 150, 230), color(85, 130, 215), "説明", 32, () -> {
+    // 説明画面の表示処理をここに追加
+    gameState.changeState(State.DESCRIBE);
+  });
+  submitButton = new EllipseButton(width - 100, height - 100, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "出荷", 32, () -> {
+    // 出荷処理をここに追加
+    player.shipRice();
   });
 }
 
@@ -216,6 +230,9 @@ void draw() {
     break;
   case START:
     ui.drawStartScreen(market.supplyLimit);
+    break;
+  case DESCRIBE:
+    ui.drawTitleScreen();
     break;
   case PLAYING:
     drawGameScreen();
@@ -233,15 +250,9 @@ void draw() {
 void drawGameScreen() {
   // 左側エリア（30%）
   leftPanel.drawLeftPanel();
-  leftPanel.drawMarketInfo();
-  leftPanel.drawEnvironment();
 
   // 右側エリア（70%）
   rightPanel.drawRightPanel();
-  rightPanel.drawTurnInfo(currentTurn);
-  rightPanel.drawPointInfo();
-  rightPanel.drawShippingArea();
-  rightPanel.drawAIShippingArea();
 }
 
 void keyPressed() {
@@ -252,38 +263,48 @@ void keyPressed() {
 }
 
 void mouseClicked() {
-  if (gameState.currentState == State.TITLE) {
+  if (gameState.currentState == State.PLAYING) {
+    if (showingPopup) {
+      if (popupType == "buy") {
+        // 全てのブランドボタンをチェック
+        for (int i = 0; i < brandPlus1Buttons.length; i++) {
+          if (brandPlus1Buttons[i].onClicked()) {
+            // 内部で既に実行済み
+            return;
+          } else if (brandMinus1Buttons[i].onClicked()) {
+            // 内部で既に実行済み
+            return;
+          } else if (buyButton.onClicked()) {
+            // 内部で既に実行済み
+          }
+        }
+      } else if (popupType == "submit") {
+        if (minus1SelectedButton.onClicked()) {
+          // 内部で既に実行済み
+        } else if (plus1SelectedButton.onClicked()) {
+          // 内部で既に実行済み
+        } else if (closePopupButton.onClicked()) {
+          // 内部で既に実行済み
+        } else if (loadButton.onClicked()) {
+          // 内部で既に実行済み
+        }
+      }
+    } else {
+      if (rightPanel.onBrand1Clicked()){
+        // 内部で既に実行済み
+      } else if (playDescribeButton.onClicked()) {
+        // 内部で既に実行済み
+      } else if (submitButton.onClicked()) {
+        // 内部で既に実行済み
+      }
+    }
+  } else if (gameState.currentState == State.TITLE) {
     if (startButton.onClicked()) {
       // 内部で既に実行済み
     } else if (describeButton.onClicked()) {
       // 内部で既に実行済み
     } else if (endButton.onClicked()) {
       // 内部で既に実行済み
-    }
-  } else if (gameState.currentState == State.PLAYING) {
-    if (popupType == "buy") {
-      // 全てのブランドボタンをチェック
-      for (int i = 0; i < brandPlus1Buttons.length; i++) {
-        if (brandPlus1Buttons[i].onClicked()) {
-          // 内部で既に実行済み
-          return;
-        } else if (brandMinus1Buttons[i].onClicked()) {
-          // 内部で既に実行済み
-          return;
-        } else if (buyButton.onClicked()) {
-          // 内部で既に実行済み
-        }
-      }
-    } else if (popupType == "submit") {
-      if (minus1SelectedButton.onClicked()) {
-        // 内部で既に実行済み
-      } else if (plus1SelectedButton.onClicked()) {
-        // 内部で既に実行済み
-      } else if (closePopupButton.onClicked()) {
-        // 内部で既に実行済み
-      } else if (submitButton.onClicked()) {
-        // 内部で既に実行済み
-      }
     }
   }
 }

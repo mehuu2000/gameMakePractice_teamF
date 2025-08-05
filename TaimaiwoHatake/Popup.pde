@@ -1,6 +1,8 @@
 // 出荷選択や手札戻し、利益描画などのポップアップの描画を管理するクラス
 String[] riceOldInfo = {"新米", "古米", "古古米"};
 class Popup {
+  int yearPopupStartTime = 0;
+  boolean yearPopupTimerSet = false;
 
   // ポップアップの種類を定義
   void drawPopup(String type) {
@@ -48,12 +50,28 @@ class Popup {
 
   // 年数ポップアップの描画
   void drawYearPopup() {
+    if (!yearPopupTimerSet) {
+        yearPopupStartTime = millis();
+        yearPopupTimerSet = true;
+    }
+    int elapsedTime = millis() - yearPopupStartTime;
+
     fill(21, 96, 130);
     rect(width/2 - 250, height/2 - 100, 500, 200);
 
-    fill(0);
+    textAlign(CENTER, CENTER);
+    fill(250);
     textSize(120);
-    text(currentTurn + "年目", width/2, height/2 + 40);
+    text(currentTurn + "年目", width/2, height/2);
+
+    fill(0);
+
+    // このポップアップが表示されてから2秒後にshowPopup("buy")を呼び出す。
+    if (elapsedTime >= 3000) {
+      yearPopupTimerSet = false;
+      closePopup();
+      showPopup("buy");
+    }
   }
 
   // 市場に持ち運ばれた米を表示するポップアップの描画
@@ -160,18 +178,26 @@ class Popup {
     line((width * 0.3) + 140, height - 170, width - 52, height -170);
     noStroke();
 
-    fill(0);
-    rect((width * 0.3) + 190, 230, 100, 180); //デモ
+    // デモカード
+    fill(250);
+    stroke(riceBrandsInfo[selectedBrandId].brandColor);
+    strokeWeight(1);
+    rect((width * 0.3) + 190, 230, 100, 180); //デモカード
 
+    // ブランド名
+    fill(riceBrandsInfo[selectedBrandId].brandColor);
     textSize(52);
-    text("アットホーム", (width * 0.3) + 460, 330); //デモ
+    text(riceBrandsInfo[selectedBrandId].name, (width * 0.3) + 460, 330); //デモ
 
+    // ブランド名 + を何枚提出しますか？
     textSize(40);
     textAlign(LEFT, CENTER);
-    text("米の名前", (width * 0.3) + 220, 140);
+    text(riceBrandsInfo[selectedBrandId].name, (width * 0.3) + 220, 140);
+    fill(0);
     text("を何枚提出しますか？", (width * 0.3) + 220, 190);
     textAlign(CENTER, CENTER);
 
+    // 提出数の選択 + ボタン
     minus1SelectedButton.display();
     fill(0);
     textSize(36);
@@ -189,7 +215,8 @@ class Popup {
     text(sumBrandCount, (width * 0.3) + 280+(3*150), height - 230);
 
     closePopupButton.display();
-    submitButton.display();
+    loadButton.display();
+    noStroke();
   }
 
   // 手札に戻すポップアップの描画

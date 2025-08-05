@@ -27,6 +27,7 @@ class Market {
         marketStock = new int[riceBrandsInfo.length]; // ブランドの在庫 (riceBrandsInfo配列のサイズ分)
         setSupplyLimit(); // 供給上限を設定
         initStockGeneration(supplyLimit); // 初期在庫を生成
+        updateBrandPoint(); // ブランドの価格を初期化
         currentEnvironment = "NORMAL"; // 初期環境は通常
         riceBrandRanking = getBrandRanking();
     }
@@ -119,8 +120,9 @@ class Market {
             }
             updateBrandStock(i, amount);
         } 
-        // 在庫に応じて価値を更新
-        updateBrandPoint();
+        
+        updateBrandPoint(); // 在庫に応じて価値を更新
+        riceBrandRanking = this.getBrandRanking(); // ランキングを更新
     }
 
     // 利益計算
