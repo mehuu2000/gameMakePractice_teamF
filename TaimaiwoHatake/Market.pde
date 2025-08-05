@@ -28,6 +28,7 @@ class Market {
         setSupplyLimit(); // 供給上限を設定
         initStockGeneration(supplyLimit); // 初期在庫を生成
         currentEnvironment = "NORMAL"; // 初期環境は通常
+        riceBrandRanking = getBrandRanking();
     }
 
     // ========== 市場在庫の初期化 ==========

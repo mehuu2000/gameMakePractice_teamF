@@ -9,7 +9,7 @@ enum State {
   DESCRIBE,
   START,
   PLAYING,
-  FINISHED,
+  FINISHED
 }
 
 class GameState {
