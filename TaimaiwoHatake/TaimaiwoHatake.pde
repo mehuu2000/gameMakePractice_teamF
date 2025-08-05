@@ -91,17 +91,17 @@ void setup() {
 // ゲーム初期化
 // ここでゲームの初期状態を設定
 void initGame() {
-  gameState = new GameState();
-  market = new Market();
-  gameLogic = new GameLogic();
-  player = new Player();
-  ai = new AI();
   riceBrandsInfo = new RiceBrand[] {
     new RiceBrand("りょうおもい", color(255, 200, 200), BASE_CARD_POINT),
     new RiceBrand("ほしひかり", color(200, 200, 255), BASE_CARD_POINT),
     new RiceBrand("ゆめごこち", color(200, 255, 200), BASE_CARD_POINT),
     new RiceBrand("つやおうじ", color(255, 255, 200), BASE_CARD_POINT)
   };
+  gameState = new GameState();
+  market = new Market();
+  gameLogic = new GameLogic();
+  player = new Player(PLAYER_POINT);
+  ai = new AI(ENEMY_POINT);
 
   // UI系
   ui = new UI(gameState);
