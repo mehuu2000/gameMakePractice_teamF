@@ -19,8 +19,6 @@ CardVisual cardVisual;
 // ========== ゲーム進行変数 ==========
 int currentTurn = 1;
 int maxTurns = 11; // 要相談
-int pMoney = 40;
-int eMoney = 40;
 
 // ========== UI状態変数 ==========
 boolean showingPopup = false; // ポップアップ表示フラグ
@@ -30,8 +28,10 @@ int selectedAmount = 1; // 選択されたカードの数量
 
 // ========== 定数 ==========
 final String[] RICE_BRANDS = {"りょうおもい", "ほしひかり", "ゆめごこち", "つやおうじ"};
-final int WINDOW_WIDTH = 1280;
-final int WINDOW_HEIGHT = 720;
+final int WINDOW_WIDTH = 1280; // ウィンドウ幅
+final int WINDOW_HEIGHT = 720; // ウィンドウ高さ
+final int PLAYER_POINT = 40; // プレイヤー初期所持金
+final int ENEMY_POINT = 40; // AI初期所持金
 final float LEFT_PANEL_WIDTH = 0.3;   // 左パネルの幅（30%）
 final float RIGHT_PANEL_WIDTH = 0.7;  // 右パネルの幅（70%）
 
@@ -150,7 +150,7 @@ void drawGameScreen() {
   // 右側エリア（70%）
   rightPanel.drawRightPanel();
   rightPanel.drawTurnInfo(currentTurn);
-  rightPanel.drawMoneyInfo(pMoney, eMoney);
+  rightPanel.drawPointInfo(PLAYER_POINT, ENEMY_POINT);
   rightPanel.drawShippingArea();
   rightPanel.drawAIShippingArea();
 }

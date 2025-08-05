@@ -10,10 +10,7 @@ class LeftPanel {
     fill(250);
     rect(0, 0, width * 0.3, height);
 
-    fill(0);
     textAlign(CENTER);
-    textSize(20);
-    text("市場情報", (width*0.3)/2, height/2);
   }
 
   /* 以下は実装例 */

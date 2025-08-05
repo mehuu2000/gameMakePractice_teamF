@@ -9,10 +9,7 @@ class RightPanel {
     fill(250);
     rect(rightX, 0, rightWidth, height);
 
-    fill(0);
     textAlign(CENTER);
-    textSize(20);
-    text("出荷準備など", rightX + rightWidth/2, height/2);
 
     stroke(0);
     strokeWeight(5);
@@ -33,21 +30,21 @@ class RightPanel {
   }
 
   // 所持金表示
-  void drawMoneyInfo(int pMoney, int eMoney) {
+  void drawPointInfo(int pPoint, int ePoint) {
     fill(21, 96, 130);
     rect(width * 0.3 + 20, 20, 120, 100);
-
-    fill(240);
-    rect(width * 0.3 + 20, height - 120, 120, 100);
 
     fill(255);
     textSize(30);
     text("所持金", width * 0.3 + 80, 60);
-    text(eMoney + "pt", width * 0.3 + 80, 100);
+    text(ePoint + "pt", width * 0.3 + 80, 100);
+
+    fill(240);
+    rect(width * 0.3 + 20, height - 120, 120, 100);
 
     fill(21, 96, 130);
     text("所持金", width * 0.3 + 80, height - 80);
-    text(pMoney + "pt", width * 0.3 + 80, height - 40);
+    text(pPoint + "pt", width * 0.3 + 80, height - 40);
   }
 
   // 出荷準備エリア
