@@ -1,7 +1,7 @@
 // 市場の処理などを行うクラス
 class Market {
     // ========== 市場在庫管理 ==========
-    int [] marketStock;  //インデックス = 0: りょうおもい, 1: ほしひかり, 2:ゆめごこち, 3:つやおうじ | 値 = 在庫数
+    int[] marketStock;  //インデックス = 0: りょうおもい, 1: ほしひかり, 2:ゆめごこち, 3:つやおうじ | 値 = 在庫数
 
     // ========== 供給管理 ==========
     int supplyLimit;         // 供給上限
@@ -22,12 +22,9 @@ class Market {
     final float CONSUME_MIN_RATIO = 0.2;  // 最小20%消費
     final float CONSUME_MAX_RATIO = 0.4;  // 最大40%消費
 
-    // ブランド数
-    final int BRAND_COUNT = 4;
-
     // コンストラクタ
     Market() {
-        marketStock = new int[BRAND_COUNT]; // 4つのブランドの在庫
+        marketStock = new int[riceBrandsInfo.length]; // 4つのブランドの在庫
         setSupplyLimit(); // 供給上限を設定
         initStockGeneration(supplyLimit); // 初期在庫を生成
         currentEnvironment = "NORMAL"; // 初期環境は通常
@@ -72,12 +69,12 @@ class Market {
 
     // 各種ブランドの在庫ランキングを取得(インデックス = 順位, 値 = ブランドID)
     int[] getBrandRanking() {
-        int[] rankings = new int[BRAND_COUNT];
-        for (int i = 0; i < BRAND_COUNT; i++) {
+        int[] rankings = new int[marketStock.length];
+        for (int i = 0; i < marketStock.length; i++) {
             rankings[i] = i; // インデックスを順位として使用し、値をブランドIDとする
         }
-        for (int i = 0; i < BRAND_COUNT - 1; i++) {
-          for (int j = 0; j < BRAND_COUNT - 1 - i; j++) {
+        for (int i = 0; i < marketStock.length - 1; i++) {
+          for (int j = 0; j < marketStock.length - 1 - i; j++) {
               // 在庫数を比較（降順）
               if (marketStock[rankings[j]] < marketStock[rankings[j + 1]]) {
                   // ブランドIDを交換
@@ -195,14 +192,14 @@ class Market {
     // 一番在庫があるものはBASE_CARD_POINTの0.5倍、次に在庫があるものはBASE_CARD_POINTの1倍、残りは1.5倍
     void updateBrandPoint() {
         // 各ブランドの順位を格納する配列（1位、2位、3位...）
-        int[] rankings = new int[BRAND_COUNT];
+        int[] rankings = new int[marketStock.length];
 
         // 各ブランドの在庫数を確認して順位を決定
-        for (int i = 0; i < BRAND_COUNT; i++) {
+        for (int i = 0; i < marketStock.length; i++) {
             int rank = 1; // 初期順位は1位
 
             // 他のブランドと比較
-            for (int j = 0; j < BRAND_COUNT; j++) {
+            for (int j = 0; j < marketStock.length; j++) {
                 if (i != j && marketStock[j] > marketStock[i]) {
                     rank++; // 自分より在庫が多いブランドがあれば順位を下げる
                 }
@@ -212,7 +209,7 @@ class Market {
         }
 
         // 順位に基づいてポイントを更新
-        for (int i = 0; i < BRAND_COUNT; i++) {
+        for (int i = 0; i < marketStock.length; i++) {
             if (rankings[i] == 1) {
                 // 1位（一番在庫が多い）
                 riceBrandsInfo[i].point = int(BASE_CARD_POINT * 0.5);
