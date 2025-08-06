@@ -260,18 +260,33 @@ class Popup {
     text("返却数", (width * 0.3) + 730, 250);
     for (int i=0; i<riceOldInfo.length; i++) {
       text(riceOldInfo[i], (width * 0.3) + 280+(i*150), height - 280);
-      text(player.handRices[selectedBrandId][i], (width * 0.3) + 280+(i*150), height - 230);
+      text(player.loadRices[selectedBrandId][i], (width * 0.3) + 280+(i*150), height - 230);
     }
     text("総数", (width * 0.3) + 280+(3*150), height - 280);
     text(sumBrandCount, (width * 0.3) + 280+(3*150), height - 230);
 
     closePopupButton.display();
-    loadButton.display();
+    returnButton.display();
     noStroke();    
   }
 
   // ターン終了ポップアップの描画
   void drawTurnEndPopup() {
+    fill(240);
+    stroke(0);
+    strokeWeight(2);
+    rect((width * 0.3) + 110, 160, (width * 0.7) - 190, height - 350);
+    
+    textAlign(LEFT, CENTER);
+    fill(0);
+    textSize(44);
+    text("ターンを終了して", (width * 0.3) + 270, 250);
+    text("よろしいですか？", (width * 0.3) + 270, 310);
+    textAlign(CENTER, CENTER);
+    
+    closeEndPopupButton.display();
+    turnEndButton.display();
+    noStroke();
   }
 
   // 集計開始ポップアップの描画
