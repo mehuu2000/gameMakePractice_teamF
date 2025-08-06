@@ -302,6 +302,21 @@ class Popup {
 
   //米の出荷による市場変動のポップアップの描画
   void drawFluctuationPopup() {
+    fill(240);
+    stroke(0);
+    strokeWeight(2);
+    rect((width * 0.3) + 110, 160, (width * 0.7) - 190, height - 320);
+    
+    textAlign(LEFT, CENTER);
+    fill(0);
+    textSize(40);
+    text("集計結果", (width * 0.3) + 370, 210);
+    
+    textSize(36);
+    text("枚数", (width * 0.3) + 600, 260);
+    textAlign(CENTER, CENTER);
+
+    noStroke();
   }
 
   // 利益のポップアップのための描画
