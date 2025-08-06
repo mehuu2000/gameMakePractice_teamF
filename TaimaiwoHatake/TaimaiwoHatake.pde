@@ -50,8 +50,8 @@ int totalPrice = 0; // 購入合計金額
 final String[] RICE_BRANDS = {"りょうおもい", "ほしひかり", "ゆめごこち", "つやおうじ"};
 final int WINDOW_WIDTH = 1280; // ウィンドウ幅
 final int WINDOW_HEIGHT = 720; // ウィンドウ高さ
-final int PLAYER_POINT = 40; // プレイヤー初期所持金
-final int ENEMY_POINT = 40; // AI初期所持金
+final int PLAYER_POINT = 500; // プレイヤー初期所持金
+final int ENEMY_POINT = 500; // AI初期所持金
 final float LEFT_PANEL_WIDTH = 0.3;   // 左パネルの幅（30%）
 final float RIGHT_PANEL_WIDTH = 0.7;  // 右パネルの幅（70%）
 final int BASE_CARD_POINT = 100; // 基本のカードポイント
@@ -206,6 +206,8 @@ void initButton() {
 
   buyButton = new EllipseButton((width * 0.3) + 680, height - 170, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "購入", 32, () -> {
     // 購入処理をここに追加
+    for (int i = 0; i < riceBrandsInfo.length; i++)
+      player.buyRice(i, selectedAmounts[i]);
     closePopup();
   });
 
