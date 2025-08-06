@@ -82,4 +82,12 @@ class GameState {
         isFirst = true;
     }
   }
+
+  // ターンエンドポップアップの御意の処理
+  void endTurnAction() {
+    player.decayRice(); // 米の古くなる処理
+    ai.decayRice(); // AIの米も古くなる
+    currentTurn++;
+    showPopup("year");
+  }
 }
