@@ -62,7 +62,7 @@ class GameState {
   }
 
   // 場に出してる米をクリックした時(返却)
-  void selectBrandBack() {
+  void selectBrandBack(int brandId) {
     selectedBrandId = brandId;
     showPopup("back");
   }
