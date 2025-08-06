@@ -27,8 +27,11 @@ TriangleButton minus1SelectedButton; // 現在の選択ブランドの選択数�
 TriangleButton[] brandPlus1Buttons; // 購入の際に特定のブランドの選択数を1増やすボタン
 TriangleButton[] brandMinus1Buttons; // 購入の際に特定のブランドの選択数を1減らすボタン
 
-EllipseButton closePopupButton; // ポップアップを閉じるボタン
+EllipseButton closePopupButton; // ポップアップを閉じるボタン（通常）
+EllipseButton closeEndPopupButton; // ポップアップを閉じるボタン（却下ボタン）
 EllipseButton loadButton; // ポップアップの提出ボタン
+EllipseButton returnButton; // ポップアップの返却ボタン
+EllipseButton turnEndButton; // ターン終了を確定するボタン
 
 EllipseButton buyButton; // 購入ボタン
 
@@ -160,11 +163,11 @@ void initButton() {
   startButton = new NormalButton(width/2 - 50, 300, 100, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "始める", 32, () -> {
     gameState.changeState(State.START);
   });
-  describeButton = new NormalButton(width/2 - 50, 350, 100, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "説明", 32, () ->{
+  describeButton = new NormalButton(width/2 - 50, 350, 100, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "説明", 32, () -> {
     gameState.changeState(State.PLAYING);
   });
   endButton = new NormalButton(width/2 - 50, 400, 100, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "終わる", 32, () -> {
-      exit(); // ゲーム終了
+    exit(); // ゲーム終了
   });
 
   // ========== 三角形ボタンの初期化 ==========
@@ -198,16 +201,25 @@ void initButton() {
   closePopupButton = new EllipseButton((width * 0.3) + 350, height - 100, 150, 70, color(0), color(100, 150, 230), color(85, 130, 215), "戻る", 32, () -> {
     closePopup();
   });
+  closeEndPopupButton = new EllipseButton((width * 0.3) + 300, height - 280, 150, 70, color(0), color(100, 150, 230), color(85, 130, 215), "却下", 32, () -> {
+    closePopup();
+  });
   loadButton = new EllipseButton((width * 0.3) + 630, height - 100, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "提出", 32, () -> {
     // 提出処理をここに追加
     player.loadRice(selectedBrandId, selectedAmounts[selectedBrandId]);
     closePopup();
   });
+  returnButton = new EllipseButton((width * 0.3) + 630, height - 100, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "返却", 32, () -> {
+    // 提出処理をここに追加
+  });
+  turnEndButton = new EllipseButton((width * 0.3) + 650, height - 280, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "御意", 32, () -> {
+    // 提出処理をここに追加
+  });
 
   buyButton = new EllipseButton((width * 0.3) + 680, height - 170, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "購入", 32, () -> {
     // 購入処理をここに追加
     for (int i = 0; i < riceBrandsInfo.length; i++)
-      player.buyRice(i, selectedAmounts[i]);
+    player.buyRice(i, selectedAmounts[i]);
     closePopup();
   });
 
@@ -290,9 +302,21 @@ void mouseClicked() {
         } else if (loadButton.onClicked()) {
           // 内部で既に実行済み
         }
+      } else if (popupType == "return") {
+        if (returnButton.onClicked()) {
+          // 内部で既に実行済み
+        } else if (closePopupButton.onClicked()) {
+          // 内部で既に実行済み
+        }
+      } else if (popupType == "turnEnd") {
+        if (closeEndPopupButton.onClicked()) {
+          // 内部で既に実行済み
+        } else if (turnEndButton.onClicked()) {
+          // 内部で既に実行済み
+        }
       }
     } else {
-      if (rightPanel.onBrand1Clicked()){
+      if (rightPanel.onBrand1Clicked()) {
         // 内部で既に実行済み
       } else if (playDescribeButton.onClicked()) {
         // 内部で既に実行済み
