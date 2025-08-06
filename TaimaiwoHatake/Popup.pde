@@ -221,6 +221,53 @@ class Popup {
 
   // 手札に戻すポップアップの描画
   void drawReturnPopup() {
+    fill(240);
+    stroke(0);
+    strokeWeight(2);
+    rect((width * 0.3) + 140, 70, (width * 0.7) - 190, height - 90);
+
+    line((width * 0.3) + 140, height - 170, width - 52, height -170);
+    noStroke();
+
+    // デモカード
+    fill(250);
+    stroke(riceBrandsInfo[selectedBrandId].brandColor);
+    strokeWeight(1);
+    rect((width * 0.3) + 190, 230, 100, 180); //デモカード
+
+    // ブランド名
+    fill(riceBrandsInfo[selectedBrandId].brandColor);
+    textSize(52);
+    text(riceBrandsInfo[selectedBrandId].name, (width * 0.3) + 460, 330); //デモ
+
+    // ブランド名 + を何枚提出しますか？
+    textSize(40);
+    textAlign(LEFT, CENTER);
+    text(riceBrandsInfo[selectedBrandId].name, (width * 0.3) + 220, 140);
+    fill(0);
+    text("を何枚手札に戻しますか？", (width * 0.3) + 220, 190);
+    textAlign(CENTER, CENTER);
+
+    // 提出数の選択 + ボタン
+    minus1SelectedButton.display();
+    fill(0);
+    textSize(36);
+    text(selectedAmounts[selectedBrandId], 1120, 312);
+    plus1SelectedButton.display();
+
+    fill(0);
+    textSize(36);
+    text("返却数", (width * 0.3) + 730, 250);
+    for (int i=0; i<riceOldInfo.length; i++) {
+      text(riceOldInfo[i], (width * 0.3) + 280+(i*150), height - 280);
+      text(player.handRices[selectedBrandId][i], (width * 0.3) + 280+(i*150), height - 230);
+    }
+    text("総数", (width * 0.3) + 280+(3*150), height - 280);
+    text(sumBrandCount, (width * 0.3) + 280+(3*150), height - 230);
+
+    closePopupButton.display();
+    loadButton.display();
+    noStroke();    
   }
 
   // ターン終了ポップアップの描画
