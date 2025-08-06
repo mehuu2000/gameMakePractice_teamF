@@ -48,14 +48,14 @@ class RightPanel {
     fill(255);
     textSize(30);
     text("所持金", width * 0.3 + 80, 60);
-    text(ENEMY_POINT + "pt", width * 0.3 + 80, 100);
+    text(ai.wallet + "pt", width * 0.3 + 80, 100);
 
     fill(240);
     rect(width * 0.3 + 20, height - 120, 120, 100);
 
     fill(21, 96, 130);
     text("所持金", width * 0.3 + 80, height - 80);
-    text(PLAYER_POINT + "pt", width * 0.3 + 80, height - 40);
+    text(player.wallet + "pt", width * 0.3 + 80, height - 40);
   }
 
   // 出荷準備エリア
