@@ -16,6 +16,26 @@ RightPanel rightPanel;
 Popup popup;
 CardVisual cardVisual;
 
+// ボタン系オブジェクト
+NormalButton startButton; // スタートボタン
+NormalButton describeButton; // 説明ボタン
+NormalButton endButton; // 終了ボタン
+
+TriangleButton plus1SelectedButton; // 現在の選択ブランドの選択数を1増やす
+TriangleButton minus1SelectedButton; // 現在の選択ブランドの選択数を1減らす
+
+TriangleButton[] brandPlus1Buttons; // 購入の際に特定のブランドの選択数を1増やすボタン
+TriangleButton[] brandMinus1Buttons; // 購入の際に特定のブランドの選択数を1減らすボタン
+
+EllipseButton closePopupButton; // ポップアップを閉じるボタン
+EllipseButton loadButton; // ポップアップの提出ボタン
+
+EllipseButton buyButton; // 購入ボタン
+
+EllipseButton playDescribeButton; // 説明画面に移動するボタン
+EllipseButton submitButton; // 出荷ボタン
+
+
 // ========== ゲーム進行変数 ==========
 int currentTurn = 1;
 int maxTurns = 11; // 要相談
@@ -23,34 +43,51 @@ int maxTurns = 11; // 要相談
 // ========== UI状態変数 ==========
 boolean showingPopup = false; // ポップアップ表示フラグ
 String popupType = ""; // ポップアップの種類
-int selectedBrandId = -1; // 選択されたブランド(買い付けフェーズなど)
-int selectedAmount = 1; // 選択されたカードの数量
+int selectedBrandId = 0; // 選択されたブランド(買い付けフェーズなど)
+int totalPrice = 0; // 購入合計金額
 
 // ========== 定数 ==========
 final String[] RICE_BRANDS = {"りょうおもい", "ほしひかり", "ゆめごこち", "つやおうじ"};
 final int WINDOW_WIDTH = 1280; // ウィンドウ幅
 final int WINDOW_HEIGHT = 720; // ウィンドウ高さ
-final int PLAYER_POINT = 40; // プレイヤー初期所持金
-final int ENEMY_POINT = 40; // AI初期所持金
+final int PLAYER_POINT = 500; // プレイヤー初期所持金
+final int ENEMY_POINT = 500; // AI初期所持金
 final float LEFT_PANEL_WIDTH = 0.3;   // 左パネルの幅（30%）
 final float RIGHT_PANEL_WIDTH = 0.7;  // 右パネルの幅（70%）
 final int BASE_CARD_POINT = 100; // 基本のカードポイント
 
 // ========== 変数（変更可能） ==========
 RiceBrand[] riceBrandsInfo;
+int[] selectedAmounts; // 選択されたカードの数量。インデックス = ブランドID
+int[] riceBrandRanking; // ブランドの供給数ランキング（重複なし）
+
+int sumBrandCount = 0; // 総数を管理する変数
+boolean isFirst = false; // 初回フラグ
 
 // ========== ポップアップ管理 ==========
 void showPopup(String type) {
   showingPopup = true;
   popupType = type;
-  selectedAmount = 1;
+  resetSelectedAmounts();
 }
 
 void closePopup() {
   showingPopup = false;
   popupType = "";
   selectedBrandId = -1;
-  selectedAmount = 1;
+  resetSelectedAmounts();
+
+  sumBrandCount = 0;
+  isFirst = false;
+
+  totalPrice = 0;
+}
+
+// selectedAmountsの初期化
+void resetSelectedAmounts() {
+  for (int i = 0; i < selectedAmounts.length; i++) {
+    selectedAmounts[i] = 0;
+  }
 }
 
 // ========== ターン管理 ==========
@@ -70,7 +107,6 @@ void restartGame() {
 // ========== カード選択 ==========
 void selectBrand(int riceBrandId) {
   selectedBrandId = riceBrandId;
-  selectedAmount = 1;
 }
 
 void settings() {
@@ -92,11 +128,14 @@ void setup() {
 // ここでゲームの初期状態を設定
 void initGame() {
   riceBrandsInfo = new RiceBrand[] {
-    new RiceBrand("りょうおもい", color(255, 200, 200), BASE_CARD_POINT),
-    new RiceBrand("ほしひかり", color(200, 200, 255), BASE_CARD_POINT),
-    new RiceBrand("ゆめごこち", color(200, 255, 200), BASE_CARD_POINT),
-    new RiceBrand("つやおうじ", color(255, 255, 200), BASE_CARD_POINT)
+    new RiceBrand("りょうおもい", color(220, 80, 80), BASE_CARD_POINT),
+    new RiceBrand("ほしひかり", color(80, 80, 220), BASE_CARD_POINT),
+    new RiceBrand("ゆめごこち", color(80, 220, 80), BASE_CARD_POINT),
+    new RiceBrand("つやおうじ", color(220, 220, 80), BASE_CARD_POINT)
   };
+
+  selectedAmounts = new int[riceBrandsInfo.length];
+  riceBrandRanking = new int[riceBrandsInfo.length];
   gameState = new GameState();
   market = new Market();
   gameLogic = new GameLogic();
@@ -110,7 +149,76 @@ void initGame() {
   popup = new Popup();
   cardVisual = new CardVisual();
 
+  // ボタン系
+  initButton();
+
   currentTurn = 1;
+}
+
+void initButton() {
+  // ========== 通常ボタンの初期化 ==========
+  startButton = new NormalButton(width/2 - 50, 300, 100, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "始める", 32, () -> {
+    gameState.changeState(State.START);
+  });
+  describeButton = new NormalButton(width/2 - 50, 350, 100, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "説明", 32, () ->{
+    gameState.changeState(State.PLAYING);
+  });
+  endButton = new NormalButton(width/2 - 50, 400, 100, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "終わる", 32, () -> {
+      exit(); // ゲーム終了
+  });
+
+  // ========== 三角形ボタンの初期化 ==========
+  minus1SelectedButton = new TriangleButton(1090, 300, true, () -> {
+    if (selectedAmounts[selectedBrandId] > 0) {
+      selectedAmounts[selectedBrandId]--;
+    }
+  });
+  plus1SelectedButton = new TriangleButton(1150, 300, false, () -> {
+    selectedAmounts[selectedBrandId]++;
+  });
+
+  brandPlus1Buttons = new TriangleButton[riceBrandsInfo.length];
+  brandMinus1Buttons = new TriangleButton[riceBrandsInfo.length];
+
+  for (int i = 0; i < riceBrandsInfo.length; i++) {
+    final int index = i; // ラムダ式内で使うため
+    brandMinus1Buttons[i] = new TriangleButton((width * 0.3) + 670, 216 + (i*60), true, () -> {
+      if (selectedAmounts[riceBrandRanking[index]] > 0) {
+        selectedAmounts[riceBrandRanking[index]]--;
+        totalPrice -= riceBrandsInfo[riceBrandRanking[index]].point;
+      }
+    });
+    brandPlus1Buttons[i] = new TriangleButton((width * 0.3) + 730, 216 + (i*60), false, () -> {
+      selectedAmounts[riceBrandRanking[index]]++;
+      totalPrice += riceBrandsInfo[riceBrandRanking[index]].point;
+    });
+  }
+
+  // ========== 楕円形ボタンの初期化 ==========
+  closePopupButton = new EllipseButton((width * 0.3) + 350, height - 100, 150, 70, color(0), color(100, 150, 230), color(85, 130, 215), "戻る", 32, () -> {
+    closePopup();
+  });
+  loadButton = new EllipseButton((width * 0.3) + 630, height - 100, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "提出", 32, () -> {
+    // 提出処理をここに追加
+    player.loadRice(selectedBrandId, selectedAmounts[selectedBrandId]);
+    closePopup();
+  });
+
+  buyButton = new EllipseButton((width * 0.3) + 680, height - 170, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "購入", 32, () -> {
+    // 購入処理をここに追加
+    for (int i = 0; i < riceBrandsInfo.length; i++)
+      player.buyRice(i, selectedAmounts[i]);
+    closePopup();
+  });
+
+  playDescribeButton = new EllipseButton(width - 100, height - 180, 150, 70, color(0), color(100, 150, 230), color(85, 130, 215), "説明", 32, () -> {
+    // 説明画面の表示処理をここに追加
+    gameState.changeState(State.DESCRIBE);
+  });
+  submitButton = new EllipseButton(width - 100, height - 100, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "出荷", 32, () -> {
+    // 出荷処理をここに追加
+    player.shipRice();
+  });
 }
 
 // メイン描画ループ
@@ -125,13 +233,16 @@ void draw() {
   case START:
     ui.drawStartScreen(market.supplyLimit);
     break;
+  case DESCRIBE:
+    ui.drawTitleScreen();
+    break;
   case PLAYING:
     drawGameScreen();
     break;
   }
 
   // ポップアップ制御
-  if (showingPopup) {
+  if (showingPopup && gameState.currentState == State.PLAYING) {
     popup.drawPopup(popupType);
   }
 }
@@ -141,20 +252,61 @@ void draw() {
 void drawGameScreen() {
   // 左側エリア（30%）
   leftPanel.drawLeftPanel();
-  leftPanel.drawMarketInfo();
-  leftPanel.drawEnvironment();
 
   // 右側エリア（70%）
   rightPanel.drawRightPanel();
-  rightPanel.drawTurnInfo(currentTurn);
-  rightPanel.drawPointInfo(PLAYER_POINT, ENEMY_POINT);
-  rightPanel.drawShippingArea();
-  rightPanel.drawAIShippingArea();
 }
 
 void keyPressed() {
   if (keyPressed == true) {
     background(255);
     textFlag = 1;
+  }
+}
+
+void mouseClicked() {
+  if (gameState.currentState == State.PLAYING) {
+    if (showingPopup) {
+      if (popupType == "buy") {
+        // 全てのブランドボタンをチェック
+        for (int i = 0; i < brandPlus1Buttons.length; i++) {
+          if (brandPlus1Buttons[i].onClicked()) {
+            // 内部で既に実行済み
+            return;
+          } else if (brandMinus1Buttons[i].onClicked()) {
+            // 内部で既に実行済み
+            return;
+          } else if (buyButton.onClicked()) {
+            // 内部で既に実行済み
+          }
+        }
+      } else if (popupType == "submit") {
+        if (minus1SelectedButton.onClicked()) {
+          // 内部で既に実行済み
+        } else if (plus1SelectedButton.onClicked()) {
+          // 内部で既に実行済み
+        } else if (closePopupButton.onClicked()) {
+          // 内部で既に実行済み
+        } else if (loadButton.onClicked()) {
+          // 内部で既に実行済み
+        }
+      }
+    } else {
+      if (rightPanel.onBrand1Clicked()){
+        // 内部で既に実行済み
+      } else if (playDescribeButton.onClicked()) {
+        // 内部で既に実行済み
+      } else if (submitButton.onClicked()) {
+        // 内部で既に実行済み
+      }
+    }
+  } else if (gameState.currentState == State.TITLE) {
+    if (startButton.onClicked()) {
+      // 内部で既に実行済み
+    } else if (describeButton.onClicked()) {
+      // 内部で既に実行済み
+    } else if (endButton.onClicked()) {
+      // 内部で既に実行済み
+    }
   }
 }
