@@ -291,6 +291,13 @@ class Popup {
 
   // 集計開始ポップアップの描画
   void drawCountStartPopup() {
+    fill(21, 96, 130);
+    rect(width/2 - 375, height/2 - 150, 750, 300);
+
+    textAlign(CENTER, CENTER);
+    fill(250);
+    textSize(120);
+    text("集計開始！", width/2, height/2);
   }
 
   //米の出荷による市場変動のポップアップの描画
