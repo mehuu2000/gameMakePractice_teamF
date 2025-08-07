@@ -40,6 +40,9 @@ class Popup {
     case "event":
       drawEventPopup();
       break;
+    case "news":
+      drawNewsPopup();
+      break;
     default:
       // 何もしないか、エラーメッセージを表示
       break;
@@ -395,6 +398,29 @@ class Popup {
     text("米価格+5000兆!!!!!!", (width * 0.3) + 173, 430);
     
     noStroke();
+  }
+  
+  // ニュースポップアップの描画
+  void drawNewsPopup() {
+    fill(240);
+    stroke(0);
+    strokeWeight(2);
+    rect((width * 0.3) + 110, 160, (width * 0.7) - 190, height - 320);
+    rect((width * 0.3) + 150, 200, (width * 0.7) - 270, height - 400);
+    
+    noStroke();
+    fill(240);
+    rect((width * 0.3) + 400, 180, 120, 40);
+    
+    fill(0);
+    textSize(44);
+    text("予報", (width * 0.3) + 460, 200);
+    
+    //予報の内容をここに記述
+    textAlign(LEFT, CENTER);
+    text("次回　使徒襲来", (width * 0.3) + 320, 340);
+    
+    textAlign(CENTER, CENTER);
   }
 
   // ポップアップを閉じるためのボタン描画
