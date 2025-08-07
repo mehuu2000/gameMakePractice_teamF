@@ -176,7 +176,7 @@ class Popup {
     // 価格表示
     textAlign(RIGHT, CENTER);
     for (int i=0; i<riceBrandsInfo.length; i++) {
-      text(riceBrandsInfo[riceBrandRanking[i]].point + "pt", (width * 0.3) + 576, 230 + (i*60));
+      text(int(riceBrandsInfo[riceBrandRanking[i]].point * RICE_BUY_RATIO) + "pt", (width * 0.3) + 576, 230 + (i*60));
     }
 
     // 購入数表示
