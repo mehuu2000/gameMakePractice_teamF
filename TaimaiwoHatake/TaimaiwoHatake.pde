@@ -132,7 +132,7 @@ void setup() {
   background(255);
 
   // フォント設定
-  gameFont = createFont("fonts/HGSGyoshotai", 16, true);
+  gameFont = createFont("HGSGyoshotai", 16, true);
   textFont(gameFont);
   textAlign(CENTER, CENTER);
 
@@ -184,6 +184,9 @@ void initButton() {
   // ========== 通常ボタンの初期化 ==========
   startButton = new NormalButton(width/2 - 50, 300, 100, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "始める", 32, () -> {
     gameState.changeState(State.START);
+    bgms[0].pause();
+    bgms[1].loop();
+    bgms[1].rewind();
   });
   describeButton = new NormalButton(width/2 - 50, 350, 100, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "説明", 32, () -> {
     bgms[0].pause();
@@ -266,6 +269,9 @@ void initSound(){
     bgms[i] = minim.loadFile("sounds/bgms/" + BGM_NAMES[i]);
   for(int i = 0; i < ses.length; i++)
     ses[i] = minim.loadFile("sounds/ses/" + SE_NAMES[i]);
+    
+  bgms[0].setGain(-20);
+  bgms[1].setGain(-20);
 }
 
 // メイン描画ループ
