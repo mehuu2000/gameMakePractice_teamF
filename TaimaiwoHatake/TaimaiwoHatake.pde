@@ -176,7 +176,10 @@ void initGame() {
   gameLogic = new GameLogic();
   player = new Player(PLAYER_POINT);
   ai = new AI(ENEMY_POINT);
-
+  
+  // その時の供給在庫を更新
+  marketStockKeep = market.marketStock.clone();
+  
   // UI系
   ui = new UI(gameState);
   leftPanel = new LeftPanel(ui);

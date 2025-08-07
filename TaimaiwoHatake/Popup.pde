@@ -307,7 +307,18 @@ class Popup {
     strokeWeight(2);
     rect((width * 0.3) + 110, 160, (width * 0.7) - 190, height - 320);
     
-    textAlign(LEFT, CENTER);
+    for (int i=0; i<riceBrandsInfo.length; i++) {
+      fill(255);
+      textSize(40);
+      textAlign(LEFT, CENTER);
+      stroke(riceBrandsInfo[riceBrandRanking[i]].brandColor);
+      rect((width * 0.3) + 220, 300 + (i*60), 30, 45); // デモ用のカード
+      fill(riceBrandsInfo[riceBrandRanking[i]].brandColor);
+      text(riceBrandsInfo[riceBrandRanking[i]].name, (width * 0.3) + 270, 320 + (i*60));
+      fill(0);
+      text(marketStockKeep[riceBrandRanking[i]] + "→" + market.marketStock[riceBrandRanking[i]], (width * 0.3) + 600, 320 + (i*60));
+    }
+    
     fill(0);
     textSize(40);
     text("集計結果", (width * 0.3) + 370, 210);
