@@ -17,17 +17,15 @@ class AI extends Broker {
       int riceID = ranking[i];
       int countRice = getSumHandRice(riceID);
       int canBuyCount = wallet / riceBrandsInfo[riceID].point; // 全額使ったら買える個数
-      if (i!=0) {
+      if (canBuyCount <= 0) {
+        buyCostAverages[riceID] = 0;
+      } else {
         buyRice(riceID, canBuyCount/2);
-        buyCostAverages[riceID] = (countRice * getSumHandRice(riceID)
-                                          + riceBrandsInfo[riceID].point * canBuyCount/2)
+        buyCostAverages[riceID] = (countRice * buyCostAverages[riceID]
+                                          + riceBrandsInfo[riceID].point * RICE_BUY_RATIO * canBuyCount/2)
                                           / float(countRice + canBuyCount/2);
-      }else{
-        buyRice(riceID, canBuyCount);
-        buyCostAverages[riceID] = (countRice * getSumHandRice(riceID)
-                                          + riceBrandsInfo[riceID].point * canBuyCount)
-                                          / float(countRice + canBuyCount);
       }
+      println(buyCostAverages[riceID]);
     }
     
     //出荷場に置くプロセス
@@ -76,10 +74,10 @@ class AI extends Broker {
     int[] tempPrice = new int[riceBrandsInfo.length];
     int tempProfit = 0;
     int maxProfit = 0;
-    for (int i = 0; i < AIHandRices[0]; i++) {
-      for (int j = 0; j < AIHandRices[1]; j++) {
-        for (int k = 0; k < AIHandRices[2]; k++) {
-          for (int l = 0; l < AIHandRices[3]; l++) {
+    for (int i = 0; i <= AIHandRices[0]; i++) {
+      for (int j = 0; j <= AIHandRices[1]; j++) {
+        for (int k = 0; k <= AIHandRices[2]; k++) {
+          for (int l = 0; l <= AIHandRices[3]; l++) {
             tempProfit = 0;
             int[] AILoadCount = {i, j, k, l};
             float totalAmount =  market.getTotalStock()+1 + sumPlayerLoadRice +(i+j+k+l); 
@@ -103,6 +101,7 @@ class AI extends Broker {
         }
       }
     }
+    println("AIの手札"+ getSumHandRice(0)+ getSumHandRice(1)+ getSumHandRice(2)+ getSumHandRice(3) +"AIの行動："+bestCombi[0]+bestCombi[1]+bestCombi[2]+bestCombi[3]);
     return bestCombi;
   }
 }

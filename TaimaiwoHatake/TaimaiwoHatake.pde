@@ -39,6 +39,7 @@ EllipseButton buyButton; // 購入ボタン
 
 EllipseButton playDescribeButton; // 説明画面に移動するボタン
 EllipseButton submitButton; // 出荷ボタン
+EllipseButton buyPopupButton; // 購入ポップアップを表示するボタン
 
 // ========== 音関係の変数 ==========
 Minim minim;
@@ -328,9 +329,12 @@ void initButton() {
     gameState.forBuyRice();
   });
 
-  playDescribeButton = new EllipseButton(width - 100, height - 180, 150, 70, color(0), color(100, 150, 230), color(85, 130, 215), "説明", 32, () -> {
+  playDescribeButton = new EllipseButton(width - 220, 30, 105, 49, color(0), color(100, 150, 230), color(85, 130, 215), "説明", 28, () -> {
     // 説明画面の表示処理をここに追加
     gameState.changeState(State.DESCRIBE);
+  });
+  buyPopupButton = new EllipseButton(width - 100, height - 180, 150, 70, color(0), color(100, 230, 150), color(85, 215, 130), "購入", 32, () -> {
+   showPopup("buy");
   });
   submitButton = new EllipseButton(width - 100, height - 100, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "出荷", 32, () -> {
     gameState.playerShipRIce();
@@ -430,6 +434,8 @@ void mouseClicked() {
       } else if (playDescribeButton.onClicked()) {
         // 内部で既に実行済み
       } else if (submitButton.onClicked()) {
+        // 内部で既に実行済み
+      } else if (buyPopupButton.onClicked()) {
         // 内部で既に実行済み
       }
     }

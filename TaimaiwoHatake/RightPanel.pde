@@ -127,6 +127,7 @@ class RightPanel {
 
   void drawButtons() {
     playDescribeButton.display();
+    buyPopupButton.display();
     submitButton.display();
   }
 }
