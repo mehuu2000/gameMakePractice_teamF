@@ -41,6 +41,7 @@ EllipseButton submitButton; // 出荷ボタン
 
 // ========== ゲーム進行変数 ==========
 int currentTurn = 1;
+int[] currentYear_season = {1, 1}; // 年と季節を管理する配列。年, 季節(1:秋, 2:冬, 3:春, 4:夏, )
 int maxTurns = 11; // 要相談
 
 // ========== UI状態変数 ==========
@@ -49,15 +50,25 @@ String popupType = ""; // ポップアップの種類
 int selectedBrandId = 0; // 選択されたブランド(買い付けフェーズなど)
 int totalPrice = 0; // 購入合計金額
 
+int playerProfit = 0; // プレイヤーの利益
+int aiProfit = 0; // AIの利益
+int[] playerLoadedRices;
+int[] aiLoadedRices;
+
+
 // ========== 定数 ==========
 final String[] RICE_BRANDS = {"りょうおもい", "ほしひかり", "ゆめごこち", "つやおうじ"};
+final String[] SEASONS = {"秋", "冬", "春", "夏",}; // 季節の名前
+final int YEAR = 0; // 年のインデックス
+final int SEASON = 1; // 季節のインデックス
 final int WINDOW_WIDTH = 1280; // ウィンドウ幅
 final int WINDOW_HEIGHT = 720; // ウィンドウ高さ
-final int PLAYER_POINT = 500; // プレイヤー初期所持金
-final int ENEMY_POINT = 500; // AI初期所持金
+final int PLAYER_POINT = 5000; // プレイヤー初期所持金
+final int ENEMY_POINT = 5000; // AI初期所持金
 final float LEFT_PANEL_WIDTH = 0.3;   // 左パネルの幅（30%）
 final float RIGHT_PANEL_WIDTH = 0.7;  // 右パネルの幅（70%）
-final int BASE_CARD_POINT = 100; // 基本のカードポイント
+final int[] BASE_CARD_POINTS = {100, 110, 120, 130}; // 基本のカードポイントの係数
+final int LOWER_LIMIT_RICE_POINT= 10; // 米の下限価格
 
 // ========== 変数（変更可能） ==========
 RiceBrand[] riceBrandsInfo;
@@ -66,6 +77,30 @@ int[] riceBrandRanking; // ブランドの供給数ランキング（重複な�
 
 int sumBrandCount = 0; // 総数を管理する変数
 boolean isFirst = false; // 初回フラグ
+
+boolean isSupplyOver = false; // 供給数が上限を超えたかどうかのフラグ
+
+int baseEventEffect = 1; // イベント効果の基本値
+int eventEffect = 1; // イベント効果の倍率
+
+// ========== 変数管理 ==========
+// イベントの倍率を更新
+void updateEventEffect(int effect) {
+  eventEffect = eventEffect * effect;
+}
+
+// イベントの倍率をリセット
+void resetEventEffect() {
+  eventEffect = baseEventEffect; // デフォルトの効果倍率にリセット
+}
+
+// 現在の年と季節を返す関数
+int[] getCurrentYear() {
+  int[] year_season = new int[currentYear_season.length];
+  year_season[0] = int((currentTurn-1)/4) + 1; // 年
+  year_season[1] = currentTurn % 4; // 季節(0:秋, 1:冬, 2:春, 3:夏)
+  return year_season;
+}
 
 // ========== ポップアップ管理 ==========
 void showPopup(String type) {
@@ -93,15 +128,7 @@ void resetSelectedAmounts() {
   }
 }
 
-// ========== ターン管理 ==========
-void nextTurn() {
-  currentTurn++;
-  if (currentTurn > maxTurns) {
-    // ゲーム終了処理、結果画面の表示など
-    // もしくは次ターン米騒動?
-  }
-}
-
+// ゲームを再スタートする関数(現在非対応)
 void restartGame() {
   currentTurn = 1;
   initGame();
@@ -131,10 +158,10 @@ void setup() {
 // ここでゲームの初期状態を設定
 void initGame() {
   riceBrandsInfo = new RiceBrand[] {
-    new RiceBrand("りょうおもい", color(220, 80, 80), BASE_CARD_POINT),
-    new RiceBrand("ほしひかり", color(80, 80, 220), BASE_CARD_POINT),
-    new RiceBrand("ゆめごこち", color(80, 220, 80), BASE_CARD_POINT),
-    new RiceBrand("つやおうじ", color(220, 220, 80), BASE_CARD_POINT)
+    new RiceBrand("りょうおもい", color(220, 80, 80), BASE_CARD_POINTS[0]),
+    new RiceBrand("ほしひかり", color(80, 80, 220), BASE_CARD_POINTS[1]),
+    new RiceBrand("ゆめごこち", color(80, 220, 80), BASE_CARD_POINTS[2]),
+    new RiceBrand("つやおうじ", color(220, 220, 80), BASE_CARD_POINTS[3])
   };
 
   selectedAmounts = new int[riceBrandsInfo.length];
@@ -154,8 +181,6 @@ void initGame() {
 
   // ボタン系
   initButton();
-
-  currentTurn = 1;
 }
 
 void initButton() {
@@ -228,8 +253,7 @@ void initButton() {
     gameState.changeState(State.DESCRIBE);
   });
   submitButton = new EllipseButton(width - 100, height - 100, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "出荷", 32, () -> {
-    // 出荷処理をここに追加
-    player.shipRice();
+    gameState.playerShipRIce();
   });
 }
 

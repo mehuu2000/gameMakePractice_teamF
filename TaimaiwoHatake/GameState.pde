@@ -55,6 +55,14 @@ class GameState {
     closePopup();
   }
 
+  // 出荷関数 ボタンでつかうよ
+  void playerShipRIce() {
+    player.shipRice();
+    closePopup();
+    
+    endTurn(); // 出荷後にターンを進める
+  }
+
   // 手札の米をクリックした時(提出)
   void selectBrandSubmit(int brandId) {
     selectedBrandId = brandId;
@@ -83,11 +91,53 @@ class GameState {
     }
   }
 
-  // ターンエンドポップアップの御意の処理
-  void endTurnAction() {
-    player.decayRice(); // 米の古くなる処理
-    ai.decayRice(); // AIの米も古くなる
+  // ========== ターン管理 ==========
+  void endTurn() {
     currentTurn++;
-    showPopup("year");
+    if (currentTurn > maxTurns) {
+      // ゲーム終了処理、結果画面の表示など
+      // もしくは次ターン米騒動?
+    }
+    // 出荷処理
+    ai.shipRice(); // AIの出荷処理
+
+    // 利益処理
+    playerProfit = player.sellRice(); // プレイヤーの利益計算
+    aiProfit = ai.sellRice(); // AIの利益計算
+
+    // 利益表示処理
+    showPopup("profit"); // 利益のポップアップを表示
+
+    // 消費処理
+    market.consume(); // 市場の消費処理
+
+    // その時の供給数を更新
+    
+
+    // 米を古くする処理
+    if ("秋".equals(SEASONS[currentYear_season[SEASON]])) {
+      println("米が古くなりました。");
+      player.decayRice(); // プレイヤーの米を古くする
+      ai.decayRice(); // AIの米を古くする 
+    }
+
+    // イベント効果のリセット。永続効果は残る
+    resetEventEffect(); 
+
+    // ターン更新
+    currentTurn++;
+    currentYear_season = getCurrentYear(); // 年と季節の更新
+
+    // 次のターンの開始処理
+    startNextTurn();
+  }
+
+  // 次のターンの開始処理
+  void startNextTurn() {
+    showPopup("year"); // 年のポップアップを表示
+
+    // ここでイベントの発生とポップアップ表示を行う
+
+    // ここで通知や予報のポップアップ表示を行う
   }
 }
