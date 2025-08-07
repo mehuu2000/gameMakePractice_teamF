@@ -37,7 +37,7 @@ class AI extends Broker {
       if (oldestRice > 0)
         loadRice(i, oldestRice);
     }
-    //価値の高い方から1/2, 3/8, 1/4, 1/8の順に出荷場に出す
+    /*//価値の高い方から1/2, 3/8, 1/4, 1/8の順に出荷場に出す
     for (int i = 0; i < riceBrandsInfo.length; i++) {
       int riceID = ranking[i];
       int countRice = getSumHandRice(riceID);
@@ -55,17 +55,54 @@ class AI extends Broker {
           loadRice(riceID, countRice/8);
           break;
       }
+    }*/
+    int[] loadCount = predCount();
+    for (int i = 0; i < riceBrandsInfo.length; i++) {
+      loadRice(i, loadCount[i]);
     }
   }
   
-  int[] predPrice(boolean perfectPred){
-    int[] predPrices = new int[riceBrandsInfo.length];
+  int[] predCount(){
+    // 完全正確な予測
+    int[] AIHandRices = new int[riceBrandsInfo.length];
+    int[] playerLoadRices = new int[riceBrandsInfo.length];
+    int sumPlayerLoadRice = 0;
     for (int i = 0; i < riceBrandsInfo.length; i++) {
-      predPrices[i] = riceBrandsInfo[i].point;
+      playerLoadRices[i] = player.getSumLoadRice(i);
+      sumPlayerLoadRice += playerLoadRices[i];
+      AIHandRices[i] = ai.getSumHandRice(i);
     }
-    if (perfectPred) {
-      
+    int[] bestCombi = new int[riceBrandsInfo.length];
+    int[] tempPrice = new int[riceBrandsInfo.length];
+    int tempProfit = 0;
+    int maxProfit = 0;
+    for (int i = 0; i < AIHandRices[0]; i++) {
+      for (int j = 0; j < AIHandRices[1]; j++) {
+        for (int k = 0; k < AIHandRices[2]; k++) {
+          for (int l = 0; l < AIHandRices[3]; l++) {
+            tempProfit = 0;
+            int[] AILoadCount = {i, j, k, l};
+            float totalAmount =  market.getTotalStock()+1 + sumPlayerLoadRice +(i+j+k+l); 
+            float totalSupplyAdjustmentFactor = (market.supplyLimit / totalAmount); // 供給数補正係数
+            for (int m = 0; m < riceBrandsInfo.length; m++) {
+                float rarityAdjustmentFactor = totalAmount / (market.marketStock[m]+2 + AILoadCount[m]); // 希少性補正係数
+                // ブランドの価格を更新
+                tempPrice[m] = int(BASE_CARD_POINTS[m] * (totalSupplyAdjustmentFactor * 0.8) * rarityAdjustmentFactor * 0.7 * eventEffect);
+                // 価格が0以下にならないように制御
+                if (tempPrice[m] <= LOWER_LIMIT_RICE_POINT) {
+                    tempPrice[m] = LOWER_LIMIT_RICE_POINT; // 最低価格はLOWER_LIMIT_RICE_POINT pt
+                }
+                tempProfit += (tempPrice[m] - buyCostAverages[m]) * AILoadCount[m];
+            }
+            if (maxProfit < tempProfit) {
+              for (int m=0; m < riceBrandsInfo.length; m++) {
+                bestCombi[m] = AILoadCount[m];
+              }
+            }
+          }
+        }
+      }
     }
-    return predPrices;
+    return bestCombi;
   }
 }

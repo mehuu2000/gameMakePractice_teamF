@@ -40,8 +40,8 @@ class Popup {
     case "event":
       drawEventPopup();
       break;
-    case "forecast":
-      drawForecastPopup();
+    case "news":
+      drawNewsPopup();
       break;
     default:
       // 何もしないか、エラーメッセージを表示
@@ -101,6 +101,24 @@ class Popup {
     text("市場にお米が", (width * 0.3) + 200, 180);
     text("持ち運ばれました！", (width * 0.3) + 200, 230);
     textAlign(CENTER, CENTER);
+    
+    for (int i=0; i<riceBrandsInfo.length; i++) {
+      fill(255);
+      textSize(44);
+      textAlign(LEFT, CENTER);
+      stroke(riceBrandsInfo[riceBrandRanking[i]].brandColor);
+      rect((width * 0.3) + 220, 320 + (i*60), 30, 45); // デモ用のカード
+      fill(riceBrandsInfo[riceBrandRanking[i]].brandColor);
+      text(riceBrandsInfo[riceBrandRanking[i]].name, (width * 0.3) + 270, 340 + (i*60));
+      fill(0);
+      textAlign(CENTER, CENTER);
+      text(market.marketStock[riceBrandRanking[i]], (width * 0.3) + 630, 340 + (i*60));
+    }
+    
+    textSize(36);
+    text("枚数", (width * 0.3) + 630, 280);
+
+    noStroke();
 
     if (elapsedTime >= 2000) {
       yearPopupTimerSet = false;
@@ -129,6 +147,24 @@ class Popup {
     text("市場からお米が", (width * 0.3) + 200, 180);
     text("購入されました！", (width * 0.3) + 200, 230);
     textAlign(CENTER, CENTER);
+    
+    for (int i=0; i<riceBrandsInfo.length; i++) {
+      fill(255);
+      textSize(44);
+      textAlign(LEFT, CENTER);
+      stroke(riceBrandsInfo[riceBrandRanking[i]].brandColor);
+      rect((width * 0.3) + 220, 300 + (i*60), 30, 45); // デモ用のカード
+      fill(riceBrandsInfo[riceBrandRanking[i]].brandColor);
+      text(riceBrandsInfo[riceBrandRanking[i]].name, (width * 0.3) + 270, 320 + (i*60));
+      fill(0);
+      text(marketStockKeep[riceBrandRanking[i]] + "→" + market.marketStock[riceBrandRanking[i]], (width * 0.3) + 600, 320 + (i*60));
+    }
+    
+    textSize(36);
+    text("枚数", (width * 0.3) + 610, 260);
+    textAlign(CENTER, CENTER);
+
+    noStroke();
 
     if (elapsedTime >= 2000) {
       yearPopupTimerSet = false;
@@ -332,6 +368,7 @@ class Popup {
     fill(250);
     textSize(120);
     text("集計開始！", width/2, height/2);
+    
     if (elapsedTime >= 2000) {
       yearPopupTimerSet = false;
       closePopup();
@@ -381,32 +418,48 @@ class Popup {
 
   // 利益のポップアップのための描画
   void drawProfitPopup() {
-    // TODO: 利益表示の実装が必要
-    if (!yearPopupTimerSet) {
-        yearPopupStartTime = millis();
-        yearPopupTimerSet = true;
-    }
-    int elapsedTime = millis() - yearPopupStartTime;
-    
     fill(240);
     stroke(0);
     strokeWeight(2);
-    rect((width * 0.3) + 110, 160, (width * 0.7) - 190, height - 320);
+    rect((width * 0.3) + 110, 160, (width * 0.7) - 190, height - 270);
     
+    for (int i=0; i<riceBrandsInfo.length; i++) { //カード情報の表示
+      fill(255);
+      textSize(40);
+      textAlign(LEFT, CENTER);
+      stroke(riceBrandsInfo[riceBrandRanking[i]].brandColor);
+      rect((width * 0.3) + 130, 300 + (i*60), 30, 45); // デモ用のカード
+      fill(riceBrandsInfo[riceBrandRanking[i]].brandColor);
+      text(riceBrandsInfo[riceBrandRanking[i]].name, (width * 0.3) + 180, 320 + (i*60));
+      fill(0);
+      text(playerLoadedRices[riceBrandRanking[i]], (width * 0.3) + 610, 320 + (i*60));
+      text(aiLoadedRices[riceBrandRanking[i]], (width * 0.3) + 730, 320 + (i*60));
+      
+      textAlign(RIGHT, CENTER);
+      text(riceBrandsInfo[riceBrandRanking[i]].point + "pt", (width * 0.3) + 550, 320 + (i*60));
+    }
+    
+    // プレイヤーと敵の総利益
+    text(playerProfit + "pt", (width * 0.3) + 650, 570);
+    text(aiProfit + "pt", (width * 0.3) + 800, 570);
+    
+    textAlign(LEFT, CENTER);
     fill(0);
     textSize(40);
-    text("利益計算", (width * 0.3) + 370, 210);
+    text("集計結果", (width * 0.3) + 370, 210);
+    text("合計", (width * 0.3) + 420, 570);
     
     textSize(32);
-    text("プレイヤー: " + playerProfit + "pt", (width * 0.3) + 370, 280);
-    text("AI: " + aiProfit + "pt", (width * 0.3) + 370, 340);
+    text("価値", (width * 0.3) + 470, 260);
     
+    fill(0, 112, 192);
+    text("あなた", (width * 0.3) + 570, 260);
+    fill(192, 0, 0);
+    text("あいて", (width * 0.3) + 690, 260);
+    textAlign(CENTER, CENTER);
+    fill(0);
+
     noStroke();
-    
-    if (elapsedTime >= 2000) {
-      yearPopupTimerSet = false;
-      closePopup();
-    }
   }
 
   // イベントポップアップの描画

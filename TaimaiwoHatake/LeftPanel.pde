@@ -86,7 +86,7 @@ class LeftPanel {
     
     fill(0);
     textSize(56);
-    text("効果名", (width*0.3)/2, 430);
+    text("効果名", (width*0.3)/2, 410);
     
     rect(20, height/2 + 80, (width * 0.3) - 40, height/2 - 100);
     

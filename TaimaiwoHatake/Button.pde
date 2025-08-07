@@ -66,6 +66,8 @@ class TriangleButton {
       if (clickAction != null) {
         clickAction.execute(); // 定義されたアクションを実行
       }
+      ses[0].play();
+      ses[0].rewind();
       return true; // クリックされた
     }
     return false; // クリックされなかった
@@ -136,6 +138,8 @@ class NormalButton {
       if (clickAction != null) {
         clickAction.execute(); // 定義されたアクションを実行
       }
+      ses[0].play();
+      ses[0].rewind();
       return true; // クリックされた
     }
     return false; // クリックされなかった
@@ -209,6 +213,8 @@ class EllipseButton {
         if (clickAction != null) {
           clickAction.execute(); // 定義されたアクションを実行
         }
+        ses[0].play();
+        ses[0].rewind();
         return true; // クリックされた
       }
       return false; // クリックされなかった

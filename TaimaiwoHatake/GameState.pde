@@ -167,7 +167,7 @@ class GameState {
       // 予報確認
       ForecastInfo forecast = eventManager.getCurrentForecast();
       if (forecast != null && forecast.message != null && !forecast.message.isEmpty()) {
-        showPopup("forecast"); // 予報をキューに追加
+        showPopup("news"); // 予報をキューに追加
       }
       
       // イベント確認
