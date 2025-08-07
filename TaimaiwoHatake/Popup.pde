@@ -376,6 +376,25 @@ class Popup {
 
   // イベントポップアップの描画
   void drawEventPopup() {
+    fill(240);
+    stroke(0);
+    strokeWeight(2);
+    rect((width * 0.3) + 110, 160, (width * 0.7) - 190, height - 320);
+    
+    fill(0);
+    textSize(40);
+    text("イベントが発生しました！", (width * 0.3) + 460, 210);
+    
+    //イベント名
+    textAlign(LEFT, CENTER);
+    text("・" + "効果名", (width * 0.3) + 130, 320);
+    
+    //効果内容
+    textSize(36);
+    text("世間がどうたらこうたら", (width * 0.3) + 173, 380);
+    text("米価格+5000兆!!!!!!", (width * 0.3) + 173, 430);
+    
+    noStroke();
   }
 
   // ポップアップを閉じるためのボタン描画
