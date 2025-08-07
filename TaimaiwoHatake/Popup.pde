@@ -91,6 +91,24 @@ class Popup {
     text("市場にお米が", (width * 0.3) + 200, 180);
     text("持ち運ばれました！", (width * 0.3) + 200, 230);
     textAlign(CENTER, CENTER);
+    
+    for (int i=0; i<riceBrandsInfo.length; i++) {
+      fill(255);
+      textSize(44);
+      textAlign(LEFT, CENTER);
+      stroke(riceBrandsInfo[riceBrandRanking[i]].brandColor);
+      rect((width * 0.3) + 220, 320 + (i*60), 30, 45); // デモ用のカード
+      fill(riceBrandsInfo[riceBrandRanking[i]].brandColor);
+      text(riceBrandsInfo[riceBrandRanking[i]].name, (width * 0.3) + 270, 340 + (i*60));
+      fill(0);
+      textAlign(CENTER, CENTER);
+      text(market.marketStock[riceBrandRanking[i]], (width * 0.3) + 630, 340 + (i*60));
+    }
+    
+    textSize(36);
+    text("枚数", (width * 0.3) + 630, 280);
+
+    noStroke();
   }
 
   // 米の購入による市場変動のポップアップの描画
