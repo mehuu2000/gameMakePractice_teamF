@@ -330,6 +330,48 @@ class Popup {
 
   // 利益のポップアップのための描画
   void drawProfitPopup() {
+    fill(240);
+    stroke(0);
+    strokeWeight(2);
+    rect((width * 0.3) + 110, 160, (width * 0.7) - 190, height - 270);
+    
+    for (int i=0; i<riceBrandsInfo.length; i++) { //カード情報の表示
+      fill(255);
+      textSize(40);
+      textAlign(LEFT, CENTER);
+      stroke(riceBrandsInfo[riceBrandRanking[i]].brandColor);
+      rect((width * 0.3) + 130, 300 + (i*60), 30, 45); // デモ用のカード
+      fill(riceBrandsInfo[riceBrandRanking[i]].brandColor);
+      text(riceBrandsInfo[riceBrandRanking[i]].name, (width * 0.3) + 180, 320 + (i*60));
+      fill(0);
+      text(playerLoadedRices[riceBrandRanking[i]], (width * 0.3) + 610, 320 + (i*60));
+      text(aiLoadedRices[riceBrandRanking[i]], (width * 0.3) + 730, 320 + (i*60));
+      
+      textAlign(RIGHT, CENTER);
+      text(riceBrandsInfo[riceBrandRanking[i]].point + "pt", (width * 0.3) + 550, 320 + (i*60));
+    }
+    
+    // プレイヤーと敵の総利益
+    text(playerProfit + "pt", (width * 0.3) + 650, 570);
+    text(aiProfit + "pt", (width * 0.3) + 800, 570);
+    
+    textAlign(LEFT, CENTER);
+    fill(0);
+    textSize(40);
+    text("集計結果", (width * 0.3) + 370, 210);
+    text("合計", (width * 0.3) + 420, 570);
+    
+    textSize(32);
+    text("価値", (width * 0.3) + 470, 260);
+    
+    fill(0, 112, 192);
+    text("あなた", (width * 0.3) + 570, 260);
+    fill(192, 0, 0);
+    text("あいて", (width * 0.3) + 690, 260);
+    textAlign(CENTER, CENTER);
+    fill(0);
+
+    noStroke();
   }
 
   // イベントポップアップの描画
