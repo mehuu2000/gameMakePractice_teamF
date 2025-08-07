@@ -72,7 +72,6 @@ class Market {
     // 各種ブランドの価値ランキングを取得(インデックス = 順位, 値 = ブランドID)
     // 価値が高い順に並べる
     int[] getBrandRanking() {
-        println("ブランドの価値ランキングを取得します。");
         int[] rankings = new int[marketStock.length];
         for (int i = 0; i < marketStock.length; i++) {
             rankings[i] = i; // インデックスを順位として使用し、値をブランドIDとする
@@ -195,7 +194,6 @@ class Market {
     // ブランド価格計算
     // 各ブランドの在庫に応じて価格を変動 BASE_CARD_POINTが基準
     void updateBrandPoint() {
-        println("市場のブランド価格を更新します。");
         float totalAmount =  getTotalStock()+1; 
         float totalSupplyAdjustmentFactor = (this.supplyLimit / totalAmount); // 供給数補正係数
         for (int i=0; i<riceBrandsInfo.length; i++) {

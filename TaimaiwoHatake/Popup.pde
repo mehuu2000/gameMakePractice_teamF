@@ -69,14 +69,12 @@ class Popup {
 
     fill(0);
 
-    // このポップアップが表示されてから2秒後にshowPopup("buy")を呼び出す。
-    if (elapsedTime >= 3000) {
+    // 1ターン目の場合、表示してから2秒後にcarryポップアップを表示
+    if (elapsedTime >= 2000) {
       yearPopupTimerSet = false;
       closePopup();
       if (currentTurn == 1) {
         showPopup("carry");
-      } else {
-        showPopup("buy");
       }
     }
   }
@@ -120,10 +118,9 @@ class Popup {
 
     noStroke();
 
-    if (elapsedTime >= 2000) {
+    if (elapsedTime >= 3000) {
       yearPopupTimerSet = false;
       closePopup();
-      showPopup("buy"); // 米購入のポップアップを表示
     }
   }
 
@@ -166,7 +163,7 @@ class Popup {
 
     noStroke();
 
-    if (elapsedTime >= 2000) {
+    if (elapsedTime >= 3000) {
       yearPopupTimerSet = false;
       closePopup();
     }
@@ -410,7 +407,7 @@ class Popup {
 
     noStroke();
 
-    if (elapsedTime >= 2000) {
+    if (elapsedTime >= 3000) {
       yearPopupTimerSet = false;
       closePopup();
     }
@@ -418,6 +415,12 @@ class Popup {
 
   // 利益のポップアップのための描画
   void drawProfitPopup() {
+    if (!yearPopupTimerSet) {
+        yearPopupStartTime = millis();
+        yearPopupTimerSet = true;
+    }
+    int elapsedTime = millis() - yearPopupStartTime;
+
     fill(240);
     stroke(0);
     strokeWeight(2);
@@ -460,6 +463,11 @@ class Popup {
     fill(0);
 
     noStroke();
+
+    if (elapsedTime >= 5000) {
+      yearPopupTimerSet = false;
+      closePopup();
+    }
   }
 
   // イベントポップアップの描画
@@ -506,7 +514,7 @@ class Popup {
   }
 
   // 予報ポップアップの描画
-  void drawForecastPopup() {
+  void drawNewsPopup() {
     if (!yearPopupTimerSet) {
         yearPopupStartTime = millis();
         yearPopupTimerSet = true;

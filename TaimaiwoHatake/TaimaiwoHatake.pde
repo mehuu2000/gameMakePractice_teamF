@@ -163,6 +163,10 @@ void closePopup() {
     // 全ポップアップ終了後の処理
     if (popupQueue[0] != null && popupQueue[0].equals("countStart")) {
       // endTurn関連のポップアップが終わったら次のターンへ
+      // キューをクリアしてから次のターンへ
+      for (int i = 0; i < 10; i++) {
+        popupQueue[i] = null;
+      }
       gameState.finishEndTurn();
     }
   }
@@ -326,7 +330,7 @@ void initButton() {
   });
 
   buyButton = new EllipseButton((width * 0.3) + 680, height - 170, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "購入", 32, () -> {
-    gameState.forBuyRice();
+    gameState.buyAndShip();
   });
 
   playDescribeButton = new EllipseButton(width - 220, 30, 105, 49, color(0), color(100, 150, 230), color(85, 130, 215), "説明", 28, () -> {
