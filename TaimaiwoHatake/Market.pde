@@ -2,7 +2,6 @@
 class Market {
     // ========== 市場在庫管理 ==========
     int[] marketStock;  //インデックス = 0: りょうおもい, 1: ほしひかり, 2:ゆめごこち, 3:つやおうじ | 値 = 在庫数
-    int[] marketStockKeep; // その時の在庫を保持するための配列
 
     // ========== 供給管理 ==========
     int supplyLimit;         // 供給上限
@@ -73,6 +72,7 @@ class Market {
     // 各種ブランドの価値ランキングを取得(インデックス = 順位, 値 = ブランドID)
     // 価値が高い順に並べる
     int[] getBrandRanking() {
+        println("ブランドの価値ランキングを取得します。");
         int[] rankings = new int[marketStock.length];
         for (int i = 0; i < marketStock.length; i++) {
             rankings[i] = i; // インデックスを順位として使用し、値をブランドIDとする
@@ -195,13 +195,11 @@ class Market {
     // ブランド価格計算
     // 各ブランドの在庫に応じて価格を変動 BASE_CARD_POINTが基準
     void updateBrandPoint() {
+        println("市場のブランド価格を更新します。");
         float totalAmount =  getTotalStock()+1; 
         float totalSupplyAdjustmentFactor = (this.supplyLimit / totalAmount); // 供給数補正係数
-        println("供給数補正係数: " + totalSupplyAdjustmentFactor);
         for (int i=0; i<riceBrandsInfo.length; i++) {
             float rarityAdjustmentFactor = totalAmount / (marketStock[i]+2); // 希少性補正係数
-            println("ブランド " + riceBrandsInfo[i].name + " の希少性補正係数: " + rarityAdjustmentFactor);
-            println("ブランド " + riceBrandsInfo[i].name + " の供給数 " + marketStock[i]);
 
             // ブランドの価格を更新
             riceBrandsInfo[i].point = int(BASE_CARD_POINTS[i] * (totalSupplyAdjustmentFactor * 0.8) * rarityAdjustmentFactor * 0.7 * eventEffect);

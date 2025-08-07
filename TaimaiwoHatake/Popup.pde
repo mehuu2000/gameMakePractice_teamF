@@ -360,7 +360,7 @@ class Popup {
       fill(riceBrandsInfo[riceBrandRanking[i]].brandColor);
       text(riceBrandsInfo[riceBrandRanking[i]].name, (width * 0.3) + 270, 320 + (i*60));
       fill(0);
-      text(marketStockKeep[riceBrandRanking[i]] + "→" + market.marketStock[riceBrandRanking[i]], (width * 0.3) + 600, 320 + (i*60));
+      text(marketStockKeep[riceBrandRanking[i]] + "→" + marketStockAfterShip[riceBrandRanking[i]], (width * 0.3) + 600, 320 + (i*60));
     }
     
     fill(0);
@@ -381,6 +381,32 @@ class Popup {
 
   // 利益のポップアップのための描画
   void drawProfitPopup() {
+    // TODO: 利益表示の実装が必要
+    if (!yearPopupTimerSet) {
+        yearPopupStartTime = millis();
+        yearPopupTimerSet = true;
+    }
+    int elapsedTime = millis() - yearPopupStartTime;
+    
+    fill(240);
+    stroke(0);
+    strokeWeight(2);
+    rect((width * 0.3) + 110, 160, (width * 0.7) - 190, height - 320);
+    
+    fill(0);
+    textSize(40);
+    text("利益計算", (width * 0.3) + 370, 210);
+    
+    textSize(32);
+    text("プレイヤー: " + playerProfit + "pt", (width * 0.3) + 370, 280);
+    text("AI: " + aiProfit + "pt", (width * 0.3) + 370, 340);
+    
+    noStroke();
+    
+    if (elapsedTime >= 2000) {
+      yearPopupTimerSet = false;
+      closePopup();
+    }
   }
 
   // イベントポップアップの描画
@@ -400,33 +426,32 @@ class Popup {
     rect((width * 0.3) + 110, 160, (width * 0.7) - 190, height - 320);
     
     fill(0);
-    textSize(48);
-    text("イベント発生！", (width * 0.3) + 370, 220);
+    textSize(40);
+    text("イベントが発生しました！", (width * 0.3) + 460, 210);
     
     // イベント名
-    textSize(40);
-    fill(255, 0, 0);
-    text(currentEvent.eventName, (width * 0.3) + 370, 300);
-    
+    textAlign(LEFT, CENTER);
+    text("・" + currentEvent.eventName, (width * 0.3) + 130, 320);
+
     // イベント効果説明
-    fill(0);
-    textSize(28);
-    text(currentEvent.effectDescription, (width * 0.3) + 370, 380);
+    textSize(36);
+    text(currentEvent.effectDescription, (width * 0.3) + 173, 380);
+    text("米価格+5000兆!!!!!!", (width * 0.3) + 173, 430);
     
     // 持続時間
-    if (currentEvent.duration > 1) {
-      textSize(24);
-      fill(100);
-      text("（" + currentEvent.duration + "ターン持続）", (width * 0.3) + 370, 430);
-    }
+    // if (currentEvent.duration > 1) {
+    //   textSize(24);
+    //   fill(100);
+    //   text("（" + currentEvent.duration + "ターン持続）", (width * 0.3) + 370, 430);
+    // }
     
     noStroke();
-    if (elapsedTime >= 2000) {
+    if (elapsedTime >= 5000) {
       yearPopupTimerSet = false;
       closePopup();
     }
   }
-  
+
   // 予報ポップアップの描画
   void drawForecastPopup() {
     if (!yearPopupTimerSet) {
@@ -442,24 +467,23 @@ class Popup {
     stroke(0);
     strokeWeight(2);
     rect((width * 0.3) + 110, 160, (width * 0.7) - 190, height - 320);
-    
-    fill(0);
-    textSize(48);
-    text("予報", (width * 0.3) + 370, 220);
-    
-    // 予報メッセージ
-    textSize(32);
-    fill(0, 0, 200);
-    text(forecast.message, (width * 0.3) + 370, 320);
-    
-    // 注意書き
-    textSize(20);
-    fill(100);
-    text("※予報は外れることがあります", (width * 0.3) + 370, 400);
+    rect((width * 0.3) + 150, 200, (width * 0.7) - 270, height - 400);
     
     noStroke();
+    fill(240);
+    rect((width * 0.3) + 400, 180, 120, 40);
+    
+    fill(0);
+    textSize(44);
+    text("予報", (width * 0.3) + 460, 200);
+    
+    // 予報の内容をここに記述
+    textAlign(LEFT, CENTER);
+    text(forecast.message, (width * 0.3) + 200, 340);
+    
+    textAlign(CENTER, CENTER);
 
-    if (elapsedTime >= 2000) {
+    if (elapsedTime >= 5000) {
       yearPopupTimerSet = false;
       closePopup();
     }

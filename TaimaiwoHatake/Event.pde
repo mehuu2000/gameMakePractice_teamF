@@ -209,7 +209,8 @@ class EventManager {
         eventSchedule = new Event[maxTurn];
         forecastSchedule = new ForecastInfo[maxTurn];
         
-        for (int turn = 0; turn < maxTurn; turn++) {
+        // 1ターン目（インデックス0）はスキップして、2ターン目から開始
+        for (int turn = 1; turn < maxTurn; turn++) {
             if (eventSchedule[turn] == null) {
                 Event selectedEvent = selectEventForTurn(turn);
                 if (selectedEvent != null) {
@@ -309,6 +310,9 @@ class EventManager {
     
     // 現在のターンのイベント処理
     void processCurrentTurn() {
+        // 1ターン目（currentTurn == 1）は何もしない
+        if (currentTurn == 1) return;
+        
         if (currentTurn >= eventSchedule.length) return;
         
         Event currentEvent = eventSchedule[currentTurn];
@@ -358,6 +362,9 @@ class EventManager {
     
     // 現在の予報を取得
     ForecastInfo getCurrentForecast() {
+        // 1ターン目は予報なし
+        if (currentTurn == 1) return null;
+        
         if (currentTurn < forecastSchedule.length) {
             return forecastSchedule[currentTurn];
         }
