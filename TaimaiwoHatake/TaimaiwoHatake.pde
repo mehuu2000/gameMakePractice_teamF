@@ -8,6 +8,7 @@ Market market;
 Player player;
 AI ai;
 GameLogic gameLogic;
+EventManager eventManager;
 
 // UI系オブジェクト
 UI ui;
@@ -41,8 +42,8 @@ EllipseButton submitButton; // 出荷ボタン
 
 // ========== ゲーム進行変数 ==========
 int currentTurn = 1;
+int maxTurn = 4 * 5 + 2; // 最大ターン数(5年 + 2シーズン(売却のため))
 int[] currentYear_season = {1, 0}; // 年と季節を管理する配列。年, 季節(0:秋, 1:冬, 2:春, 3:夏, )
-int maxTurns = 11; // 要相談
 
 // ========== UI状態変数 ==========
 boolean showingPopup = false; // ポップアップ表示フラグ
@@ -87,8 +88,8 @@ int eventEffect = 1; // イベント効果の倍率
 
 // ========== 変数管理 ==========
 // イベントの倍率を更新
-void updateEventEffect(int effect) {
-  eventEffect = eventEffect * effect;
+void updateEventEffect(float effect) {
+  eventEffect = int(eventEffect * effect);
 }
 
 // イベントの倍率をリセット
@@ -171,11 +172,12 @@ void initGame() {
 
   selectedAmounts = new int[riceBrandsInfo.length];
   riceBrandRanking = new int[riceBrandsInfo.length];
-  gameState = new GameState();
   market = new Market();
   gameLogic = new GameLogic();
   player = new Player(PLAYER_POINT);
   ai = new AI(ENEMY_POINT);
+  eventManager = new EventManager();
+  gameState = new GameState();
   
   // その時の供給在庫を更新
   marketStockKeep = market.marketStock.clone();

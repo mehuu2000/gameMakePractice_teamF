@@ -40,6 +40,9 @@ class Popup {
     case "event":
       drawEventPopup();
       break;
+    case "forecast":
+      drawForecastPopup();
+      break;
     default:
       // 何もしないか、エラーメッセージを表示
       break;
@@ -70,12 +73,22 @@ class Popup {
     if (elapsedTime >= 3000) {
       yearPopupTimerSet = false;
       closePopup();
-      showPopup("buy");
+      if (currentTurn == 1) {
+        showPopup("carry");
+      } else {
+        showPopup("buy");
+      }
     }
   }
 
   // 市場に持ち運ばれた米を表示するポップアップの描画
   void drawCarryPopup() {
+    if (!yearPopupTimerSet) {
+        yearPopupStartTime = millis();
+        yearPopupTimerSet = true;
+    }
+    int elapsedTime = millis() - yearPopupStartTime;
+
     stroke(0);
     strokeWeight(2);
 
@@ -88,10 +101,22 @@ class Popup {
     text("市場にお米が", (width * 0.3) + 200, 180);
     text("持ち運ばれました！", (width * 0.3) + 200, 230);
     textAlign(CENTER, CENTER);
+
+    if (elapsedTime >= 2000) {
+      yearPopupTimerSet = false;
+      closePopup();
+      showPopup("buy"); // 米購入のポップアップを表示
+    }
   }
 
   // 米の購入による市場変動のポップアップの描画
   void drawCellPopup() {
+    if (!yearPopupTimerSet) {
+        yearPopupStartTime = millis();
+        yearPopupTimerSet = true;
+    }
+    int elapsedTime = millis() - yearPopupStartTime;
+
     stroke(0);
     strokeWeight(2);
 
@@ -104,6 +129,11 @@ class Popup {
     text("市場からお米が", (width * 0.3) + 200, 180);
     text("購入されました！", (width * 0.3) + 200, 230);
     textAlign(CENTER, CENTER);
+
+    if (elapsedTime >= 2000) {
+      yearPopupTimerSet = false;
+      closePopup();
+    }
   }
 
   // 買い付けポップアップの描画
@@ -289,6 +319,12 @@ class Popup {
 
   // 集計開始ポップアップの描画
   void drawCountStartPopup() {
+    if (!yearPopupTimerSet) {
+        yearPopupStartTime = millis();
+        yearPopupTimerSet = true;
+    }
+    int elapsedTime = millis() - yearPopupStartTime;
+
     fill(21, 96, 130);
     rect(width/2 - 375, height/2 - 150, 750, 300);
 
@@ -296,10 +332,20 @@ class Popup {
     fill(250);
     textSize(120);
     text("集計開始！", width/2, height/2);
+    if (elapsedTime >= 2000) {
+      yearPopupTimerSet = false;
+      closePopup();
+    }
   }
 
   //米の出荷による市場変動のポップアップの描画
   void drawFluctuationPopup() {
+    if (!yearPopupTimerSet) {
+        yearPopupStartTime = millis();
+        yearPopupTimerSet = true;
+    }
+    int elapsedTime = millis() - yearPopupStartTime;
+
     fill(240);
     stroke(0);
     strokeWeight(2);
@@ -326,6 +372,11 @@ class Popup {
     textAlign(CENTER, CENTER);
 
     noStroke();
+
+    if (elapsedTime >= 2000) {
+      yearPopupTimerSet = false;
+      closePopup();
+    }
   }
 
   // 利益のポップアップのための描画
@@ -334,6 +385,84 @@ class Popup {
 
   // イベントポップアップの描画
   void drawEventPopup() {
+    if (!yearPopupTimerSet) {
+        yearPopupStartTime = millis();
+        yearPopupTimerSet = true;
+    }
+    int elapsedTime = millis() - yearPopupStartTime;
+
+    Event currentEvent = eventManager.getCurrentEvent();
+    if (currentEvent == null) return;
+    
+    fill(240);
+    stroke(0);
+    strokeWeight(2);
+    rect((width * 0.3) + 110, 160, (width * 0.7) - 190, height - 320);
+    
+    fill(0);
+    textSize(48);
+    text("イベント発生！", (width * 0.3) + 370, 220);
+    
+    // イベント名
+    textSize(40);
+    fill(255, 0, 0);
+    text(currentEvent.eventName, (width * 0.3) + 370, 300);
+    
+    // イベント効果説明
+    fill(0);
+    textSize(28);
+    text(currentEvent.effectDescription, (width * 0.3) + 370, 380);
+    
+    // 持続時間
+    if (currentEvent.duration > 1) {
+      textSize(24);
+      fill(100);
+      text("（" + currentEvent.duration + "ターン持続）", (width * 0.3) + 370, 430);
+    }
+    
+    noStroke();
+    if (elapsedTime >= 2000) {
+      yearPopupTimerSet = false;
+      closePopup();
+    }
+  }
+  
+  // 予報ポップアップの描画
+  void drawForecastPopup() {
+    if (!yearPopupTimerSet) {
+        yearPopupStartTime = millis();
+        yearPopupTimerSet = true;
+    }
+    int elapsedTime = millis() - yearPopupStartTime;
+
+    ForecastInfo forecast = eventManager.getCurrentForecast();
+    if (forecast == null) return;
+    
+    fill(240);
+    stroke(0);
+    strokeWeight(2);
+    rect((width * 0.3) + 110, 160, (width * 0.7) - 190, height - 320);
+    
+    fill(0);
+    textSize(48);
+    text("予報", (width * 0.3) + 370, 220);
+    
+    // 予報メッセージ
+    textSize(32);
+    fill(0, 0, 200);
+    text(forecast.message, (width * 0.3) + 370, 320);
+    
+    // 注意書き
+    textSize(20);
+    fill(100);
+    text("※予報は外れることがあります", (width * 0.3) + 370, 400);
+    
+    noStroke();
+
+    if (elapsedTime >= 2000) {
+      yearPopupTimerSet = false;
+      closePopup();
+    }
   }
 
   // ポップアップを閉じるためのボタン描画

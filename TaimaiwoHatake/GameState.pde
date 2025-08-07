@@ -87,7 +87,7 @@ class GameState {
 
   // ========== ターン管理 ==========
   void endTurn() {
-    if (currentTurn > maxTurns) {
+    if (currentTurn > maxTurn) {
       // ゲーム終了処理、結果画面の表示など
       // もしくは次ターン米騒動?
     }
@@ -108,10 +108,13 @@ class GameState {
     aiProfit = ai.sellRice(); // AIの利益計算
 
     // 利益表示処理
+    showPopup("countStart"); // 集計開始のポップアップを表示
+    showPopup("fluctuation"); // 市場変動のポップアップを表示
     showPopup("profit"); // 利益のポップアップを表示
 
     // 消費処理
     market.consume(); // 市場の消費処理
+    showPopup("cell"); // 消費のポップアップを表示
     market.updateBrandPoint(); // 市場のブランドポイントを更新
     market.getBrandRanking(); // ブランドの価値ランキングを更新
 
@@ -138,10 +141,25 @@ class GameState {
       ai.decayRice(); // AIの米を古くする 
     }
     
+    // イベント処理（eventManagerが初期化されている場合のみ）
+    if (eventManager != null) {
+      eventManager.processCurrentTurn();
+      
+      // 予報確認
+      ForecastInfo forecast = eventManager.getCurrentForecast();
+      if (forecast != null && forecast.message != null && !forecast.message.isEmpty()) {
+        showPopup("forecast");
+        return; // 予報がある場合は予報を先に表示
+      }
+      
+      // イベント確認
+      Event currentEvent = eventManager.getCurrentEvent();
+      if (currentEvent != null && !currentEvent.eventName.equals("通常")) {
+        showPopup("event");
+        return; // イベントがある場合はイベントを表示
+      }
+    }
+    
     showPopup("year"); // 年のポップアップを表示
-
-    // ここでイベントの発生とポップアップ表示を行う
-
-    // ここで通知や予報のポップアップ表示を行う
   }
 }
