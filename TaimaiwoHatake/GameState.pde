@@ -106,6 +106,9 @@ class GameState {
       aiLoadedRices[i] = ai.getSumLoadRice(i); // AIの出荷状態を保存
     }
 
+    market.updateBrandPoint(); // 市場のブランドポイントを更新
+    market.getBrandRanking(); // ブランドの価値ランキングを更新
+
     // 利益処理 (プレイヤーの利益表示ポップアップでも使用される)
     playerProfit = player.sellRice(); // プレイヤーの利益計算
     aiProfit = ai.sellRice(); // AIの利益計算
@@ -116,17 +119,10 @@ class GameState {
     // 消費処理
     market.consume(); // 市場の消費処理
     market.updateBrandPoint(); // 市場のブランドポイントを更新
-    market.getBrandRanking();
+    market.getBrandRanking(); // ブランドの価値ランキングを更新
 
     // その時の供給在庫を更新
     marketStockKeep = market.marketStock.clone();
-
-    // 米を古くする処理
-    if ("秋".equals(SEASONS[currentYear_season[SEASON]])) {
-      println("米が古くなりました。");
-      player.decayRice(); // プレイヤーの米を古くする
-      ai.decayRice(); // AIの米を古くする 
-    }
 
     // イベント効果のリセット。永続効果は残る
     resetEventEffect(); 
@@ -141,6 +137,13 @@ class GameState {
 
   // 次のターンの開始処理
   void startNextTurn() {
+    // 米を古くする処理
+    if ("秋".equals(SEASONS[currentYear_season[SEASON]])) {
+      println("米が古くなりました。");
+      player.decayRice(); // プレイヤーの米を古くする
+      ai.decayRice(); // AIの米を古くする 
+    }
+    
     showPopup("year"); // 年のポップアップを表示
 
     // ここでイベントの発生とポップアップ表示を行う
