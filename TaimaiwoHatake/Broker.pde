@@ -2,7 +2,7 @@
 // Player.pdeやAI.pdeで継承して使用する
 
 // ========== 定数 ==========
-final int RICE_DECAY_LIMIT = 4;
+final int RICE_DECAY_LIMIT = 3;
 final float RICE_BUY_RATIO = 0.8;
 
 //クラス宣言

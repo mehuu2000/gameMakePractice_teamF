@@ -59,13 +59,13 @@ class AI extends Broker {
   }
   
   int[] predPrice(boolean perfectPred){
-    int[] predPrices;
-    for (int i = 0; i < riceBrandsInfo.length, i++) {
-      predPrices = riceBrandsInfo[i].point;
+    int[] predPrices = new int[riceBrandsInfo.length];
+    for (int i = 0; i < riceBrandsInfo.length; i++) {
+      predPrices[i] = riceBrandsInfo[i].point;
     }
     if (perfectPred) {
       
     }
-    return predPrices
+    return predPrices;
   }
 }
