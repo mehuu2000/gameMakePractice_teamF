@@ -93,7 +93,6 @@ class GameState {
 
   // ========== ターン管理 ==========
   void endTurn() {
-    currentTurn++;
     if (currentTurn > maxTurns) {
       // ゲーム終了処理、結果画面の表示など
       // もしくは次ターン米騒動?
@@ -101,7 +100,13 @@ class GameState {
     // 出荷処理
     ai.shipRice(); // AIの出荷処理
 
-    // 利益処理
+    // ブローカーの出荷状態を保存 (プレイヤーの利益表示ポップアップで使用)
+    for (int i=0; i<riceBrandsInfo.length; i++) {
+      playerLoadedRices[i] = player.getSumLoadRice(i); // プレイヤーの出荷状態を保存
+      aiLoadedRices[i] = ai.getSumLoadRice(i); // AIの出荷状態を保存
+    }
+
+    // 利益処理 (プレイヤーの利益表示ポップアップでも使用される)
     playerProfit = player.sellRice(); // プレイヤーの利益計算
     aiProfit = ai.sellRice(); // AIの利益計算
 
@@ -110,9 +115,11 @@ class GameState {
 
     // 消費処理
     market.consume(); // 市場の消費処理
+    market.updateBrandPoint(); // 市場のブランドポイントを更新
+    market.getBrandRanking();
 
-    // その時の供給数を更新
-    
+    // その時の供給在庫を更新
+    marketStockKeep = market.marketStock.clone();
 
     // 米を古くする処理
     if ("秋".equals(SEASONS[currentYear_season[SEASON]])) {

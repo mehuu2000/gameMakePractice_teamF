@@ -20,8 +20,8 @@ class Market {
     final float INIT_STOCK_MAX_RATIO = 0.25;  // 供給上限の1/2
 
     // 消費率
-    final float CONSUME_MIN_RATIO = 0.1;  // 最小10%消費
-    final float CONSUME_MAX_RATIO = 0.25;  // 最大25%消費
+    final float CONSUME_MIN_RATIO = 0.3;  // 最小10%消費
+    final float CONSUME_MAX_RATIO = 0.5;  // 最大25%消費
 
     // コンストラクタ
     Market() {
@@ -80,7 +80,7 @@ class Market {
         for (int i = 0; i < marketStock.length - 1; i++) {
           for (int j = 0; j < marketStock.length - 1 - i; j++) {
               // 価値を比較（降順）
-              if (riceBrandsInfo[rankings[j]].point < riceBrandsInfo[rankings[j + 1].point]) {
+              if (riceBrandsInfo[rankings[j]].point < riceBrandsInfo[rankings[j + 1]].point) {
                   // ブランドIDを交換
                   int temp = rankings[j];
                   rankings[j] = rankings[j + 1];
@@ -123,7 +123,7 @@ class Market {
             updateBrandStock(i, amount);
         } 
         
-        updateBrandPoint(); // 在庫に応じて価値を更新
+        // updateBrandPoint(); // 在庫に応じて価値を更新
         riceBrandRanking = this.getBrandRanking(); // ランキングを更新
     }
 
@@ -157,7 +157,7 @@ class Market {
         // 消費数を決定
         int startCount = int(getTotalStock() * CONSUME_MIN_RATIO);
         int finishCount = int(getTotalStock() * CONSUME_MAX_RATIO);
-        int consumeCount = int(random(startCount, finishCount));
+        int consumeCount = int(max(2, random(startCount, finishCount)));
         // consumeCountがbrandIds.lengthを超えないようにする
         consumeCount = min(consumeCount, brandIds.length);
 

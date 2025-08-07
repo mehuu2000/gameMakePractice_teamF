@@ -50,10 +50,12 @@ String popupType = ""; // ポップアップの種類
 int selectedBrandId = 0; // 選択されたブランド(買い付けフェーズなど)
 int totalPrice = 0; // 購入合計金額
 
+// 集計結果で使用する変数
 int playerProfit = 0; // プレイヤーの利益
 int aiProfit = 0; // AIの利益
-int[] playerLoadedRices;
-int[] aiLoadedRices;
+int[] playerLoadedRices; // プレイヤーが前シーズンで出荷した米の数
+int[] aiLoadedRices; // AIが前シーズンで出荷した米の数
+int[] marketStockKeep; // その時の在庫を保持するための配列
 
 
 // ========== 定数 ==========
@@ -163,6 +165,9 @@ void initGame() {
     new RiceBrand("ゆめごこち", color(80, 220, 80), BASE_CARD_POINTS[2]),
     new RiceBrand("つやおうじ", color(220, 220, 80), BASE_CARD_POINTS[3])
   };
+  playerLoadedRices = new int[riceBrandsInfo.length];
+  aiLoadedRices = new int[riceBrandsInfo.length];
+  marketStockKeep = new int[riceBrandsInfo.length];
 
   selectedAmounts = new int[riceBrandsInfo.length];
   riceBrandRanking = new int[riceBrandsInfo.length];

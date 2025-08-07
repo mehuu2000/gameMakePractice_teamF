@@ -116,9 +116,10 @@ class Broker {
   }
   
   //米を売る関数
-  void sellRice() {
+  int sellRice() {
     int profit = market.calculateProfit(sumLoadRices);
     wallet += profit;
     loadRices = new int[riceBrandsInfo.length][RICE_DECAY_LIMIT];
+    return profit; // 売上を返す
   }
 }
