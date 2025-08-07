@@ -41,7 +41,7 @@ EllipseButton submitButton; // 出荷ボタン
 
 // ========== ゲーム進行変数 ==========
 int currentTurn = 1;
-int[] currentYear_season = {1, 1}; // 年と季節を管理する配列。年, 季節(1:秋, 2:冬, 3:春, 4:夏, )
+int[] currentYear_season = {1, 0}; // 年と季節を管理する配列。年, 季節(0:秋, 1:冬, 2:春, 3:夏, )
 int maxTurns = 11; // 要相談
 
 // ========== UI状態変数 ==========
