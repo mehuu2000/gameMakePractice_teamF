@@ -73,12 +73,22 @@ class Popup {
     if (elapsedTime >= 3000) {
       yearPopupTimerSet = false;
       closePopup();
-      showPopup("buy");
+      if (currentTurn == 1) {
+        showPopup("carry");
+      } else {
+        showPopup("buy");
+      }
     }
   }
 
   // 市場に持ち運ばれた米を表示するポップアップの描画
   void drawCarryPopup() {
+    if (!yearPopupTimerSet) {
+        yearPopupStartTime = millis();
+        yearPopupTimerSet = true;
+    }
+    int elapsedTime = millis() - yearPopupStartTime;
+
     stroke(0);
     strokeWeight(2);
 
@@ -109,10 +119,22 @@ class Popup {
     text("枚数", (width * 0.3) + 630, 280);
 
     noStroke();
+
+    if (elapsedTime >= 2000) {
+      yearPopupTimerSet = false;
+      closePopup();
+      showPopup("buy"); // 米購入のポップアップを表示
+    }
   }
 
   // 米の購入による市場変動のポップアップの描画
   void drawCellPopup() {
+    if (!yearPopupTimerSet) {
+        yearPopupStartTime = millis();
+        yearPopupTimerSet = true;
+    }
+    int elapsedTime = millis() - yearPopupStartTime;
+
     stroke(0);
     strokeWeight(2);
 
@@ -143,6 +165,11 @@ class Popup {
     textAlign(CENTER, CENTER);
 
     noStroke();
+
+    if (elapsedTime >= 2000) {
+      yearPopupTimerSet = false;
+      closePopup();
+    }
   }
 
   // 買い付けポップアップの描画
@@ -328,6 +355,12 @@ class Popup {
 
   // 集計開始ポップアップの描画
   void drawCountStartPopup() {
+    if (!yearPopupTimerSet) {
+        yearPopupStartTime = millis();
+        yearPopupTimerSet = true;
+    }
+    int elapsedTime = millis() - yearPopupStartTime;
+
     fill(21, 96, 130);
     rect(width/2 - 375, height/2 - 150, 750, 300);
 
@@ -335,10 +368,21 @@ class Popup {
     fill(250);
     textSize(120);
     text("集計開始！", width/2, height/2);
+    
+    if (elapsedTime >= 2000) {
+      yearPopupTimerSet = false;
+      closePopup();
+    }
   }
 
   //米の出荷による市場変動のポップアップの描画
   void drawFluctuationPopup() {
+    if (!yearPopupTimerSet) {
+        yearPopupStartTime = millis();
+        yearPopupTimerSet = true;
+    }
+    int elapsedTime = millis() - yearPopupStartTime;
+
     fill(240);
     stroke(0);
     strokeWeight(2);
@@ -353,7 +397,7 @@ class Popup {
       fill(riceBrandsInfo[riceBrandRanking[i]].brandColor);
       text(riceBrandsInfo[riceBrandRanking[i]].name, (width * 0.3) + 270, 320 + (i*60));
       fill(0);
-      text(marketStockKeep[riceBrandRanking[i]] + "→" + market.marketStock[riceBrandRanking[i]], (width * 0.3) + 600, 320 + (i*60));
+      text(marketStockKeep[riceBrandRanking[i]] + "→" + marketStockAfterShip[riceBrandRanking[i]], (width * 0.3) + 600, 320 + (i*60));
     }
     
     fill(0);
@@ -365,6 +409,11 @@ class Popup {
     textAlign(CENTER, CENTER);
 
     noStroke();
+
+    if (elapsedTime >= 2000) {
+      yearPopupTimerSet = false;
+      closePopup();
+    }
   }
 
   // 利益のポップアップのための描画
@@ -415,6 +464,15 @@ class Popup {
 
   // イベントポップアップの描画
   void drawEventPopup() {
+    if (!yearPopupTimerSet) {
+        yearPopupStartTime = millis();
+        yearPopupTimerSet = true;
+    }
+    int elapsedTime = millis() - yearPopupStartTime;
+
+    Event currentEvent = eventManager.getCurrentEvent();
+    if (currentEvent == null) return;
+    
     fill(240);
     stroke(0);
     strokeWeight(2);
@@ -424,20 +482,40 @@ class Popup {
     textSize(40);
     text("イベントが発生しました！", (width * 0.3) + 460, 210);
     
-    //イベント名
+    // イベント名
     textAlign(LEFT, CENTER);
-    text("・" + "効果名", (width * 0.3) + 130, 320);
-    
-    //効果内容
+    text("・" + currentEvent.eventName, (width * 0.3) + 130, 320);
+
+    // イベント効果説明
     textSize(36);
-    text("世間がどうたらこうたら", (width * 0.3) + 173, 380);
+    text(currentEvent.effectDescription, (width * 0.3) + 173, 380);
     text("米価格+5000兆!!!!!!", (width * 0.3) + 173, 430);
     
+    // 持続時間
+    // if (currentEvent.duration > 1) {
+    //   textSize(24);
+    //   fill(100);
+    //   text("（" + currentEvent.duration + "ターン持続）", (width * 0.3) + 370, 430);
+    // }
+    
     noStroke();
+    if (elapsedTime >= 5000) {
+      yearPopupTimerSet = false;
+      closePopup();
+    }
   }
-  
-  // ニュースポップアップの描画
-  void drawNewsPopup() {
+
+  // 予報ポップアップの描画
+  void drawForecastPopup() {
+    if (!yearPopupTimerSet) {
+        yearPopupStartTime = millis();
+        yearPopupTimerSet = true;
+    }
+    int elapsedTime = millis() - yearPopupStartTime;
+
+    ForecastInfo forecast = eventManager.getCurrentForecast();
+    if (forecast == null) return;
+    
     fill(240);
     stroke(0);
     strokeWeight(2);
@@ -452,11 +530,16 @@ class Popup {
     textSize(44);
     text("予報", (width * 0.3) + 460, 200);
     
-    //予報の内容をここに記述
+    // 予報の内容をここに記述
     textAlign(LEFT, CENTER);
-    text("次回　使徒襲来", (width * 0.3) + 320, 340);
+    text(forecast.message, (width * 0.3) + 200, 340);
     
     textAlign(CENTER, CENTER);
+
+    if (elapsedTime >= 5000) {
+      yearPopupTimerSet = false;
+      closePopup();
+    }
   }
 
   // ポップアップを閉じるためのボタン描画

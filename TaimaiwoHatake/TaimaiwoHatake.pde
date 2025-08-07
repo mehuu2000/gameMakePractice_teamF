@@ -9,6 +9,7 @@ Market market;
 Player player;
 AI ai;
 GameLogic gameLogic;
+EventManager eventManager;
 
 // UI系オブジェクト
 UI ui;
@@ -55,12 +56,15 @@ AudioPlayer[] bgms = new AudioPlayer[BGM_NAMES.length];
 
 // ========== ゲーム進行変数 ==========
 int currentTurn = 1;
+int maxTurn = 4 * 5 + 2; // 最大ターン数(5年 + 2シーズン(売却のため))
 int[] currentYear_season = {1, 0}; // 年と季節を管理する配列。年, 季節(0:秋, 1:冬, 2:春, 3:夏, )
-int maxTurns = 11; // 要相談
 
 // ========== UI状態変数 ==========
 boolean showingPopup = false; // ポップアップ表示フラグ
 String popupType = ""; // ポップアップの種類
+String[] popupQueue = new String[10]; // ポップアップのキュー（最大10個）
+int popupQueueSize = 0; // キューに入っているポップアップの数
+int currentPopupIndex = 0; // 現在表示中のポップアップのインデックス
 int selectedBrandId = 0; // 選択されたブランド(買い付けフェーズなど)
 int totalPrice = 0; // 購入合計金額
 
@@ -69,7 +73,8 @@ int playerProfit = 0; // プレイヤーの利益
 int aiProfit = 0; // AIの利益
 int[] playerLoadedRices; // プレイヤーが前シーズンで出荷した米の数
 int[] aiLoadedRices; // AIが前シーズンで出荷した米の数
-int[] marketStockKeep; // その時の在庫を保持するための配列
+int[] marketStockKeep; // 出荷前の在庫を保持するための配列
+int[] marketStockAfterShip; // 出荷直後（消費前）の在庫を保持するための配列
 
 
 // ========== 定数 ==========
@@ -102,8 +107,8 @@ int eventEffect = 1; // イベント効果の倍率
 
 // ========== 変数管理 ==========
 // イベントの倍率を更新
-void updateEventEffect(int effect) {
-  eventEffect = eventEffect * effect;
+void updateEventEffect(float effect) {
+  eventEffect = int(eventEffect * effect);
 }
 
 // イベントの倍率をリセット
@@ -121,21 +126,55 @@ int[] getCurrentYear() {
 
 // ========== ポップアップ管理 ==========
 void showPopup(String type) {
-  showingPopup = true;
-  popupType = type;
-  resetSelectedAmounts();
+  // キューに追加
+  if (popupQueueSize < 10) {
+    popupQueue[popupQueueSize] = type;
+    popupQueueSize++;
+  }
+  
+  // 最初のポップアップの場合、表示を開始
+  if (popupQueueSize == 1) {
+    showingPopup = true;
+    popupType = popupQueue[0];
+    currentPopupIndex = 0;
+    resetSelectedAmounts();
+  }
 }
 
 void closePopup() {
-  showingPopup = false;
-  popupType = "";
-  selectedBrandId = -1;
-  resetSelectedAmounts();
+  // 次のポップアップがあるかチェック
+  currentPopupIndex++;
+  if (currentPopupIndex < popupQueueSize) {
+    // 次のポップアップを表示
+    popupType = popupQueue[currentPopupIndex];
+    popup.yearPopupTimerSet = false; // タイマーリセット
+  } else {
+    // 全てのポップアップが終了
+    showingPopup = false;
+    popupType = "";
+    popupQueueSize = 0;
+    currentPopupIndex = 0;
+    selectedBrandId = -1;
+    resetSelectedAmounts();
+    sumBrandCount = 0;
+    isFirst = false;
+    totalPrice = 0;
+    
+    // 全ポップアップ終了後の処理
+    if (popupQueue[0] != null && popupQueue[0].equals("countStart")) {
+      // endTurn関連のポップアップが終わったら次のターンへ
+      gameState.finishEndTurn();
+    }
+  }
+}
 
-  sumBrandCount = 0;
-  isFirst = false;
-
-  totalPrice = 0;
+// ポップアップキューをクリア
+void clearPopupQueue() {
+  popupQueueSize = 0;
+  currentPopupIndex = 0;
+  for (int i = 0; i < 10; i++) {
+    popupQueue[i] = null;
+  }
 }
 
 // selectedAmountsの初期化
@@ -183,14 +222,16 @@ void initGame() {
   playerLoadedRices = new int[riceBrandsInfo.length];
   aiLoadedRices = new int[riceBrandsInfo.length];
   marketStockKeep = new int[riceBrandsInfo.length];
+  marketStockAfterShip = new int[riceBrandsInfo.length];
 
   selectedAmounts = new int[riceBrandsInfo.length];
   riceBrandRanking = new int[riceBrandsInfo.length];
-  gameState = new GameState();
   market = new Market();
   gameLogic = new GameLogic();
   player = new Player(PLAYER_POINT);
   ai = new AI(ENEMY_POINT);
+  eventManager = new EventManager();
+  gameState = new GameState();
   
   // その時の供給在庫を更新
   marketStockKeep = market.marketStock.clone();

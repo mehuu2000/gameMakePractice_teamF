@@ -51,6 +51,9 @@ class GameState {
 
   // 出荷関数 ボタンでつかうよ
   void playerShipRIce() {
+    // 出荷前の市場在庫を保存（fluctuationポップアップで使用）
+    marketStockKeep = market.marketStock.clone();
+    
     player.shipRice();
     closePopup();
     
@@ -87,10 +90,13 @@ class GameState {
 
   // ========== ターン管理 ==========
   void endTurn() {
-    if (currentTurn > maxTurns) {
+    if (currentTurn > maxTurn) {
       // ゲーム終了処理、結果画面の表示など
       // もしくは次ターン米騒動?
     }
+    
+    // 注：marketStockKeepはplayerShipRIce()で既に保存済み
+    
     // 出荷処理
     ai.shipRice(); // AIの出荷処理
 
@@ -100,31 +106,44 @@ class GameState {
       aiLoadedRices[i] = ai.getSumLoadRice(i); // AIの出荷状態を保存
     }
 
+    // 出荷直後（消費前）の市場在庫を保存
+    marketStockAfterShip = market.marketStock.clone();
+    
     market.updateBrandPoint(); // 市場のブランドポイントを更新
-    market.getBrandRanking(); // ブランドの価値ランキングを更新
+    riceBrandRanking = market.getBrandRanking(); // ブランドの価値ランキングを更新
 
     // 利益処理 (プレイヤーの利益表示ポップアップでも使用される)
     playerProfit = player.sellRice(); // プレイヤーの利益計算
     aiProfit = ai.sellRice(); // AIの利益計算
 
     // 利益表示処理
+    showPopup("countStart"); // 集計開始のポップアップを表示
+    showPopup("fluctuation"); // 市場変動のポップアップを表示
     showPopup("profit"); // 利益のポップアップを表示
 
     // 消費処理
     market.consume(); // 市場の消費処理
+    showPopup("cell"); // 消費のポップアップを表示
     market.updateBrandPoint(); // 市場のブランドポイントを更新
-    market.getBrandRanking(); // ブランドの価値ランキングを更新
-
-    // その時の供給在庫を更新
-    marketStockKeep = market.marketStock.clone();
+    riceBrandRanking = market.getBrandRanking(); // ブランドの価値ランキングを更新
 
     // イベント効果のリセット。永続効果は残る
     resetEventEffect(); 
 
-    // ターン更新
+    // 次のターンの開始処理はポップアップ終了後に呼ばれる
+    // ターン更新もfinishEndTurn()で行う
+    // startNextTurn();
+  }
+  
+  // ターン終了の最終処理（全ポップアップ終了後に呼ばれる）
+  void finishEndTurn() {
+    // その時の供給在庫を更新
+    // marketStockKeep = market.marketStock.clone();
+    
+    // ターン更新（ここでのみ行う）
     currentTurn++;
     currentYear_season = getCurrentYear(); // 年と季節の更新
-
+    
     // 次のターンの開始処理
     startNextTurn();
   }
@@ -138,10 +157,24 @@ class GameState {
       ai.decayRice(); // AIの米を古くする 
     }
     
+    // ポップアップをキューに追加
     showPopup("year"); // 年のポップアップを表示
-
-    // ここでイベントの発生とポップアップ表示を行う
-
-    // ここで通知や予報のポップアップ表示を行う
+    
+    // イベント処理（eventManagerが初期化されている場合のみ）
+    if (eventManager != null) {
+      eventManager.processCurrentTurn();
+      
+      // 予報確認
+      ForecastInfo forecast = eventManager.getCurrentForecast();
+      if (forecast != null && forecast.message != null && !forecast.message.isEmpty()) {
+        showPopup("news"); // 予報をキューに追加
+      }
+      
+      // イベント確認
+      Event currentEvent = eventManager.getCurrentEvent();
+      if (currentEvent != null && !currentEvent.eventName.equals("通常")) {
+        showPopup("event"); // イベントをキューに追加
+      }
+    }
   }
 }
