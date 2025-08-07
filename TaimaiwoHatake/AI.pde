@@ -14,19 +14,16 @@ class AI extends Broker {
     // 購入プロセス ランキング順に安い方から買っていく
     int[] ranking = market.getBrandRanking();
     for (int i = 0; i < riceBrandsInfo.length; i++) {
-      int riceID = ranking[3-i];
+      int riceID = ranking[i];
       int countRice = getSumHandRice(riceID);
       int canBuyCount = wallet / riceBrandsInfo[riceID].point; // 全額使ったら買える個数
-      if (i==0) {
+      if (canBuyCount <= 0) {
+        buyCostAverages[riceID] = 0;
+      } else {
         buyRice(riceID, canBuyCount/2);
         buyCostAverages[riceID] = (countRice * buyCostAverages[riceID]
                                           + riceBrandsInfo[riceID].point * RICE_BUY_RATIO * canBuyCount/2)
                                           / float(countRice + canBuyCount/2);
-      }else{
-        buyRice(riceID, canBuyCount);
-        buyCostAverages[riceID] = (countRice * buyCostAverages[riceID]
-                                          + riceBrandsInfo[riceID].point * RICE_BUY_RATIO * canBuyCount)
-                                          / float(countRice + canBuyCount);
       }
       println(buyCostAverages[riceID]);
     }
