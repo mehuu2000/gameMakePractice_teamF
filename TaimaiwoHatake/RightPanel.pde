@@ -106,23 +106,19 @@ class RightPanel {
     // 当たり判定をチェック
     if (mouseX > (width * 0.3) + 160 && mouseX < (width * 0.3) + 280 &&
         mouseY > height/2 + 120 && mouseY < height/2 + 320) {
-      selectedBrandId = 0;
-      showPopup("submit");
+      gameState.selectBrandSubmit(0);
       return true;
     } else if (mouseX > (width * 0.3) + 300 && mouseX < (width * 0.3) + 420 &&
                mouseY > height/2 + 120 && mouseY < height/2 + 320) {
-      selectedBrandId = 1;
-      showPopup("submit");
+      gameState.selectBrandSubmit(1);
       return true;
     } else if (mouseX > (width * 0.3) + 440 && mouseX < (width * 0.3) + 560 &&
                mouseY > height/2 + 120 && mouseY < height/2 + 320) {
-      selectedBrandId = 2;
-      showPopup("submit");
+      gameState.selectBrandSubmit(2);
       return true;
     } else if (mouseX > (width * 0.3) + 580 && mouseX < (width * 0.3) + 700 &&
                mouseY > height/2 + 120 && mouseY < height/2 + 320) {
-      selectedBrandId = 3;
-      showPopup("submit");
+      gameState.selectBrandSubmit(3);
       return true;
     }
 

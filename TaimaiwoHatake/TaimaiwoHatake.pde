@@ -238,22 +238,17 @@ void initButton() {
     closePopup();
   });
   loadButton = new EllipseButton((width * 0.3) + 630, height - 100, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "提出", 32, () -> {
-    // 提出処理をここに追加
-    player.loadRice(selectedBrandId, selectedAmounts[selectedBrandId]);
-    closePopup();
+    gameState.playerLoadRice();
   });
   returnButton = new EllipseButton((width * 0.3) + 630, height - 100, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "返却", 32, () -> {
-    // 提出処理をここに追加
+    gameState.playerBackRice();
   });
   turnEndButton = new EllipseButton((width * 0.3) + 650, height - 280, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "御意", 32, () -> {
     // 提出処理をここに追加
   });
 
   buyButton = new EllipseButton((width * 0.3) + 680, height - 170, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "購入", 32, () -> {
-    // 購入処理をここに追加
-    for (int i = 0; i < riceBrandsInfo.length; i++)
-    player.buyRice(i, selectedAmounts[i]);
-    closePopup();
+    gameState.forBuyRice();
   });
 
   playDescribeButton = new EllipseButton(width - 100, height - 180, 150, 70, color(0), color(100, 150, 230), color(85, 130, 215), "説明", 32, () -> {
