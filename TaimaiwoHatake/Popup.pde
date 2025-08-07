@@ -107,6 +107,24 @@ class Popup {
     text("市場からお米が", (width * 0.3) + 200, 180);
     text("購入されました！", (width * 0.3) + 200, 230);
     textAlign(CENTER, CENTER);
+    
+    for (int i=0; i<riceBrandsInfo.length; i++) {
+      fill(255);
+      textSize(44);
+      textAlign(LEFT, CENTER);
+      stroke(riceBrandsInfo[riceBrandRanking[i]].brandColor);
+      rect((width * 0.3) + 220, 300 + (i*60), 30, 45); // デモ用のカード
+      fill(riceBrandsInfo[riceBrandRanking[i]].brandColor);
+      text(riceBrandsInfo[riceBrandRanking[i]].name, (width * 0.3) + 270, 320 + (i*60));
+      fill(0);
+      text(marketStockKeep[riceBrandRanking[i]] + "→" + market.marketStock[riceBrandRanking[i]], (width * 0.3) + 600, 320 + (i*60));
+    }
+    
+    textSize(36);
+    text("枚数", (width * 0.3) + 610, 260);
+    textAlign(CENTER, CENTER);
+
+    noStroke();
   }
 
   // 買い付けポップアップの描画
