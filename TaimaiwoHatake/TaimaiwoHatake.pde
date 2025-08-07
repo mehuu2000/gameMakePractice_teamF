@@ -1,6 +1,7 @@
 int textFlag = 0;
 
 PFont gameFont;
+PImage[] images;
 
 // ========== ゲームオブジェクト ==========
 GameState gameState;
@@ -71,6 +72,7 @@ final float LEFT_PANEL_WIDTH = 0.3;   // 左パネルの幅（30%）
 final float RIGHT_PANEL_WIDTH = 0.7;  // 右パネルの幅（70%）
 final int[] BASE_CARD_POINTS = {100, 110, 120, 130}; // 基本のカードポイントの係数
 final int LOWER_LIMIT_RICE_POINT= 10; // 米の下限価格
+final int PHOTO_SHEETS = 10; //画像の上限数
 
 // ========== 変数（変更可能） ==========
 RiceBrand[] riceBrandsInfo;
@@ -186,7 +188,10 @@ void initGame() {
   rightPanel = new RightPanel();
   popup = new Popup();
   cardVisual = new CardVisual();
-
+  images = new PImage[PHOTO_SHEETS]; // 画像配列を初期化
+  
+  //ここに images[x] = loadImage("〇〇.png");  の形で画像を指定してください
+  
   // ボタン系
   initButton();
 }
