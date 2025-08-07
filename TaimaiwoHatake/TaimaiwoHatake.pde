@@ -1,4 +1,4 @@
-int textFlag = 0;
+import ddf.minim.*;
 
 PFont gameFont;
 
@@ -38,6 +38,18 @@ EllipseButton buyButton; // 購入ボタン
 EllipseButton playDescribeButton; // 説明画面に移動するボタン
 EllipseButton submitButton; // 出荷ボタン
 
+// ========== 音関係の変数 ==========
+Minim minim;
+String[] SE_NAMES = {"pon.wav", "titlecall.wav"};
+String[] BGM_NAMES = {"maou_bgm_fantasy06.mp3", "maou_bgm_fantasy15.mp3",};
+/*音の説明 / 0:ぽん-ボタン音
+            1:たいまいをはたけ-タイトルコール
+*/
+AudioPlayer[] ses =  new AudioPlayer[SE_NAMES.length];
+/*音の説明 / 0:荘厳め-タイトル
+            1:戦闘曲-ゲーム
+*/
+AudioPlayer[] bgms = new AudioPlayer[BGM_NAMES.length];
 
 // ========== ゲーム進行変数 ==========
 int currentTurn = 1;
@@ -120,7 +132,7 @@ void setup() {
   background(255);
 
   // フォント設定
-  gameFont = createFont("HGSGyoshotai", 16, true);
+  gameFont = createFont("fonts/HGSGyoshotai", 16, true);
   textFont(gameFont);
   textAlign(CENTER, CENTER);
 
@@ -154,7 +166,17 @@ void initGame() {
 
   // ボタン系
   initButton();
-
+  
+  // 音系
+  initSound();
+  
+  // タイトルコール
+  ses[1].play();
+  ses[1].rewind();
+  // タイトルBGM（他のbgmは止める）
+  bgms[1].pause();
+  bgms[0].loop();
+  bgms[0].rewind();
   currentTurn = 1;
 }
 
@@ -164,9 +186,13 @@ void initButton() {
     gameState.changeState(State.START);
   });
   describeButton = new NormalButton(width/2 - 50, 350, 100, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "説明", 32, () -> {
+    bgms[0].pause();
+    bgms[1].loop();
+    bgms[1].rewind();
     gameState.changeState(State.PLAYING);
   });
   endButton = new NormalButton(width/2 - 50, 400, 100, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "終わる", 32, () -> {
+    stop(); // ゲーム終了前の処理
     exit(); // ゲーム終了
   });
 
@@ -233,6 +259,15 @@ void initButton() {
   });
 }
 
+// ========== 音関係の初期化 ==========
+void initSound(){
+  minim = new Minim(this);
+  for(int i = 0; i < bgms.length; i++)
+    bgms[i] = minim.loadFile("sounds/bgms/" + BGM_NAMES[i]);
+  for(int i = 0; i < ses.length; i++)
+    ses[i] = minim.loadFile("sounds/ses/" + SE_NAMES[i]);
+}
+
 // メイン描画ループ
 // ここでゲームの状態に応じた描画を行う
 void draw() {
@@ -267,13 +302,6 @@ void drawGameScreen() {
 
   // 右側エリア（70%）
   rightPanel.drawRightPanel();
-}
-
-void keyPressed() {
-  if (keyPressed == true) {
-    background(255);
-    textFlag = 1;
-  }
 }
 
 void mouseClicked() {
@@ -333,4 +361,14 @@ void mouseClicked() {
       // 内部で既に実行済み
     }
   }
+}
+
+//スケッチが正常に終了した時に実行される関数
+void stop() {
+  for(int i = 0; i < bgms.length; i++)
+    bgms[i].close();
+  for(int i = 0; i < bgms.length; i++)
+    ses[i].close();
+  minim.stop();
+  super.stop();
 }
