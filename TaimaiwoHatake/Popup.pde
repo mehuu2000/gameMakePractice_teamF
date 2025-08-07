@@ -165,10 +165,7 @@ class Popup {
 
   // 提出ポップアップの描画
   void drawSubmitPopup() {
-    if (!isFirst) {
-        sumBrandCount = player.getSumHandRice(selectedBrandId);
-        isFirst = true;
-    }
+    gameState.handBrandCount(); // その時のブランドが手札に何枚あるかのsumBrandCountを更新 
 
     fill(240);
     stroke(0);
@@ -221,6 +218,7 @@ class Popup {
 
   // 手札に戻すポップアップの描画
   void drawReturnPopup() {
+    gameState.loadBrandCount(); // その時のブランドが手札に何枚あるかのsumBrandCountを更新
     fill(240);
     stroke(0);
     strokeWeight(2);

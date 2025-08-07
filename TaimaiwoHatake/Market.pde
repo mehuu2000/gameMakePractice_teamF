@@ -16,12 +16,12 @@ class Market {
     final int MAX_SUPPLY_LIMIT = 100;
 
     // 初期在庫生成の割合
-    final float INIT_STOCK_MIN_RATIO = 0.1;  // 供給上限の1/5
-    final float INIT_STOCK_MAX_RATIO = 0.25;  // 供給上限の1/2
+    final float INIT_STOCK_MIN_RATIO = 0.25;  // 供給上限の1/4
+    final float INIT_STOCK_MAX_RATIO = 0.5;  // 供給上限の1/2
 
     // 消費率
-    final float CONSUME_MIN_RATIO = 0.3;  // 最小10%消費
-    final float CONSUME_MAX_RATIO = 0.5;  // 最大25%消費
+    final float CONSUME_MIN_RATIO = 0.2;  // 最小20%消費
+    final float CONSUME_MAX_RATIO = 0.4;  // 最大40%消費
 
     // コンストラクタ
     Market() {

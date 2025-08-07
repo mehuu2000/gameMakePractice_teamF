@@ -26,20 +26,14 @@ class GameState {
     currentState = newState;
   }
 
-  // 米購入関数 TaimaiwoHatakeの
-  // buyButton = new EllipseButton((width * 0.3) + 680, height - 170, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "購入", 32, () -> {
-  //   // 購入処理をここに追加
-  //   for (int i = 0; i < riceBrandsInfo.length; i++)
-  //     player.buyRice(i, selectedAmounts[i]);
-  //   closePopup();
-  // });
-  // で使う
+  // 米購入関数 
   void forBuyRice() {
     if (player.wallet - totalPrice < 0) {
       return; // 残金が足りない場合は何もしない
     }
-    for (int i = 0; i < riceBrandsInfo.length; i++)
+    for (int i = 0; i < riceBrandsInfo.length; i++){
       player.buyRice(i, selectedAmounts[i]);
+    }
     closePopup();
   }
 
