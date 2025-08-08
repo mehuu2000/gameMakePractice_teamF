@@ -255,6 +255,8 @@ void initGame() {
   images = new PImage[PHOTO_SHEETS]; // 画像配列を初期化
   
   //ここに images[x] = loadImage("〇〇.png");  の形で画像を指定してください
+  images[0] = loadImage("truck.png");
+  images[1] = loadImage("leftArrow.png");
   
   // ボタン系
   initButton();
@@ -342,14 +344,14 @@ void initButton() {
     gameState.buyAndShip();
   });
 
-  playDescribeButton = new EllipseButton(width - 220, 30, 105, 49, color(0), color(100, 150, 230), color(85, 130, 215), "説明", 28, () -> {
+  playDescribeButton = new EllipseButton(width - 100, height - 40, 105, 49, color(0), color(100, 150, 230), color(85, 130, 215), "説明", 28, () -> {
     // 説明画面の表示処理をここに追加
     gameState.changeState(State.DESCRIBE);
   });
-  buyPopupButton = new EllipseButton(width - 100, height - 180, 150, 70, color(0), color(100, 230, 150), color(85, 215, 130), "購入", 32, () -> {
+  buyPopupButton = new EllipseButton(width - 95, height - 150, 150, 70, color(0), color(100, 230, 150), color(85, 215, 130), "購入", 32, () -> {
    showPopup("buy");
   });
-  submitButton = new EllipseButton(width - 100, height - 100, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "出荷", 32, () -> {
+  submitButton = new EllipseButton((width * 0.3) + 100, height/2 - 80, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "出荷", 32, () -> {
     gameState.playerShipRIce();
   });
 }

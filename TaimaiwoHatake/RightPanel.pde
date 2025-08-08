@@ -21,6 +21,8 @@ class RightPanel {
     drawAIShippingArea();
     drawHandCards();
     drawButtons();
+    drawPhoto();
+    drawButtons();
   }
 
   /* 以下は実装例 */
@@ -63,12 +65,12 @@ class RightPanel {
   // 出荷準備エリア
   void drawShippingArea() {
     fill(100);
-    rect(width * 0.3 + 100, 280, 710, 140);
+    rect(width * 0.3 + 180, 280, 560, 140);
   }
   // AI出荷準備エリア
   void drawAIShippingArea() {
     fill(255, 0, 0);
-    rect(width * 0.3 + 100, 130, 710, 140);
+    rect(width * 0.3 + 180, 130, 560, 140);
     strokeWeight(1);
 
     // 場札の描画
@@ -91,10 +93,9 @@ class RightPanel {
         text(player.getSumLoadRice(i), (width * 0.3) + 163 + (140 * i) + 105, height/2 - 64);
       }
     }
-    
+
     noStroke();
     fill(0);
-    
   }
 
   // 手札の描画
@@ -130,47 +131,55 @@ class RightPanel {
     fill(0);
   }
 
+  void drawPhoto() {
+    // トラックの描画
+    image(images[0], width - 180, height/2 + 110, 219, 137);
+    
+    //矢印の描画
+    image(images[1], (width * 0.3) - 5, height/2 - 230, 200, 300);
+  }
+
   boolean onLoadBrandClicked() {
     // 当たり判定をチェック
-    if(player.getSumLoadRice(0) > 0){
-    if (mouseX > (width * 0.3) + 205 && mouseX < (width * 0.3) + 275 &&
-      mouseY > height/2 - 65 && mouseY < height/2 + 45) {
-      println("a");
-      gameState.selectBrandBack(0);
-      return true;
+    if (player.getSumLoadRice(0) > 0) {
+      if (mouseX > (width * 0.3) + 205 && mouseX < (width * 0.3) + 275 &&
+        mouseY > height/2 - 65 && mouseY < height/2 + 45) {
+        println("a");
+        gameState.selectBrandBack(0);
+        return true;
       }
     }
-    
-    if(player.getSumLoadRice(1) > 0){
+
+    if (player.getSumLoadRice(1) > 0) {
       if (mouseX > (width * 0.3) + 345 && mouseX < (width * 0.3) + 415 &&
-      mouseY > height/2 - 65 && mouseY < height/2 + 45) {
-      println("a");
-      gameState.selectBrandBack(1);
-      return true;
+        mouseY > height/2 - 65 && mouseY < height/2 + 45) {
+        println("a");
+        gameState.selectBrandBack(1);
+        return true;
       }
     }
-    
-    if(player.getSumLoadRice(2) > 0){
+
+    if (player.getSumLoadRice(2) > 0) {
       if (mouseX > (width * 0.3) + 485 && mouseX < (width * 0.3) + 555 &&
-      mouseY > height/2 - 65 && mouseY < height/2 + 45) {
-      println("a");
-      gameState.selectBrandBack(2);
-      return true;
+        mouseY > height/2 - 65 && mouseY < height/2 + 45) {
+        println("a");
+        gameState.selectBrandBack(2);
+        return true;
       }
     }
-    
-    if(player.getSumLoadRice(3) > 0){
+
+    if (player.getSumLoadRice(3) > 0) {
       if (mouseX > (width * 0.3) + 625 && mouseX < (width * 0.3) + 695 &&
-      mouseY > height/2 - 65 && mouseY < height/2 + 45) {
-      println("a");
-      gameState.selectBrandBack(3);
-      return true;
+        mouseY > height/2 - 65 && mouseY < height/2 + 45) {
+        println("a");
+        gameState.selectBrandBack(3);
+        return true;
       }
     }
 
     return false;
   }
-  
+
   boolean onBrand1Clicked() {
     // 当たり判定をチェック
     if (mouseX > (width * 0.3) + 160 && mouseX < (width * 0.3) + 280 &&
