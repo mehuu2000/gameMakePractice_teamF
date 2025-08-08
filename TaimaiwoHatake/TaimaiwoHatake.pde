@@ -30,6 +30,7 @@ TriangleButton[] brandPlus1Buttons; // 購入の際に特定のブランドの�
 TriangleButton[] brandMinus1Buttons; // 購入の際に特定のブランドの選択数を1減らすボタン
 
 EllipseButton closePopupButton; // ポップアップを閉じるボタン（通常）
+EllipseButton closeBuyPopupButton; // 購入ポップアップを閉じるボタン
 EllipseButton closeEndPopupButton; // ポップアップを閉じるボタン（却下ボタン）
 EllipseButton loadButton; // ポップアップの提出ボタン
 EllipseButton returnButton; // ポップアップの返却ボタン
@@ -75,6 +76,7 @@ int[] playerLoadedRices; // プレイヤーが前シーズンで出荷した米�
 int[] aiLoadedRices; // AIが前シーズンで出荷した米の数
 int[] marketStockKeep; // 出荷前の在庫を保持するための配列
 int[] marketStockAfterShip; // 出荷直後（消費前）の在庫を保持するための配列
+int[] marketPriceKeep; // 出荷直前の価値を保持するための配列
 
 
 // ========== 定数 ==========
@@ -227,6 +229,7 @@ void initGame() {
   aiLoadedRices = new int[riceBrandsInfo.length];
   marketStockKeep = new int[riceBrandsInfo.length];
   marketStockAfterShip = new int[riceBrandsInfo.length];
+  marketPriceKeep = new int[riceBrandsInfo.length];
 
   selectedAmounts = new int[riceBrandsInfo.length];
   riceBrandRanking = new int[riceBrandsInfo.length];
@@ -316,6 +319,9 @@ void initButton() {
   closePopupButton = new EllipseButton((width * 0.3) + 350, height - 100, 150, 70, color(0), color(100, 150, 230), color(85, 130, 215), "戻る", 32, () -> {
     closePopup();
   });
+  closeBuyPopupButton = new EllipseButton((width * 0.3) + 600, height - 170, 150, 70, color(0), color(100, 150, 230), color(85, 130, 215), "戻る", 32, () -> {
+    closePopup();
+  });
   closeEndPopupButton = new EllipseButton((width * 0.3) + 300, height - 280, 150, 70, color(0), color(100, 150, 230), color(85, 130, 215), "却下", 32, () -> {
     closePopup();
   });
@@ -329,7 +335,7 @@ void initButton() {
     // 提出処理をここに追加
   });
 
-  buyButton = new EllipseButton((width * 0.3) + 680, height - 170, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "購入", 32, () -> {
+  buyButton = new EllipseButton((width * 0.3) + 760, height - 170, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "購入", 32, () -> {
     gameState.buyAndShip();
   });
 
@@ -406,6 +412,8 @@ void mouseClicked() {
             // 内部で既に実行済み
             return;
           } else if (buyButton.onClicked()) {
+            // 内部で既に実行済み
+          } else if (closeBuyPopupButton.onClicked()) {
             // 内部で既に実行済み
           }
         }
