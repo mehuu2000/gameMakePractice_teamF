@@ -3,6 +3,8 @@ String[] riceOldInfo = {"新米", "古米", "古古米"};
 class Popup {
   int yearPopupStartTime = 0;
   boolean yearPopupTimerSet = false;
+  boolean popupClosing = false;  // ポップアップが閉じる処理中フラグ
+  int currentNewsIndex = 0;  // 現在表示中の予報のインデックス
 
   // ポップアップの種類を定義
   void drawPopup(String type) {
@@ -60,6 +62,7 @@ class Popup {
     if (!yearPopupTimerSet) {
         yearPopupStartTime = millis();
         yearPopupTimerSet = true;
+        popupClosing = false;  // フラグをリセット
     }
     int elapsedTime = millis() - yearPopupStartTime;
 
@@ -76,13 +79,10 @@ class Popup {
     fill(0);
     noStroke();
 
-    // 1ターン目の場合、表示してから2秒後にcarryポップアップを表示
-    if (elapsedTime >= 2000) {
-      yearPopupTimerSet = false;
+    // 表示してから2秒後に閉じる
+    if (elapsedTime >= 2000 && !popupClosing) {
+      popupClosing = true;  // 閉じる処理を開始
       closePopup();
-      if (currentTurn == 1) {
-        showPopup("carry");
-      }
     }
   }
 
@@ -91,6 +91,7 @@ class Popup {
     if (!yearPopupTimerSet) {
         yearPopupStartTime = millis();
         yearPopupTimerSet = true;
+        nextButton.isEnabled = false;  // 最初はボタンを無効化
     }
     int elapsedTime = millis() - yearPopupStartTime;
 
@@ -128,9 +129,12 @@ class Popup {
 
     noStroke();
 
-    if (elapsedTime >= 3000) {
-      yearPopupTimerSet = false;
-      closePopup();
+    // ボタンは常に表示
+    nextButton.display();
+    
+    // 1秒後にボタンを有効化
+    if (elapsedTime >= 1000) {
+      nextButton.isEnabled = true;
     }
   }
 
@@ -139,6 +143,7 @@ class Popup {
     if (!yearPopupTimerSet) {
         yearPopupStartTime = millis();
         yearPopupTimerSet = true;
+        nextButton.isEnabled = false;  // 最初はボタンを無効化
     }
     int elapsedTime = millis() - yearPopupStartTime;
 
@@ -176,9 +181,12 @@ class Popup {
 
     noStroke();
 
-    if (elapsedTime >= 3000) {
-      yearPopupTimerSet = false;
-      closePopup();
+    // ボタンは常に表示
+    nextButton.display();
+    
+    // 1秒後にボタンを有効化
+    if (elapsedTime >= 1000) {
+      nextButton.isEnabled = true;
     }
   }
 
@@ -403,6 +411,7 @@ class Popup {
     if (!yearPopupTimerSet) {
         yearPopupStartTime = millis();
         yearPopupTimerSet = true;
+        popupClosing = false;  // フラグをリセット
     }
     int elapsedTime = millis() - yearPopupStartTime;
 
@@ -414,8 +423,8 @@ class Popup {
     textSize(120);
     text("集計開始！", width/2, height/2);
     
-    if (elapsedTime >= 2000) {
-      yearPopupTimerSet = false;
+    if (elapsedTime >= 2000 && !popupClosing) {
+      popupClosing = true;  // 閉じる処理を開始
       closePopup();
     }
   }
@@ -425,6 +434,7 @@ class Popup {
     if (!yearPopupTimerSet) {
         yearPopupStartTime = millis();
         yearPopupTimerSet = true;
+        nextButton.isEnabled = false;  // 最初はボタンを無効化
     }
     int elapsedTime = millis() - yearPopupStartTime;
 
@@ -455,11 +465,12 @@ class Popup {
 
     noStroke();
 
-    if (elapsedTime >= 3000) {
-      ses[4].play();
-      ses[4].rewind();
-      yearPopupTimerSet = false;
-      closePopup();
+    // ボタンは常に表示
+    nextButton.display();
+    
+    // 1秒後にボタンを有効化
+    if (elapsedTime >= 1000) {
+      nextButton.isEnabled = true;
     }
   }
 
@@ -468,6 +479,10 @@ class Popup {
     if (!yearPopupTimerSet) {
         yearPopupStartTime = millis();
         yearPopupTimerSet = true;
+        nextButton.isEnabled = false;  // 最初はボタンを無効化
+        // 利益表示と同時にお金の効果音を再生
+        ses[4].play();
+        ses[4].rewind();
     }
     int elapsedTime = millis() - yearPopupStartTime;
 
@@ -518,9 +533,12 @@ class Popup {
 
     noStroke();
 
-    if (elapsedTime >= 5000) {
-      yearPopupTimerSet = false;
-      closePopup();
+    // ボタンは常に表示
+    nextButton.display();
+    
+    // 1秒後にボタンを有効化
+    if (elapsedTime >= 1000) {
+      nextButton.isEnabled = true;
     }
   }
 
@@ -529,6 +547,7 @@ class Popup {
     if (!yearPopupTimerSet) {
         yearPopupStartTime = millis();
         yearPopupTimerSet = true;
+        nextButton.isEnabled = false;  // 最初はボタンを無効化
     }
     int elapsedTime = millis() - yearPopupStartTime;
 
@@ -562,9 +581,9 @@ class Popup {
     
     textAlign(CENTER, CENTER);  // 他の箇所のためにリセット
     noStroke();
-    if (elapsedTime >= 5000) {
-      yearPopupTimerSet = false;
-      closePopup();
+    if (elapsedTime >= 1000) {
+      nextButton.isEnabled = true;  // ボタンを有効化
+      nextButton.display();
     }
   }
 
@@ -573,6 +592,9 @@ class Popup {
     if (!yearPopupTimerSet) {
         yearPopupStartTime = millis();
         yearPopupTimerSet = true;
+        nextButton.isEnabled = false;  // 最初はボタンを無効化
+        // 初回のみインデックスを進める
+        currentNewsIndex++;
     }
     int elapsedTime = millis() - yearPopupStartTime;
 
@@ -580,10 +602,12 @@ class Popup {
     ArrayList<ForecastInfo> allForecasts = eventManager.getAllCurrentForecasts();
     if (allForecasts == null || allForecasts.size() == 0) return;
     
-    // どの予報を表示するか決定（時間経過で切り替え）
-    int displayTime = 3000; // 各予報を3秒表示
-    int currentForecastIndex = (elapsedTime / displayTime) % allForecasts.size();
-    ForecastInfo forecast = allForecasts.get(currentForecastIndex);
+    // 現在の予報を取得（インデックスを使用）
+    int displayIndex = currentNewsIndex - 1;  // 表示用のインデックス
+    if (displayIndex < 0 || displayIndex >= allForecasts.size()) {
+      displayIndex = 0;  // 安全のためリセット
+    }
+    ForecastInfo forecast = allForecasts.get(displayIndex);
     
     fill(240);
     stroke(0);
@@ -603,7 +627,7 @@ class Popup {
     if (allForecasts.size() > 1) {
       textSize(24);
       fill(100);
-      text((currentForecastIndex + 1) + " / " + allForecasts.size(), (width * 0.3) + 460, 240);
+      text(currentNewsIndex + " / " + allForecasts.size(), (width * 0.3) + 460, 240);
     }
     
     // 予報の内容をここに記述
@@ -613,11 +637,14 @@ class Popup {
     text(forecast.message, (width * 0.3) + 200, 290, (width * 0.7) - 370, 220);
     
     textAlign(CENTER, CENTER);
+    noStroke();
 
-    // 全ての予報を一巡したら閉じる
-    if (elapsedTime >= displayTime * allForecasts.size()) {
-      yearPopupTimerSet = false;
-      closePopup();
+    // ボタンは常に表示
+    nextButton.display();
+    
+    // 1秒後にボタンを有効化
+    if (elapsedTime >= 1000) {
+      nextButton.isEnabled = true;
     }
   }
 
@@ -626,6 +653,7 @@ class Popup {
     if (!yearPopupTimerSet) {
         yearPopupStartTime = millis();
         yearPopupTimerSet = true;
+        nextButton.isEnabled = false;  // 最初はボタンを無効化
     }
     int elapsedTime = millis() - yearPopupStartTime;
 
@@ -657,9 +685,9 @@ class Popup {
     
     textAlign(CENTER, CENTER);
 
-    if (elapsedTime >= 4000) {  // 内容が増えたので表示時間を延長
-      yearPopupTimerSet = false;
-      closePopup();
+    if (elapsedTime >= 1000) {
+      nextButton.isEnabled = true;  // ボタンを有効化
+      nextButton.display();
     }
   }
 
