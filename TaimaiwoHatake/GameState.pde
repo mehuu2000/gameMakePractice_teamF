@@ -7,6 +7,8 @@
 enum State {
   TITLE,
   DESCRIBE,
+  DESCRIBE2,
+  DESCRIBE3,
   START,
   PLAYING,
   FINISHED
