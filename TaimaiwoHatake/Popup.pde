@@ -415,6 +415,8 @@ class Popup {
     noStroke();
 
     if (elapsedTime >= 3000) {
+      ses[4].play();
+      ses[4].rewind();
       yearPopupTimerSet = false;
       closePopup();
     }
