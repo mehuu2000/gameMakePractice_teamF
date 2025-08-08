@@ -61,7 +61,7 @@ AudioPlayer[] bgms = new AudioPlayer[BGM_NAMES.length];
 
 // ========== ゲーム進行変数 ==========
 int currentTurn = 1;
-int maxTurn = 4 * 5 + 2; // 最大ターン数(5年 + 2シーズン(売却のため))
+int maxTurn = 4 * 3 + 2; // 最大ターン数(5年 + 2シーズン(売却のため))
 int[] currentYear_season = {1, 0}; // 年と季節を管理する配列。年, 季節(0:秋, 1:冬, 2:春, 3:夏, )
 
 // ========== UI状態変数 ==========
@@ -144,16 +144,25 @@ void showPopup(String type) {
     popupType = popupQueue[0];
     currentPopupIndex = 0;
     resetSelectedAmounts();
+    // 新しいキューの開始時にタイマーをリセット
+    popup.yearPopupTimerSet = false;
+    popup.yearPopupStartTime = 0;
+    popup.popupClosing = false;
   }
 }
 
 void closePopup() {
+  // nextButtonを無効化（次のポップアップのため）
+  nextButton.isEnabled = false;
+  
   // 次のポップアップがあるかチェック
   currentPopupIndex++;
   if (currentPopupIndex < popupQueueSize) {
     // 次のポップアップを表示
     popupType = popupQueue[currentPopupIndex];
     popup.yearPopupTimerSet = false; // タイマーリセット
+    popup.yearPopupStartTime = 0; // タイマー開始時刻もリセット
+    popup.popupClosing = false; // 閉じる処理フラグもリセット
   } else {
     // 全てのポップアップが終了
     showingPopup = false;
@@ -165,6 +174,7 @@ void closePopup() {
     sumBrandCount = 0;
     isFirst = false;
     totalPrice = 0;
+    popup.popupClosing = false; // 閉じる処理フラグもリセット
     
     // 全ポップアップ終了後の処理
     if (popupQueue[0] != null && popupQueue[0].equals("countStart")) {
@@ -242,6 +252,7 @@ void initGame() {
   gameLogic = new GameLogic();
   player = new Player(PLAYER_POINT);
   ai = new AI(ENEMY_POINT);
+  effectManager = new EventEffectManager();  // イベント効果管理の初期化
   eventManager = new EventManager();
   gameState = new GameState();
   
@@ -326,12 +337,20 @@ void initButton() {
     brandMinus1Buttons[i] = new TriangleButton((width * 0.3) + 670, 216 + (i*60), true, () -> {
       if (selectedAmounts[riceBrandRanking[index]] > 0) {
         selectedAmounts[riceBrandRanking[index]]--;
-        totalPrice -= int(riceBrandsInfo[riceBrandRanking[index]].point * RICE_BUY_RATIO);
+        float effectMultiplier = 1.0;
+        if (effectManager != null) {
+          effectMultiplier = effectManager.getBrandBuyPriceMultiplier(riceBrandRanking[index]);
+        }
+        totalPrice -= int(riceBrandsInfo[riceBrandRanking[index]].point * RICE_BUY_RATIO * effectMultiplier);
       }
     });
     brandPlus1Buttons[i] = new TriangleButton((width * 0.3) + 730, 216 + (i*60), false, () -> {
       selectedAmounts[riceBrandRanking[index]]++;
-      totalPrice += int(riceBrandsInfo[riceBrandRanking[index]].point * RICE_BUY_RATIO);
+      float effectMultiplier = 1.0;
+      if (effectManager != null) {
+        effectMultiplier = effectManager.getBrandBuyPriceMultiplier(riceBrandRanking[index]);
+      }
+      totalPrice += int(riceBrandsInfo[riceBrandRanking[index]].point * RICE_BUY_RATIO * effectMultiplier);
     });
   }
 
@@ -498,6 +517,10 @@ void mouseClicked() {
           // 内部で既に実行済み
         }
       } else if (popupType == "news") {
+        if (nextButton.onClicked()) {
+          // 内部で既に実行済み
+        }
+      } else if (popupType == "missed") {
         if (nextButton.onClicked()) {
           // 内部で既に実行済み
         }

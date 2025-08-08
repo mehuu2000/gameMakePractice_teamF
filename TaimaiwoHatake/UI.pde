@@ -49,6 +49,9 @@ class UI {
     if (elapsedTime >= 4000) {
       gameState.changeState(State.PLAYING);
       showPopup("year");
+      if (currentTurn == 1) {
+        showPopup("carry"); // 1ターン目は市場への持ち運びも表示
+      }
     }
 
     if (isMessageDisplay[0]) {

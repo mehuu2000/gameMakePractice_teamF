@@ -90,6 +90,9 @@ class NormalButton {
 
   // ボタンが押された時に実行する処理
   ButtonAction clickAction;
+  
+  // ボタンの有効/無効状態（デフォルトは有効）
+  boolean isEnabled = true;
 
   // コンストラクタ
   NormalButton(float x_argument, float y_argument, float btnWidth_argument, float btnHeight_argument, int radius_argument, color textColor_argument, color backgroundColor_argument, color hoverColor_argument, String text_argument, int size_argument, ButtonAction action) {
@@ -140,6 +143,11 @@ class NormalButton {
 
   // ボタンがクリックされたかを判定し、アクションを実行する
   boolean onClicked() {
+    // ボタンが無効な場合は何もしない
+    if (!isEnabled) {
+      return false;
+    }
+    
     if (isMouseOver()) {
       if (clickAction != null) {
         clickAction.execute(); // 定義されたアクションを実行

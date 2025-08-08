@@ -17,11 +17,14 @@ class AI extends Broker {
     
     // イベントを確認（nullチェック付き）
     String eventName = "通常";
+    // currentTurnは1から始まるが、配列は0から始まるので-1する
+    int arrayIndex = currentTurn - 1;
     if (eventManager != null && 
         eventManager.eventSchedule != null && 
-        currentTurn < eventManager.eventSchedule.length && 
-        eventManager.eventSchedule[currentTurn] != null) {
-      eventName = eventManager.eventSchedule[currentTurn].eventName;
+        arrayIndex >= 0 &&
+        arrayIndex < eventManager.eventSchedule.length && 
+        eventManager.eventSchedule[arrayIndex] != null) {
+      eventName = eventManager.eventSchedule[arrayIndex].eventName;
       println(eventName);
     }
     
