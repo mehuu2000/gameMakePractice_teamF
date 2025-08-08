@@ -141,9 +141,13 @@ class LeftPanel {
   
     
   void drawPieChart() {
+     //最大サイズを市場サイズに問わない形にするための係数
     float sizeFactor = 300 / market.supplyLimit;
+    // 円グラフの大きさのために全体数取得
     int totalStock = market.getTotalStock();
+    // 円グラフの始点を変えるため
     float sumRadian = 0;
+    // 円グラフをランキング順に上から表示
     for (int i = 0; i < riceBrandsInfo.length; i++) {
       int riceID = riceBrandRanking[i];
       fill(riceBrandsInfo[riceID].brandColor);
