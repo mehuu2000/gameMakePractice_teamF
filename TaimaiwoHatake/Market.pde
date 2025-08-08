@@ -1,7 +1,7 @@
 // 市場の処理などを行うクラス
 class Market {
     // ========== 市場在庫管理 ==========
-    int [] marketStock;  //インデックス = 0: りょうおもい, 1: ほしひかり, 2:ゆめごこち, 3:つやおうじ | 値 = 在庫数
+    int[] marketStock;  //インデックス = 0: りょうおもい, 1: ほしひかり, 2:ゆめごこち, 3:つやおうじ | 値 = 在庫数
 
     // ========== 供給管理 ==========
     int supplyLimit;         // 供給上限
@@ -16,20 +16,20 @@ class Market {
 
     // 初期在庫生成の割合
     final float INIT_STOCK_MIN_RATIO = 0.25;  // 供給上限の1/4
-    final float INIT_STOCK_MAX_RATIO = 0.75;  // 供給上限の3/4
+    final float INIT_STOCK_MAX_RATIO = 0.5;  // 供給上限の1/2
 
     // 消費率
     final float CONSUME_MIN_RATIO = 0.2;  // 最小20%消費
-    final float CONSUME_MAX_RATIO = 0.6;  // 最大60%消費
+    final float CONSUME_MAX_RATIO = 0.4;  // 最大40%消費
 
-    // ブランド数
-    final int BRAND_COUNT = 4;
-
+    // コンストラクタ
     Market() {
-        marketStock = new int[BRAND_COUNT]; // 4つのブランドの在庫
+        marketStock = new int[riceBrandsInfo.length]; // ブランドの在庫 (riceBrandsInfo配列のサイズ分)
         setSupplyLimit(); // 供給上限を設定
         initStockGeneration(supplyLimit); // 初期在庫を生成
+        updateBrandPoint(); // ブランドの価格を初期化
         currentEnvironment = "NORMAL"; // 初期環境は通常
+        riceBrandRanking = getBrandRanking();
     }
 
     // ========== 市場在庫の初期化 ==========
@@ -69,6 +69,27 @@ class Market {
         return marketStock[brandIndex];
     }
 
+    // 各種ブランドの価値ランキングを取得(インデックス = 順位, 値 = ブランドID)
+    // 価値が高い順に並べる
+    int[] getBrandRanking() {
+        int[] rankings = new int[marketStock.length];
+        for (int i = 0; i < marketStock.length; i++) {
+            rankings[i] = i; // インデックスを順位として使用し、値をブランドIDとする
+        }
+        for (int i = 0; i < marketStock.length - 1; i++) {
+          for (int j = 0; j < marketStock.length - 1 - i; j++) {
+              // 価値を比較（降順）
+              if (riceBrandsInfo[rankings[j]].point < riceBrandsInfo[rankings[j + 1]].point) {
+                  // ブランドIDを交換
+                  int temp = rankings[j];
+                  rankings[j] = rankings[j + 1];
+                  rankings[j + 1] = temp;
+              }
+          }
+      }
+        return rankings;
+    }
+
     // ========== 市場の在庫を更新 ==========
     // ブランドの在庫を更新
     void updateBrandStock(int brandIndex, int changeAmount) {
@@ -85,6 +106,7 @@ class Market {
     // ========== 市場のアクション ==========
     // 出荷処理
     void ship(int[] brands) {
+        // 在庫更新処理
         if (brands.length != marketStock.length) {
             println("受け取ったブランドの数が市場のブランド数と一致しません。");
             return;
@@ -98,7 +120,23 @@ class Market {
                 continue;
             }
             updateBrandStock(i, amount);
+        } 
+        
+        // updateBrandPoint(); // 在庫に応じて価値を更新
+        riceBrandRanking = this.getBrandRanking(); // ランキングを更新
+    }
+
+    // 利益計算
+    int calculateProfit(int[] brands) {
+        int profit = 0;
+        for (int i=0; i<brands.length; i++) {
+            if (i < 0 || i >= marketStock.length) {
+                println("無効なブランドインデックス: " + i);
+                continue;
+            }
+            profit += riceBrandsInfo[i].point * brands[i];
         }
+        return profit;
     }
 
     // 市場の消費
@@ -115,10 +153,14 @@ class Market {
         // 配列をシャッフル
         shuffleArray(brandIds);
 
-        // 消費数を決定
-        int startCount = int(getTotalStock() * CONSUME_MIN_RATIO); // 20%を消費
-        int finishCount = int(getTotalStock() * CONSUME_MAX_RATIO); // 60%を消費
-        int consumeCount = int(random(startCount, finishCount)); // 全体数の2割から6割の間でランダムに消費数を決定
+        // 消費数を決定（EventEffectの消費率倍率を適用）
+        float consumptionMultiplier = 1.0;
+        if (effectManager != null) {
+            consumptionMultiplier = effectManager.getConsumptionMultiplier();
+        }
+        int startCount = int(getTotalStock() * CONSUME_MIN_RATIO * consumptionMultiplier);
+        int finishCount = int(getTotalStock() * CONSUME_MAX_RATIO * consumptionMultiplier);
+        int consumeCount = int(max(2, random(startCount, finishCount)));
         // consumeCountがbrandIds.lengthを超えないようにする
         consumeCount = min(consumeCount, brandIds.length);
 
@@ -153,12 +195,31 @@ class Market {
         }
     }
 
-    // 利益計算
-
     // ブランド価格計算
+    // 各ブランドの在庫に応じて価格を変動 BASE_CARD_POINTが基準
+    void updateBrandPoint() {
+        float totalAmount =  getTotalStock()+1; 
+        float totalSupplyAdjustmentFactor = (this.supplyLimit / totalAmount); // 供給数補正係数
+        for (int i=0; i<riceBrandsInfo.length; i++) {
+            float rarityAdjustmentFactor = totalAmount / (marketStock[i]+2); // 希少性補正係数
+            
+            // EventEffectの売値倍率を取得
+            float sellPriceMultiplier = 1.0;
+            if (effectManager != null) {
+                sellPriceMultiplier = effectManager.getBrandSellPriceMultiplier(i);
+            }
 
-    void marketAction() {
+            // ブランドの価格を更新（売値の計算）
+            riceBrandsInfo[i].point = int(BASE_CARD_POINTS[i] * (totalSupplyAdjustmentFactor * 0.8) * rarityAdjustmentFactor * 0.7 * sellPriceMultiplier);
+            
+            // 価格が0以下にならないように制御
+            if (riceBrandsInfo[i].point <= LOWER_LIMIT_RICE_POINT) {
+                riceBrandsInfo[i].point = LOWER_LIMIT_RICE_POINT; // 最低価格はLOWER_LIMIT_RICE_POINT pt
+            }
+        }
     }
+
+
     void environmentAction() {
     }
 }

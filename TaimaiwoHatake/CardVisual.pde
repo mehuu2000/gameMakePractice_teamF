@@ -5,12 +5,20 @@ class CardVisual {
     /* 以下は実装例 */
     // カードの画像を格納する配列
     PImage[] cardImages;
-
+    
     // 画像読み込み
-    void loadCardImages() {}
+    void loadCardImages() {
+      cardImages = new PImage[4];
+      cardImages[0] = loadImage("rice_card_ryouomoi.png");
+      cardImages[1] = loadImage("rice_card_hoshihikari.png");
+      cardImages[2] = loadImage("rice_card_yumegogochi.png");
+      cardImages[3] = loadImage("rice_card_tsuyaouji.png");
+    }
 
     // カードの描画
-    void drawCard() {}
+    void drawCard() {
+      
+    }
 
     // カードの裏面描画(AIが出したやつ)
     void drawCardBack() {}

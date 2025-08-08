@@ -2,7 +2,7 @@
 // Player.pdeやAI.pdeで継承して使用する
 
 // ========== 定数 ==========
-final int RICE_DECAY_LIMIT = 4;
+final int RICE_DECAY_LIMIT = 3;
 final float RICE_BUY_RATIO = 0.8;
 
 //クラス宣言
@@ -54,12 +54,43 @@ class Broker {
   
   //米を買う関数　引数:米のid, 個数　返り値:購入成功->true 購入失敗->false
   boolean buyRice(int riceID, int count) {
-    int cost = int(riceBrandsInfo[riceID].point * RICE_BUY_RATIO) * count;
+    // EventEffectの効果を適用した買値を計算
+    float priceMultiplier = 1.0;
+    if (effectManager != null) {
+      priceMultiplier = effectManager.getBrandBuyPriceMultiplier(riceID);
+    }
+    int cost = int(riceBrandsInfo[riceID].point * RICE_BUY_RATIO * priceMultiplier) * count;
     if (cost > wallet) {
       return false;
     }else{
       wallet -= cost;
-      handRices[riceID][0] += count;
+      
+      // EventEffectの仕入れ量倍率を適用
+      float supplyMultiplier = 1.0;
+      if (effectManager != null) {
+        supplyMultiplier = effectManager.getSupplyMultiplier();
+      }
+      
+      // 実際の仕入れ量を計算
+      float rawAmount = count * supplyMultiplier;
+      int actualCount;
+      
+      // 切り上げ・切り下げの判定
+      if (supplyMultiplier < 1.0) {
+        // 減少時（台風など）は切り上げ（最小1枚を保証）
+        actualCount = (int)Math.ceil(rawAmount);
+        if (actualCount < 1 && count > 0) {
+          actualCount = 1;  // 0枚にならないように
+        }
+      } else if (supplyMultiplier > 1.0) {
+        // 増加時（大盤振米など）も切り上げ
+        actualCount = (int)Math.ceil(rawAmount);
+      } else {
+        // 倍率1.0の場合はそのまま
+        actualCount = count;
+      }
+      
+      handRices[riceID][0] += actualCount;
       return true;
     }
   }
@@ -116,9 +147,10 @@ class Broker {
   }
   
   //米を売る関数
-  void sellRice() {
+  int sellRice() {
     int profit = market.calculateProfit(sumLoadRices);
     wallet += profit;
     loadRices = new int[riceBrandsInfo.length][RICE_DECAY_LIMIT];
+    return profit; // 売上を返す
   }
 }
