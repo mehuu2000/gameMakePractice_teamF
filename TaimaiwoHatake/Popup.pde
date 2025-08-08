@@ -43,6 +43,9 @@ class Popup {
     case "news":
       drawNewsPopup();
       break;
+    case "missed":
+      drawMissedPopup();
+      break;
     default:
       // 何もしないか、エラーメッセージを表示
       break;
@@ -161,7 +164,7 @@ class Popup {
       fill(riceBrandsInfo[riceBrandRanking[i]].brandColor);
       text(riceBrandsInfo[riceBrandRanking[i]].name, (width * 0.3) + 270, 320 + (i*60));
       fill(0);
-      text(marketStockKeep[riceBrandRanking[i]] + "→" + market.marketStock[riceBrandRanking[i]], (width * 0.3) + 600, 320 + (i*60));
+      text(marketStockAfterShip[riceBrandRanking[i]] + "→" + market.marketStock[riceBrandRanking[i]], (width * 0.3) + 600, 320 + (i*60));
       
       //米を購入されたタイミングの価格を保存
       marketPriceKeep[riceBrandRanking[i]] = riceBrandsInfo[riceBrandRanking[i]].point;
@@ -207,18 +210,52 @@ class Popup {
     fill(0);
     noStroke();
 
-    // 価格表示
+    // 価格表示（EventEffectの効果を適用）
     textAlign(RIGHT, CENTER);
     for (int i=0; i<riceBrandsInfo.length; i++) {
-      text(int(riceBrandsInfo[riceBrandRanking[i]].point * RICE_BUY_RATIO) + "pt", (width * 0.3) + 576, 230 + (i*60));
+      float effectMultiplier = 1.0;
+      if (effectManager != null) {
+        effectMultiplier = effectManager.getBrandBuyPriceMultiplier(riceBrandRanking[i]);
+      }
+      text(int(riceBrandsInfo[riceBrandRanking[i]].point * RICE_BUY_RATIO * effectMultiplier) + "pt", (width * 0.3) + 576, 230 + (i*60));
     }
 
     // 購入数表示
     textAlign(CENTER, CENTER);
     text("仕入数", (width * 0.3) + 700, 170);
+    
+    // 仕入れ量倍率を取得
+    float supplyMultiplier = 1.0;
+    if (effectManager != null) {
+      supplyMultiplier = effectManager.getSupplyMultiplier();
+    }
+    
     for (int i=0; i<riceBrandsInfo.length; i++) {
         brandMinus1Buttons[i].display();
-        text(selectedAmounts[riceBrandRanking[i]], (width * 0.3) + 700, 230 + (i*60));
+        int displayAmount = selectedAmounts[riceBrandRanking[i]];
+        
+        // 仕入れ量倍率が1.0以外の場合は実際の取得量も表示
+        if (supplyMultiplier != 1.0 && displayAmount > 0) {
+          float rawAmount = displayAmount * supplyMultiplier;
+          int actualAmount;
+          
+          if (supplyMultiplier < 1.0) {
+            // 減少時（台風など）は切り上げ（最小1枚を保証）
+            actualAmount = (int)Math.ceil(rawAmount);
+            if (actualAmount < 1) {
+              actualAmount = 1;
+            }
+          } else {
+            // 増加時（大盤振米など）も切り上げ
+            actualAmount = (int)Math.ceil(rawAmount);
+          }
+          textSize(20);
+          text(displayAmount + "→" + actualAmount, (width * 0.3) + 700, 230 + (i*60));
+          textSize(36);
+        } else {
+          text(displayAmount, (width * 0.3) + 700, 230 + (i*60));
+        }
+        
         brandPlus1Buttons[i].display();
     }
 
@@ -508,12 +545,13 @@ class Popup {
     text("イベントが発生しました！", (width * 0.3) + 460, 210);
     
     // イベント名
-    textAlign(LEFT, CENTER);
-    text("【" + currentEvent.eventName + "】", (width * 0.3) + 130, 320);
+    textAlign(CENTER, TOP);
+    text("【" + currentEvent.eventName + "】", (width * 0.3) + 460, 280);
 
     // イベントの説明（なぜ起こったか）
-    textSize(24);
-    text(currentEvent.effectDescription, (width * 0.3) + 150, 380, (width * 0.7) - 250, 100);
+    textSize(26);
+    textAlign(LEFT, TOP);
+    text(currentEvent.effectDescription, (width * 0.3) + 190, 340, (width * 0.7) - 350, 200);
     
     // 持続時間
     // if (currentEvent.duration > 1) {
@@ -522,6 +560,7 @@ class Popup {
     //   text("（" + currentEvent.duration + "ターン持続）", (width * 0.3) + 370, 430);
     // }
     
+    textAlign(CENTER, CENTER);  // 他の箇所のためにリセット
     noStroke();
     if (elapsedTime >= 5000) {
       yearPopupTimerSet = false;
@@ -537,8 +576,14 @@ class Popup {
     }
     int elapsedTime = millis() - yearPopupStartTime;
 
-    ForecastInfo forecast = eventManager.getCurrentForecast();
-    if (forecast == null) return;
+    // 全ての予報を取得
+    ArrayList<ForecastInfo> allForecasts = eventManager.getAllCurrentForecasts();
+    if (allForecasts == null || allForecasts.size() == 0) return;
+    
+    // どの予報を表示するか決定（時間経過で切り替え）
+    int displayTime = 3000; // 各予報を3秒表示
+    int currentForecastIndex = (elapsedTime / displayTime) % allForecasts.size();
+    ForecastInfo forecast = allForecasts.get(currentForecastIndex);
     
     fill(240);
     stroke(0);
@@ -554,13 +599,65 @@ class Popup {
     textSize(44);
     text("予報", (width * 0.3) + 460, 200);
     
+    // 複数予報がある場合は番号を表示
+    if (allForecasts.size() > 1) {
+      textSize(24);
+      fill(100);
+      text((currentForecastIndex + 1) + " / " + allForecasts.size(), (width * 0.3) + 460, 240);
+    }
+    
     // 予報の内容をここに記述
-    textAlign(LEFT, CENTER);
-    text(forecast.message, (width * 0.3) + 200, 340);
+    fill(0);
+    textSize(28);
+    textAlign(LEFT, TOP);
+    text(forecast.message, (width * 0.3) + 200, 290, (width * 0.7) - 370, 220);
     
     textAlign(CENTER, CENTER);
 
-    if (elapsedTime >= 5000) {
+    // 全ての予報を一巡したら閉じる
+    if (elapsedTime >= displayTime * allForecasts.size()) {
+      yearPopupTimerSet = false;
+      closePopup();
+    }
+  }
+
+  // 予報外れポップアップの描画
+  void drawMissedPopup() {
+    if (!yearPopupTimerSet) {
+        yearPopupStartTime = millis();
+        yearPopupTimerSet = true;
+    }
+    int elapsedTime = millis() - yearPopupStartTime;
+
+    Event dummyEvent = eventManager.getCurrentDummyEvent();
+    if (dummyEvent == null) return;
+    
+    fill(240);
+    stroke(0);
+    strokeWeight(2);
+    rect((width * 0.3) + 110, 160, (width * 0.7) - 190, height - 320);
+    rect((width * 0.3) + 150, 200, (width * 0.7) - 270, height - 400);
+    
+    noStroke();
+    fill(240);
+    rect((width * 0.3) + 400, 180, 120, 40);
+    
+    fill(0);
+    textSize(44);
+    text("速報", (width * 0.3) + 460, 200);
+    
+    // 予報内容と外れメッセージを表示
+    fill(0);
+    textSize(24);
+    textAlign(LEFT, TOP);
+    // 予報内容を先に表示
+    String fullMessage = "【予報】" + dummyEvent.forecastMessage + "\n\n" + 
+                        "【結果】" + dummyEvent.missedMessage;
+    text(fullMessage, (width * 0.3) + 180, 270, (width * 0.7) - 300, 250);
+    
+    textAlign(CENTER, CENTER);
+
+    if (elapsedTime >= 4000) {  // 内容が増えたので表示時間を延長
       yearPopupTimerSet = false;
       closePopup();
     }

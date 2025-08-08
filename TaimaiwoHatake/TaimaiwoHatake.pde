@@ -60,7 +60,7 @@ AudioPlayer[] bgms = new AudioPlayer[BGM_NAMES.length];
 
 // ========== ゲーム進行変数 ==========
 int currentTurn = 1;
-int maxTurn = 4 * 5 + 2; // 最大ターン数(5年 + 2シーズン(売却のため))
+int maxTurn = 4 * 3 + 2; // 最大ターン数(5年 + 2シーズン(売却のため))
 int[] currentYear_season = {1, 0}; // 年と季節を管理する配列。年, 季節(0:秋, 1:冬, 2:春, 3:夏, )
 
 // ========== UI状態変数 ==========
@@ -241,6 +241,7 @@ void initGame() {
   gameLogic = new GameLogic();
   player = new Player(PLAYER_POINT);
   ai = new AI(ENEMY_POINT);
+  effectManager = new EventEffectManager();  // イベント効果管理の初期化
   eventManager = new EventManager();
   gameState = new GameState();
   
@@ -319,12 +320,20 @@ void initButton() {
     brandMinus1Buttons[i] = new TriangleButton((width * 0.3) + 670, 216 + (i*60), true, () -> {
       if (selectedAmounts[riceBrandRanking[index]] > 0) {
         selectedAmounts[riceBrandRanking[index]]--;
-        totalPrice -= int(riceBrandsInfo[riceBrandRanking[index]].point * RICE_BUY_RATIO);
+        float effectMultiplier = 1.0;
+        if (effectManager != null) {
+          effectMultiplier = effectManager.getBrandBuyPriceMultiplier(riceBrandRanking[index]);
+        }
+        totalPrice -= int(riceBrandsInfo[riceBrandRanking[index]].point * RICE_BUY_RATIO * effectMultiplier);
       }
     });
     brandPlus1Buttons[i] = new TriangleButton((width * 0.3) + 730, 216 + (i*60), false, () -> {
       selectedAmounts[riceBrandRanking[index]]++;
-      totalPrice += int(riceBrandsInfo[riceBrandRanking[index]].point * RICE_BUY_RATIO);
+      float effectMultiplier = 1.0;
+      if (effectManager != null) {
+        effectMultiplier = effectManager.getBrandBuyPriceMultiplier(riceBrandRanking[index]);
+      }
+      totalPrice += int(riceBrandsInfo[riceBrandRanking[index]].point * RICE_BUY_RATIO * effectMultiplier);
     });
   }
 
