@@ -15,6 +15,8 @@ class RightPanel {
     strokeWeight(5);
     line(width * 0.3 + 5, 0, width * 0.3 + 5, height);
 
+    cardVisual.loadCardImages();
+
     drawTurnInfo();
     drawPointInfo();
     drawButtons();
@@ -22,7 +24,10 @@ class RightPanel {
     drawShippingArea();
     drawAIShippingArea();
     drawHandCards();
+    drawPlayerFieldCards();
+    drawEnemyFieldCards();
     drawButtons();
+    
   }
 
   /* 以下は実装例 */
@@ -65,15 +70,17 @@ class RightPanel {
   // 出荷準備エリア
   void drawShippingArea() {
     fill(100);
-    rect(width * 0.3 + 180, 280, 560, 140);
+    //rect(width * 0.3 + 180, 280, 560, 140);
   }
   // AI出荷準備エリア
   void drawAIShippingArea() {
     fill(255, 0, 0);
-    rect(width * 0.3 + 180, 130, 560, 140);
+    //rect(width * 0.3 + 180, 130, 560, 140);
     strokeWeight(1);
+  }
 
-    // 場札の描画
+  // プレイヤーの場札の描画
+  void drawPlayerFieldCards() {
     for (int i=0; i<riceBrandsInfo.length; i++) {
       fill(250);
       stroke(0);
@@ -81,17 +88,42 @@ class RightPanel {
 
       // 個数分重ねて描画(少しずらす)
       if (player.getSumLoadRice(i) > 0) {
-        rect((width * 0.3) + 205 + (140 * i), height/2 - 65, 70, 105, 10);
+        image(cardVisual.cardImages[i], (width * 0.3) + 260 + (115 * i), height/2 - 65, 70, 105);
 
         // 個数を表示するための下地
         noStroke();
         fill(21, 96, 130);
-        ellipse((width * 0.3) + 160 + (140 * i) + 107, height/2 - 63, 30, 30);
+        ellipse((width * 0.3) + 215 + (115 * i) + 107, height/2 - 63, 30, 30);
         textAlign(CENTER, CENTER);
         fill(250);
         textSize(20);
-        text(player.getSumLoadRice(i), (width * 0.3) + 163 + (140 * i) + 105, height/2 - 64);
+        text(player.getSumLoadRice(i), (width * 0.3) + 219 + (115 * i) + 105, height/2 - 64);
       }
+    }
+
+    noStroke();
+    fill(0);
+  }
+  
+  // 敵の場札の描画
+  void drawEnemyFieldCards() {
+    for (int i=0; i<riceBrandsInfo.length; i++) {
+      fill(250);
+      stroke(0);
+      stroke(riceBrandsInfo[i].brandColor);
+      
+      tint(150); // 画像を150/255の割合で暗くする。
+      image(cardVisual.cardImages[i], (width * 0.3) + 260 + (115 * i), height/2 - 215, 70, 105);
+      tint(255);
+
+      // 個数を表示するための下地
+      noStroke();
+      fill(21, 96, 130);
+      ellipse((width * 0.3) + 215 + (115 * i) + 107, height/2 - 213, 30, 30);
+      textAlign(CENTER, CENTER);
+      fill(250);
+      textSize(20);
+      text("？", (width * 0.3) + 218 + (115 * i) + 105, height/2 - 214);
     }
 
     noStroke();
@@ -111,20 +143,30 @@ class RightPanel {
       // 個数分重ねて描画(少しずらす)
       if (brandCount > 0) {
         for (int j=min(brandCount, 5); j>0; j--) {
-          rect((width * 0.3) + 160 + (140 * i) + (j * 3), height/2 + 160 - (j * 2), 120, 180, 10);
+          image(cardVisual.cardImages[i], (width * 0.3) + 160 + (140 * i) + (j * 3), height/2 + 160 - (j * 2), 120, 180);
         }
       } else {
-        rect((width * 0.3) + 160 + (140 * i), height/2 + 160, 120, 180, 10);
+        image(cardVisual.cardImages[i], (width * 0.3) + 160 + (140 * i), height/2 + 160, 120, 180);
       }
 
       // 個数を表示するための下地
       noStroke();
       fill(21, 96, 130);
-      ellipse((width * 0.3) + 160 + (140 * i) + 120, height/2 + 160, 30, 30);
-      textAlign(CENTER, CENTER);
-      fill(250);
-      textSize(20);
-      text(brandCount, (width * 0.3) + 160 + (140 * i) + 120, height/2 + 159);
+
+      if (!showingPopup ||popupType.equals("year")) { // ポップアップの表示をしていない場合、年度のポップアップを表示している場合
+        // 右上
+        ellipse((width * 0.3) + 160 + (140 * i) + 120, height/2 + 160, 30, 30);
+        textAlign(CENTER, CENTER);
+        fill(250);
+        textSize(20);
+        text(brandCount, (width * 0.3) + 160 + (140 * i) + 120, height/2 + 159);
+      } else { // ポップアップの表示をしている場合
+        ellipse((width * 0.3) + 160 + (140 * i) + 120, height/2 + 330, 30, 30);
+        textAlign(CENTER, CENTER);
+        fill(250);
+        textSize(20);
+        text(brandCount, (width * 0.3) + 160 + (140 * i) + 120, height/2 + 329);
+      }
     }
 
     noStroke();
@@ -134,21 +176,27 @@ class RightPanel {
   void drawPhoto() {
     // トラックの描画
     image(images[0], width - 180, height/2 + 110, 219, 137);
-    
+
     //矢印の描画
     image(images[1], (width * 0.3) - 5, height/2 - 230, 200, 300);
-    
+
     //倉庫の描画
     image(images[2], width/2 - 130, height/2 + 50, 600, 388);
-    
+
     //敵の描画
     image(images[3], width/2 + 100, 0, 220, 160);
+
+    //敵のトラックの描画
+    image(images[5], 520, 80, 599, 234);
+
+    //味方のトラックの描画
+    image(images[4], 520, 230, 599, 234);
   }
 
   boolean onLoadBrandClicked() {
     // 当たり判定をチェック
     if (player.getSumLoadRice(0) > 0) {
-      if (mouseX > (width * 0.3) + 205 && mouseX < (width * 0.3) + 275 &&
+      if (mouseX > (width * 0.3) + 260 && mouseX < (width * 0.3) + 330 &&
         mouseY > height/2 - 65 && mouseY < height/2 + 45) {
         println("a");
         gameState.selectBrandBack(0);
@@ -157,7 +205,7 @@ class RightPanel {
     }
 
     if (player.getSumLoadRice(1) > 0) {
-      if (mouseX > (width * 0.3) + 345 && mouseX < (width * 0.3) + 415 &&
+      if (mouseX > (width * 0.3) + 375 && mouseX < (width * 0.3) + 445 &&
         mouseY > height/2 - 65 && mouseY < height/2 + 45) {
         println("a");
         gameState.selectBrandBack(1);
@@ -166,7 +214,7 @@ class RightPanel {
     }
 
     if (player.getSumLoadRice(2) > 0) {
-      if (mouseX > (width * 0.3) + 485 && mouseX < (width * 0.3) + 555 &&
+      if (mouseX > (width * 0.3) + 490 && mouseX < (width * 0.3) + 560 &&
         mouseY > height/2 - 65 && mouseY < height/2 + 45) {
         println("a");
         gameState.selectBrandBack(2);
@@ -175,7 +223,7 @@ class RightPanel {
     }
 
     if (player.getSumLoadRice(3) > 0) {
-      if (mouseX > (width * 0.3) + 625 && mouseX < (width * 0.3) + 695 &&
+      if (mouseX > (width * 0.3) + 605 && mouseX < (width * 0.3) + 675 &&
         mouseY > height/2 - 65 && mouseY < height/2 + 45) {
         println("a");
         gameState.selectBrandBack(3);

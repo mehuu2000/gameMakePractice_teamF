@@ -223,9 +223,9 @@ void setup() {
 // ここでゲームの初期状態を設定
 void initGame() {
   riceBrandsInfo = new RiceBrand[] {
-    new RiceBrand("りょうおもい", color(220, 80, 80), BASE_CARD_POINTS[0]),
+    new RiceBrand("りょうおもい", color(80, 220, 80), BASE_CARD_POINTS[0]),
     new RiceBrand("ほしひかり", color(80, 80, 220), BASE_CARD_POINTS[1]),
-    new RiceBrand("ゆめごこち", color(80, 220, 80), BASE_CARD_POINTS[2]),
+    new RiceBrand("ゆめごこち", color(220, 80, 80), BASE_CARD_POINTS[2]),
     new RiceBrand("つやおうじ", color(220, 220, 80), BASE_CARD_POINTS[3])
   };
   playerLoadedRices = new int[riceBrandsInfo.length];
@@ -237,6 +237,7 @@ void initGame() {
   selectedAmounts = new int[riceBrandsInfo.length];
   riceBrandRanking = new int[riceBrandsInfo.length];
   market = new Market();
+  cardVisual = new CardVisual();
   gameLogic = new GameLogic();
   player = new Player(PLAYER_POINT);
   ai = new AI(ENEMY_POINT);
@@ -259,6 +260,10 @@ void initGame() {
   images[1] = loadImage("leftArrow.png");
   images[2] = loadImage("wareHouse.png");
   images[3] = loadImage("enemy.png");
+  images[4] = loadImage("topview_car_truck_player.png");
+  images[5] = loadImage("topview_car_truck_enemy.png");
+  
+  
   
   // ボタン系
   initButton();
@@ -332,7 +337,7 @@ void initButton() {
   closeEndPopupButton = new EllipseButton((width * 0.3) + 300, height - 280, 150, 70, color(0), color(100, 150, 230), color(85, 130, 215), "却下", 32, () -> {
     closePopup();
   });
-  loadButton = new EllipseButton((width * 0.3) + 630, height - 100, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "提出", 32, () -> {
+  loadButton = new EllipseButton((width * 0.3) + 630, height - 100, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "積む", 32, () -> {
     gameState.playerLoadRice();
   });
   returnButton = new EllipseButton((width * 0.3) + 630, height - 100, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "返却", 32, () -> {
@@ -350,7 +355,7 @@ void initButton() {
     // 説明画面の表示処理をここに追加
     gameState.changeState(State.DESCRIBE);
   });
-  buyPopupButton = new EllipseButton(width - 95, height - 150, 150, 70, color(0), color(100, 230, 150), color(85, 215, 130), "購入", 32, () -> {
+  buyPopupButton = new EllipseButton(width - 95, height - 150, 150, 70, color(0), color(100, 230, 150), color(85, 215, 130), "仕入れ", 32, () -> {
    showPopup("buy");
   });
   submitButton = new EllipseButton((width * 0.3) + 100, height/2 - 80, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "出荷", 32, () -> {
