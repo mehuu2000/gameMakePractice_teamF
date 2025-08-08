@@ -120,7 +120,72 @@ class UI {
   //ここでは操作方法やルールを表示する
   //例えば、ゲームの目的や操作方法などを説明する
   void drawInstructions() {
+    fill(0);
+    textSize(40);
+    textAlign(LEFT, CENTER);
+    text("[ゲーム概要]", 50, 50);
+    text("・大米をはたけ！とは", 50, 120);
+    
+    textSize(32);
+    text("チーム「飯だ」が提供する、「令和の米騒動」をテーマとした", 90, 170);
+    text("米取引シミュレーションカードゲーム。", 90, 220);
+    text("ポイントを使用して米を買い、出荷する一連の流れを繰り返し", 90, 270);
+    text("ゲーム終了時により多くのポイントを所持しているプレイヤーが勝者となる。", 90, 320);
+    
+    text("プレイヤーは各ターンごとに市場を確認し、利益が大きくなるように", 90, 420);
+    text("米を出荷しなければならないほか、ランダムで発生する様々なイベントに", 90, 470);
+    text("対応できる柔軟性も必要である。", 90, 520);
+    
+    titleButton.display();
+    //overviewButton.display(); //デバッグ用
+    systemButton.display();
+    system2Button.display();
   }
+  
+  void drawSystemInstructions() {
+    fill(0);
+    textSize(40);
+    textAlign(LEFT, CENTER);
+    text("[システム説明1]", 50, 50);
+    text("・大米をはたけ！とは", 50, 120);
+    
+    textSize(32);
+    text("チーム「飯だ」が提供する、「令和の米騒動」をテーマとした", 90, 170);
+    text("米取引シミュレーションカードゲーム。", 90, 220);
+    text("ポイントを使用して米を買い、出荷する一連の流れを繰り返し", 90, 270);
+    text("ゲーム終了時により多くのポイントを所持しているプレイヤーが勝者となる。", 90, 320);
+    
+    text("プレイヤーは各ターンごとに市場を確認し、利益が大きくなるように", 90, 420);
+    text("米を出荷しなければならないほか、ランダムで発生する様々なイベントに", 90, 470);
+    text("対応できる柔軟性も必要である。", 90, 520);
+    
+    titleButton.display();
+    overviewButton.display();
+    system2Button.display();
+  }
+  
+  void drawSystem2Instructions() {
+    fill(0);
+    textSize(40);
+    textAlign(LEFT, CENTER);
+    text("[システム説明2]", 50, 50);
+    text("・大米をはたけ！とは", 50, 120);
+    
+    textSize(32);
+    text("チーム「飯だ」が提供する、「令和の米騒動」をテーマとした", 90, 170);
+    text("米取引シミュレーションカードゲーム。", 90, 220);
+    text("ポイントを使用して米を買い、出荷する一連の流れを繰り返し", 90, 270);
+    text("ゲーム終了時により多くのポイントを所持しているプレイヤーが勝者となる。", 90, 320);
+    
+    text("プレイヤーは各ターンごとに市場を確認し、利益が大きくなるように", 90, 420);
+    text("米を出荷しなければならないほか、ランダムで発生する様々なイベントに", 90, 470);
+    text("対応できる柔軟性も必要である。", 90, 520);
+    
+    titleButton.display();
+    overviewButton.display();
+    systemButton.display();
+  }
+  
   void supplyLimitDisplay(int supplyLimit) {
     supplyLimitX = (supplyLimit / 10) * 10;
   }

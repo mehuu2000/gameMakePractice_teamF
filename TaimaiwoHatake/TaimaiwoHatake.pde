@@ -21,6 +21,10 @@ CardVisual cardVisual;
 // ボタン系オブジェクト
 NormalButton startButton; // スタートボタン
 NormalButton describeButton; // 説明ボタン
+NormalButton titleButton; // タイトルへ戻るボタン
+NormalButton systemButton; // システム説明1へ移るボタン
+NormalButton system2Button; // システム説明2へ移るボタン
+NormalButton overviewButton; // 概要（説明の初期ページ）へ移るボタン
 NormalButton endButton; // 終了ボタン
 NormalButton nextButton; //次のポップアップに移動するボタン
 
@@ -309,14 +313,26 @@ void initButton() {
     bgms[1].rewind();
   });
   describeButton = new NormalButton(width/2 - 50, 350, 100, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "説明", 32, () -> {
-    bgms[0].pause();
-    bgms[1].loop();
-    bgms[1].rewind();
-    gameState.changeState(State.PLAYING);
+    //bgms[0].pause();
+    //bgms[1].loop();
+    //bgms[1].rewind();
+    gameState.changeState(State.DESCRIBE);
   });
   endButton = new NormalButton(width/2 - 50, 400, 100, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "終わる", 32, () -> {
     stop(); // ゲーム終了前の処理
     exit(); // ゲーム終了
+  });
+  titleButton = new NormalButton(50, 650, 160, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "タイトルへ", 32, () -> {
+    gameState.changeState(State.TITLE);
+  });
+  overviewButton = new NormalButton(width/2 - 180, 650, 190, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "ゲーム概要へ", 32, () -> {
+    gameState.changeState(State.DESCRIBE);
+  });
+  systemButton = new NormalButton(width/2 + 70, 650, 235, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "システム説明[1]", 32, () -> {
+    gameState.changeState(State.DESCRIBE2);
+  });
+  system2Button = new NormalButton(width - 280, 650, 235, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "システム説明[2]", 32, () -> {
+    gameState.changeState(State.DESCRIBE3);
   });
   nextButton = new NormalButton(0, 0, width, height, 0, color(0, 0, 0), color(0, 0, 0), color(0, 0, 0), "", 32, () -> {
     closePopup();
@@ -406,7 +422,7 @@ void initSound(){
   for(int i = 0; i < ses.length; i++)
     ses[i] = minim.loadFile("sounds/ses/" + SE_NAMES[i]);
     
-  bgms[0].setGain(-5);
+  bgms[0].setGain(-10);
   bgms[1].setGain(-7);
 }
 
@@ -423,7 +439,13 @@ void draw() {
     ui.drawStartScreen(market.supplyLimit);
     break;
   case DESCRIBE:
-    ui.drawTitleScreen();
+    ui.drawInstructions();
+    break;
+  case DESCRIBE2:
+    ui.drawSystemInstructions();
+    break;
+  case DESCRIBE3:
+    ui.drawSystem2Instructions();
     break;
   case PLAYING:
     background(100);
@@ -557,7 +579,37 @@ void mouseClicked() {
     } else if (endButton.onClicked()) {
       // 内部で既に実行済み
     }
-  }
+  } else if (gameState.currentState == State.DESCRIBE) {
+    if (titleButton.onClicked()) {
+      // 内部で既に実行済み
+    } else if (overviewButton.onClicked()) {
+      // 内部で既に実行済み
+    } else if (systemButton.onClicked()) {
+      // 内部で既に実行済み
+    } else if (system2Button.onClicked()) {
+      // 内部で既に実行済み
+    }
+  } else if (gameState.currentState == State.DESCRIBE2) {
+    if (titleButton.onClicked()) {
+      // 内部で既に実行済み
+    } else if (overviewButton.onClicked()) {
+      // 内部で既に実行済み
+    } else if (systemButton.onClicked()) {
+      // 内部で既に実行済み
+    } else if (system2Button.onClicked()) {
+      // 内部で既に実行済み
+    }
+  } else if (gameState.currentState == State.DESCRIBE3) {
+    if (titleButton.onClicked()) {
+      // 内部で既に実行済み
+    } else if (overviewButton.onClicked()) {
+      // 内部で既に実行済み
+    } else if (systemButton.onClicked()) {
+      // 内部で既に実行済み
+    } else if (system2Button.onClicked()) {
+      // 内部で既に実行済み
+    }
+  } 
 }
 
 //スケッチが正常に終了した時に実行される関数
