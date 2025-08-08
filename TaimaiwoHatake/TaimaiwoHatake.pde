@@ -312,7 +312,12 @@ void initButton() {
     }
   });
   plus1SelectedButton = new TriangleButton(1150, 300, false, () -> {
-    selectedAmounts[selectedBrandId]++;
+    if (popupType == "submit" && selectedAmounts[selectedBrandId] < player.getSumHandRice(selectedBrandId)) {
+      selectedAmounts[selectedBrandId]++;
+    }
+    if (popupType == "return" && selectedAmounts[selectedBrandId] < player.getSumLoadRice(selectedBrandId)) {
+      selectedAmounts[selectedBrandId]++;
+    }
   });
 
   brandPlus1Buttons = new TriangleButton[riceBrandsInfo.length];
