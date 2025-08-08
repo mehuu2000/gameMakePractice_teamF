@@ -125,9 +125,9 @@ class Popup {
 
     noStroke();
 
-    if (elapsedTime >= 3000) {
+    if (elapsedTime >= 1000) {
       yearPopupTimerSet = false;
-      closePopup();
+      nextButton.display();
     }
   }
 
@@ -175,7 +175,7 @@ class Popup {
 
     if (elapsedTime >= 3000) {
       yearPopupTimerSet = false;
-      closePopup();
+      nextButton.display();
     }
   }
 
@@ -422,7 +422,7 @@ class Popup {
       ses[4].play();
       ses[4].rewind();
       yearPopupTimerSet = false;
-      closePopup();
+      nextButton.display();
     }
   }
 
@@ -481,9 +481,9 @@ class Popup {
 
     noStroke();
 
-    if (elapsedTime >= 5000) {
+    if (elapsedTime >= 1000) {
       yearPopupTimerSet = false;
-      closePopup();
+      nextButton.display();
     }
   }
 
@@ -523,9 +523,9 @@ class Popup {
     // }
     
     noStroke();
-    if (elapsedTime >= 5000) {
+    if (elapsedTime >= 1000) {
       yearPopupTimerSet = false;
-      closePopup();
+      nextButton.display();
     }
   }
 
@@ -560,9 +560,9 @@ class Popup {
     
     textAlign(CENTER, CENTER);
 
-    if (elapsedTime >= 5000) {
+    if (elapsedTime >= 1000) {
       yearPopupTimerSet = false;
-      closePopup();
+      nextButton.display();
     }
   }
 

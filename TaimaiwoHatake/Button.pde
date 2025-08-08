@@ -117,9 +117,15 @@ class NormalButton {
 
     fill(currentColor);
     noStroke();
+    if(x == 0 && y == 0){
+      fill(0, 0, 0, 0);
+    }
     rect(x, y, btnWidth, btnHeight, radius);
 
     fill(textColor);
+    if(x == 0 && y == 0){
+      fill(0, 0, 0, 0);
+    }
     textSize(size);
     textAlign(CENTER, CENTER);
     text(text, x + btnWidth/2, y + btnHeight/2);
