@@ -257,6 +257,8 @@ void initGame() {
   //ここに images[x] = loadImage("〇〇.png");  の形で画像を指定してください
   images[0] = loadImage("truck.png");
   images[1] = loadImage("leftArrow.png");
+  images[2] = loadImage("wareHouse.png");
+  images[3] = loadImage("enemy.png");
   
   // ボタン系
   initButton();
