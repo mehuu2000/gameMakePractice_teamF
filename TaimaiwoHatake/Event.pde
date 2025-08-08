@@ -442,14 +442,6 @@ class EventManager {
              }
         ));
 
-
-        
-
-        
-
-
-
-        
         // 配列に変換
         eventTemplates = templates.toArray(new Event[templates.size()]);
     }

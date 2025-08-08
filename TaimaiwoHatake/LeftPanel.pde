@@ -8,10 +8,12 @@ class LeftPanel {
   // 左側のパネル全体管理
   void drawLeftPanel() {
     fill(250);
-    rect(0, 0, width * 0.3, height);
+    //rect(0, 0, width * 0.3, height);
 
     textAlign(CENTER);
-
+    
+    cardVisual.loadCardImages();
+    
     drawMarketInfo();
     drawSupply();
     drawEnvironment();
@@ -45,7 +47,7 @@ class LeftPanel {
     fill(250);
     for (int i=0; i<riceBrandsInfo.length; i++) {
       stroke(riceBrandsInfo[riceBrandRanking[i]].brandColor);
-      rect(15, 130 + (i * 60), 30, 45); // デモ用のカード
+      image(cardVisual.cardImages[riceBrandRanking[i]],15, 130 + (i * 60), 30, 45); // デモ用のカード
     }
     stroke(0);
     
