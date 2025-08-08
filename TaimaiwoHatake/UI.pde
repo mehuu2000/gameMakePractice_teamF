@@ -71,6 +71,46 @@ class UI {
 
   //結果画面の描画
   void drawResultScreen() {
+    fill(0);
+    textSize(92);
+    text("結果発表", width/2, 80);
+    
+    textSize(48);
+    text("所持金", width/4 - 50, 300);
+    text("所持金", (width - width/4) + 50, 300);
+    
+    textSize(100);
+    text(player.wallet + "pt", width/4 - 50, 400);
+    text(ai.wallet + "pt", (width - width/4) + 50, 400);
+    
+    fill(0, 0, 200);
+    textSize(76);
+    text("あなた", width/4 - 50, 200);
+    
+    fill(200, 0, 0);
+    text("あいて", (width - width/4) + 50, 200);
+    
+    if(player.wallet >= ai.wallet){
+      fill(0, 0, 200);
+      textSize(180);
+      text("勝利", width/2, 500);
+      
+      image(images[10], width/2 - 160, 120, 300, 300);
+      
+      fill(0);
+      textSize(60);
+      text("お見事！貴方こそ真の米マスターだ！", width/2, 650);
+    } else {
+      fill(200, 0, 0);
+      textSize(180);
+      text("敗北", width/2, 500);
+      
+      image(images[11], width/2 - 140, 120, 300, 300);
+      
+      fill(0);
+      textSize(60);
+      text("失敗は成功の大きな一歩である。", width/2, 650);
+    }
   }
 
   //操作説明の描画

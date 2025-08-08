@@ -95,7 +95,7 @@ final float LEFT_PANEL_WIDTH = 0.3;   // 左パネルの幅（30%）
 final float RIGHT_PANEL_WIDTH = 0.7;  // 右パネルの幅（70%）
 final int[] BASE_CARD_POINTS = {100, 110, 120, 130}; // 基本のカードポイントの係数
 final int LOWER_LIMIT_RICE_POINT= 10; // 米の下限価格
-final int PHOTO_SHEETS = 10; //画像の上限数
+final int PHOTO_SHEETS = 20; //画像の上限数
 
 // ========== 変数（変更可能） ==========
 RiceBrand[] riceBrandsInfo;
@@ -264,6 +264,9 @@ void initGame() {
   images[4] = loadImage("topview_car_truck_player.png");
   images[5] = loadImage("topview_car_truck_enemy.png");
   images[6] = loadImage("background.png");
+  images[10] = loadImage("win.png");
+  images[11] = loadImage("lose.png");
+  
   
   
   
@@ -406,6 +409,9 @@ void draw() {
     image(images[6], 0, 0);
     noTint();
     drawGameScreen();
+    break;
+  case FINISHED:
+    ui.drawResultScreen();
     break;
   }
 
