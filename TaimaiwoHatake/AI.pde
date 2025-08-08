@@ -42,18 +42,22 @@ class AI extends Broker {
       case "豊作":
       case "花見需要":
       case "安価な外国米の大量輸入":
-        eventbuyCount = 3;
+        eventbuyCount = 4;
         break;
       case "豊作（りょうおもい）":
+        eventbuyCount = 2;
         eventbuyCountbyRices[0] = 2;
         break;
       case "豊作（ほしひかり）":
+        eventbuyCount = 2;
         eventbuyCountbyRices[1] = 2;
         break;
       case "豊作（ゆめごこち）":
+        eventbuyCount = 2;
         eventbuyCountbyRices[2] = 2;
         break;
       case "豊作（つやおうじ）":
+        eventbuyCount = 2;
         eventbuyCountbyRices[3] = 2;
         break;
       case "農業体験ブーム":
@@ -72,7 +76,8 @@ class AI extends Broker {
       int riceID = ranking[i];
       int countRice = getSumHandRice(riceID);
       int canBuyCount = wallet / riceBrandsInfo[riceID].point; // 全額使ったら買える個数
-      if (canBuyCount <= 0 || eventbuyCount <= 0 || eventbuyCountbyRices[i] <= 0) {
+      println( canBuyCount/2 + " " + eventbuyCount + " " + eventbuyCountbyRices[i]);
+      if (canBuyCount <= 0 || (eventbuyCount <= 0 && eventbuyCountbyRices[i] <= 0)) {
         // 購入しない場合は前の値を保持（初期値0の場合は現在の価格を設定）
         if (buyCostAverages[riceID] == 0) {
           buyCostAverages[riceID] = riceBrandsInfo[riceID].point * RICE_BUY_RATIO;
