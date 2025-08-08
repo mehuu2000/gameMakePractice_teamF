@@ -362,8 +362,8 @@ void initSound(){
   for(int i = 0; i < ses.length; i++)
     ses[i] = minim.loadFile("sounds/ses/" + SE_NAMES[i]);
     
-  bgms[0].setGain(-20);
-  bgms[1].setGain(-20);
+  bgms[0].setGain(-5);
+  bgms[1].setGain(-7);
 }
 
 // メイン描画ループ
