@@ -111,6 +111,9 @@ class Popup {
       fill(0);
       textAlign(CENTER, CENTER);
       text(market.marketStock[riceBrandRanking[i]], (width * 0.3) + 630, 340 + (i*60));
+      
+      //持ち運ばれたタイミングの価格を保存
+      marketPriceKeep[riceBrandRanking[i]] = riceBrandsInfo[riceBrandRanking[i]].point;
     }
     
     textSize(36);
@@ -155,6 +158,9 @@ class Popup {
       text(riceBrandsInfo[riceBrandRanking[i]].name, (width * 0.3) + 270, 320 + (i*60));
       fill(0);
       text(marketStockKeep[riceBrandRanking[i]] + "→" + market.marketStock[riceBrandRanking[i]], (width * 0.3) + 600, 320 + (i*60));
+      
+      //米を購入されたタイミングの価格を保存
+      marketPriceKeep[riceBrandRanking[i]] = riceBrandsInfo[riceBrandRanking[i]].point;
     }
     
     textSize(36);
@@ -222,6 +228,7 @@ class Popup {
     text((player.wallet - totalPrice) + " pt", (width * 0.3) + 500, height - 150);
 
     buyButton.display();
+    closeBuyPopupButton.display();
 
     textAlign(CENTER, CENTER);
   }
@@ -439,7 +446,11 @@ class Popup {
       text(aiLoadedRices[riceBrandRanking[i]], (width * 0.3) + 730, 320 + (i*60));
       
       textAlign(RIGHT, CENTER);
+      if((marketPriceKeep[riceBrandRanking[i]] - riceBrandsInfo[riceBrandRanking[i]].point) > 0){
+        fill(255, 0, 0); // 価値が下がったら赤字にする
+      }
       text(riceBrandsInfo[riceBrandRanking[i]].point + "pt", (width * 0.3) + 550, 320 + (i*60));
+      fill(0);
     }
     
     // プレイヤーと敵の総利益
@@ -497,7 +508,7 @@ class Popup {
     // イベント効果説明
     textSize(36);
     text(currentEvent.effectDescription, (width * 0.3) + 173, 380);
-    text("米価格+5000兆!!!!!!", (width * 0.3) + 173, 430);
+    //text("米価格+5000兆!!!!!!", (width * 0.3) + 173, 430); //デモ説明
     
     // 持続時間
     // if (currentEvent.duration > 1) {
