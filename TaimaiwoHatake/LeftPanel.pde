@@ -119,18 +119,19 @@ class LeftPanel {
     
     // 効果の説明文（ゲームへの影響）
     fill(0);
-    textSize(20);
-    textAlign(CENTER, CENTER);
+    textSize(18);
+    textAlign(CENTER, TOP);
     if (!eventMessage.isEmpty()) {
-      text(eventMessage, (width*0.3)/2, height - 130);
+      // 幅と高さを指定して枠内に収める
+      text(eventMessage, 30, height/2 + 200, (width * 0.3) - 60, height/2 - 180);
     } else {
-      text("特別な効果なし", (width*0.3)/2, height - 130);
+      text("特別な効果なし", 30, height/2 + 200, (width * 0.3) - 60, height/2 - 180);
     }
     
     // 残りターン数の表示（イベントが有効な場合）
     if (currentEvent != null && remainingTurns > 0 && !eventName.equals("通常")) {
       textAlign(CENTER, CENTER);
-      textSize(20);
+      textSize(18);
       fill(100);
       text("残り " + remainingTurns + " ターン", (width*0.3)/2, height - 50);
     }

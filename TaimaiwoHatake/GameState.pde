@@ -198,6 +198,12 @@ class GameState {
       if (currentEvent != null && !currentEvent.eventName.equals("通常")) {
         showPopup("event"); // イベントをキューに追加
       }
+      
+      // ダミーイベント（外れメッセージ）確認
+      Event dummyEvent = eventManager.getCurrentDummyEvent();
+      if (dummyEvent != null) {
+        showPopup("missed"); // 外れメッセージをキューに追加
+      }
     }
   }
 }

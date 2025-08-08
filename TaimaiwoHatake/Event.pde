@@ -21,15 +21,24 @@ class Event {
     String forecastMessage; // 予報メッセージ（予報がある場合のみ使用）    
     String effectDescription; // なぜそのようなことが起こったか（イベントポップアップで表示）
     String effectMessage; // ゲームに与える効果（左下の画面で表示）
+    String missedMessage; // 予報が外れた時のメッセージ（ダミーイベント時に表示）
     boolean isDummy; // ダミーイベントかどうか（予報のみで実際には発動しない）
     boolean isOnceOnly; // このイベントがゲーム中1回だけ発生するか
     
     EventAction onStart;       
     EventEndAction onEnd;      
     
-    // 通常のコンストラクタ
+    // 通常のコンストラクタ（外れメッセージなし）
     Event(String name, int[] seasons, float prob, int dur, int forecast, 
           String forecastMsg, String description, String message,
+          boolean onceOnly, EventAction startAction, EventEndAction endAction) {
+        this(name, seasons, prob, dur, forecast, forecastMsg, description, message, 
+             "", onceOnly, startAction, endAction);
+    }
+    
+    // 拡張コンストラクタ（外れメッセージあり）
+    Event(String name, int[] seasons, float prob, int dur, int forecast, 
+          String forecastMsg, String description, String message, String missed,
           boolean onceOnly, EventAction startAction, EventEndAction endAction) {
         eventName = name;
         triggerSeasons = seasons;
@@ -40,6 +49,7 @@ class Event {
         forecastMessage = forecastMsg;
         effectDescription = description;
         effectMessage = message;
+        missedMessage = missed;
         isOnceOnly = onceOnly;
         onStart = startAction;
         onEnd = endAction;
@@ -57,6 +67,7 @@ class Event {
         this.forecastMessage = original.forecastMessage; // 予報メッセージをコピー
         this.effectDescription = original.effectDescription; // 効果の理由をコピー
         this.effectMessage = original.effectMessage; // 効果の説明をコピー
+        this.missedMessage = original.missedMessage; // 外れメッセージをコピー
         this.isOnceOnly = original.isOnceOnly; // 1回限りかどうかをコピー
         this.onStart = original.onStart; // イベント開始時のアクションをコピー
         this.onEnd = original.onEnd; // イベント終了時のアクションをコピー
@@ -126,9 +137,9 @@ class EventManager {
         // {"りょうおもい", "ほしひかり", "ゆめごこち", "つやおうじ"};
         // 豊作イベント（本来は2ターン持続、予報あり、70%で実際に発生）
         templates.add(new Event("豊作（りょうおもい）", new int[]{0}, 0.7, 2, 1, 
-                 "来季は豊作の予報！（2ターン持続予定）",  // 予報メッセージ
+                 "来季は豊作の予報！",  // 予報メッセージ
                  "今期は天候に恵まれ、各地でりょうおもいが豊作となりました", // 効果の理由
-                 "供給増加・りょうおもいの買値が20%低下", // 効果の説明
+                 "りょうおもいの買値が20%低下!", // 効果の説明
                  false,  // 1回限りではない 
             () -> {
                 applyHarvestEvent("豊作（りょうおもい）", 0);
@@ -140,9 +151,9 @@ class EventManager {
             }
         ));
         templates.add(new Event("豊作（ほしひかり）", new int[]{0}, 0.7, 2, 1, 
-                 "来季は豊作の予報！（2ターン持続予定）", 
+                 "来季は豊作の予報！", 
                  "今期は天候に恵まれ、各地でほしひかりが豊作となりました",
-                 "供給増加・ほしひかりの買値が20%低下",
+                 "ほしひかりの買値が20%低下!",
                  false,  // 1回限りではない 
             () -> {
                 applyHarvestEvent("豊作（ほしひかり）", 1);
@@ -154,9 +165,9 @@ class EventManager {
             }
         ));
         templates.add(new Event("豊作（ゆめごこち）", new int[]{0}, 0.7, 2, 1, 
-                 "来季は豊作の予報！（2ターン持続予定）", 
+                 "来季は豊作の予報！", 
                  "今期は天候に恵まれ、各地でゆめごこちが豊作となりました",
-                 "供給増加・ゆめごこちの買値が20%低下",
+                 "ゆめごこちの買値が20%低下!",
                  false,  // 1回限りではない 
             () -> {
                 applyHarvestEvent("豊作（ゆめごこち）", 2);
@@ -168,9 +179,9 @@ class EventManager {
             }
         ));
         templates.add(new Event("豊作（つやおうじ）", new int[]{0}, 0.7, 2, 1, 
-                 "来季は豊作の予報！（2ターン持続予定）", 
+                 "来季は豊作の予報！", 
                  "今期は天候に恵まれ、各地でつやおうじが豊作となりました",
-                 "供給増加・つやおうじの買値が20%低下",
+                 "つやおうじの買値が20%低下!",
                  false,  // 1回限りではない 
             () -> {
                 applyHarvestEvent("豊作（つやおうじ）", 3);
@@ -187,6 +198,7 @@ class EventManager {
                  "台風が接近中、直撃すると米の収穫量に影響が出るかもしれない...", 
                  "台風が直撃！収穫物に大打撃、収穫量が減ってしまった...",
                  "供給減少・農家さんから仕入れる米の量が20%減少",
+                 "台風は接近したが、影響はなかったようだ...",  // 外れメッセージ
                  false,  // 1回限りではない 
             () -> {
                 applyTyphoonEvent("台風接近！");
@@ -202,7 +214,8 @@ class EventManager {
         templates.add(new Event("大雪", new int[]{1}, 0.8, 1, 1, 
                  "大雪警報発令", 
                  "記録的な大雪により物流が停滞しています",
-                 "輸送困難・買値20%上昇",
+                 "全ての米の買値が20%上昇",
+                 "そこまで雪が降らなかった...",  // 外れメッセージ
                  false,  // 1回限りではない 
             () -> {
                 applySnowEvent("大雪");
@@ -218,7 +231,8 @@ class EventManager {
         templates.add(new Event("猛暑", new int[]{3}, 0.75, 1, 1, 
                  "記録的猛暑の予報", 
                  "連日の猛暑により米の品質管理が困難になっています",
-                 "古米、古古米の売値50%減少",
+                 "古米、古古米の売値が50%減少",
+                 "猛暑ではあったが、対策を立てたため影響はなかったああ",  // 外れメッセージ
                  false,  // 1回限りではない 
             () -> {
                 applyHeatwaveEvent("猛暑");
@@ -232,9 +246,10 @@ class EventManager {
         
         // 米騒動イベント（全季節、3ターン持続、予報あり、50%で実隟に発生）
         templates.add(new Event("米騒動", new int[]{0, 1, 2, 3}, 0.5, 2, 2, 
-                 "市場に不穏な動き...（最大2ターン継続の可能性）", 
+                 "市場に不穏な動き...（最大2ターン継続）", 
                  "市民の買い占めにより米不足が深刻化しています",
                  "全米の買値、売値2倍！経過後ゲーム終了",
+                 "市場が落ち着いて何事もなかったようだ...",  // 外れメッセージ
                  true,  // 1回限り！ 
             () -> {
                 applyRiceRiotEvent("米騒動");
@@ -252,7 +267,7 @@ class EventManager {
         templates.add(new Event("日本一決定戦", new int[]{0, 1, 2, 3}, 1.0, 1, 1, 
                  "日本一のお米を決める大会が次の季節に開催されるようだ", 
                  "日本一のお米を決める大会が開催！今回はりょうおもいが日本一に輝き価値が上昇！",
-                 "りょうおもい米の売値が1.5倍になる",
+                 "りょうおもいの売値が50%増加！",
                  true,  // 1回限り！ 
             () -> {
                 applyChampionshipEvent("日本一決定戦（りょうおもい）", 0);
@@ -266,7 +281,7 @@ class EventManager {
         templates.add(new Event("日本一決定戦", new int[]{0, 1, 2, 3}, 1.0, 1, 1, 
                  "日本一のお米を決める大会が次の季節に開催されるようだ", 
                  "日本一のお米を決める大会が開催！今回はほしひかりが日本一に輝き価値が上昇！",
-                 "ほしひかり米の売値が1.5倍になる",
+                 "ほしひかりの売値が50%増加！",
                  true,  // 1回限り！ 
             () -> {
                 applyChampionshipEvent("日本一決定戦（ほしひかり）", 1);
@@ -280,7 +295,7 @@ class EventManager {
         templates.add(new Event("日本一決定戦", new int[]{0, 1, 2, 3}, 1.0, 1, 1, 
                  "日本一のお米を決める大会が次の季節に開催されるようだ", 
                  "日本一のお米を決める大会が開催！今回はゆめごこちが日本一に輝き価値が上昇！",
-                 "ゆめごこち米の売値が1.5倍になる",
+                 "ゆめごこちの売値が50%増加！",
                  true,  // 1回限り！ 
             () -> {
                 applyChampionshipEvent("日本一決定戦（ゆめごこち）", 2);
@@ -294,7 +309,7 @@ class EventManager {
         templates.add(new Event("日本一決定戦", new int[]{0, 1, 2, 3}, 1.0, 1, 1, 
                  "日本一のお米を決める大会が次の季節に開催されるようだ", 
                  "日本一のお米を決める大会が開催！今回はつやおうじが日本一に輝き価値が上昇！",
-                 "つやおうじ米の売値が1.5倍になる",
+                 "つやおうじの売値が50%増加！",
                  true,  // 1回限り！ 
             () -> {
                 applyChampionshipEvent("日本一決定戦（つやおうじ）", 3);
@@ -309,6 +324,7 @@ class EventManager {
                  "外れることで有名な予言師が、今年の新米は大不作になり、古米の需要が増えるだろう、と大予言", 
                  "今年は記録的な雨不足で大不作に...新米の値段が高騰し、古米に注目が集まった。不運にも予言は的中した...",
                  "買値が2.5倍になり、米の売値が2.5倍になる",
+                 "予言は外れたようだ...",  // 外れメッセージ
                  true,  // 1回限り！ 
             () -> {
                 applyProphecyEvent("オオカタ・ハズレールの大予言");
@@ -331,8 +347,8 @@ class EventManager {
         ));
 
         templates.add(new Event("大盤振米", new int[]{0}, 1.0, 1, 0, "", 
-                 "農家さんからいつものお礼にお米を少し多くいただけた！",
-                 "農家さんから受け取る米の量が1.2倍になる（小数点は切り上げ）",
+                 "農家さんからいつものお礼にお米を少し多くいただけることに！",
+                 "農家さんから受け取る米の量が20%増加になる（小数点は切り上げ）",
                  false,
             () -> {
                 applySupplyBonusEvent("大盤振米");
@@ -346,7 +362,7 @@ class EventManager {
         templates.add(new Event("きりたんぽ鍋ブーム", new int[]{1}, 0.8, 1, 2, 
                  "有名インフルエンサーがきりたんぽ鍋を大絶賛、これは今年の冬にブームが到来するのでは...?",
                  "空前のきりたんぽ鍋ブームが到来！きりたんぽ需要の増加でお米の価値も上昇！",
-                 "売値が1.5倍になる",
+                 "全ての米の売値が50%増加する!",
                  false,
             () -> {
                 applyHotpotBoomEvent("きりたんぽ鍋ブーム");
@@ -360,7 +376,7 @@ class EventManager {
         templates.add(new Event("不況", new int[]{1}, 0.8, 2, 2, 
                  "経済指標の悪化が懸念される中...",
                  "やはり関税が原因で景気が悪化し、国民が節約を始めたため、米の価値が下がることに...",
-                 "買値と売値が今年の間0.8倍になる",
+                 "買値と売値が少しの間20%減少する",
                  true,
             () -> {
                 applyRecessionEvent("不況");
@@ -372,9 +388,9 @@ class EventManager {
         ));
 
         templates.add(new Event("買い占め", new int[]{1, 2}, 1.0, 1, 1, 
-                 "匿名者が大災害を予言か...?",
+                 "有名預言者が大災害を予言か...?",
                  "突如として市場の米が何者かに大量に買われ、市場の米が大幅に減少した！",
-                 "消費量が1.5倍になる",
+                 "消費量が50%増加する",
                  true,
             () -> {
                 applyHoardingEvent("買い占め");
@@ -387,7 +403,7 @@ class EventManager {
 
         templates.add(new Event("外国米の大量輸入", new int[]{0, 1, 2, 3}, 1.0, 1, 0, "", 
                  "政府が緊急経済対策として、海外から安価な米を大量に輸入した。市場には米が溢れ、国産米の価格も下落してしまった。",
-                 "市場の消費が低下し、売値が0.9倍になる。買値が0.8倍になる",
+                 "市場の消費が低下し、売値が10%減少し、買値が20%減少する",
                  true,
             () -> {
                 applyImportEvent("海外からの安価な米の輸入");
@@ -401,7 +417,7 @@ class EventManager {
         templates.add(new Event("農業体験ブーム", new int[]{0, 3}, 1.0, 1, 1, 
                  "次の季節に農業体験イベントが開催されるようだ",
                  "テレビ番組の影響で農業体験がブームに！多くの若者がボランティアとして農作業を手伝い、今年は豊作が期待できそうだ。",
-                 "ボランティアが増え、今年の米の収穫量が1割増加する。",
+                 "ボランティアが増え、仕入れる米の量が10%増加する。",
                  false,
             () -> {
                 applyAgricultureBoomEvent("農業体験ブーム");
@@ -414,8 +430,8 @@ class EventManager {
 
         templates.add(new Event("農家の後継者問題", new int[]{0}, 1.0, 1, 3, 
                  "農家の高齢化が進む中...",
-                 "お世話になっている農家さんが、高齢のため今年で引退することに…。後継者がおらず、来年から米を分けてもらえなくなってしまう。",
-                 "来年から米を分けてくれる農家が1軒へり、今年の米の収穫量が1割減少する。",
+                 "お世話になっている農家さんが、高齢のため今年で引退することに…。後継者がおらず、来年からこの農家の米を仕入れられない。",
+                 "契約農家が1軒減り、仕入れる米の量が10%減少する。",
                  false,
             () -> {
                 applyFarmerRetirementEvent("農家の後継者問題");
@@ -612,22 +628,25 @@ class EventManager {
                     // ダミーイベントの場合
                     println("予報された「" + currentEvent.eventName + 
                            "」は発生しませんでした。");
-                    // ダミーイベントは即座に終了
-                    activeEvent = null;
-                    activeEventRemainingTurns = 0;
+                    // ダミーイベントは1ターンだけ保持（外れメッセージ表示のため）
+                    activeEventRemainingTurns = 1;
                 }
             } else {
                 // 継続中のイベントの場合（activeEvent == currentEvent）
                 // 残りターン数を減らす
                 if (activeEventRemainingTurns > 0) {
                     activeEventRemainingTurns--;
-                    println("イベント「" + activeEvent.eventName + 
-                           "」継続中（残り" + activeEventRemainingTurns + "ターン）");
+                    if (!activeEvent.isDummy) {
+                        println("イベント「" + activeEvent.eventName + 
+                               "」継続中（残り" + activeEventRemainingTurns + "ターン）");
+                    }
                     if (activeEventRemainingTurns <= 0) {
                         // 持続ターンが終了したら終了処理
                         if (!activeEvent.isDummy) {
                             activeEvent.end();
                             println("イベント「" + activeEvent.eventName + "」が終了しました。");
+                        } else {
+                            println("ダミーイベント「" + activeEvent.eventName + "」が終了しました。");
                         }
                         activeEvent = null;
                     }
@@ -647,6 +666,15 @@ class EventManager {
     // 現在のイベントを取得（ダミーでない場合のみ）
     Event getCurrentEvent() {
         if (activeEvent != null && !activeEvent.isDummy) {
+            return activeEvent;
+        }
+        return null;
+    }
+    
+    // 現在のダミーイベントを取得（外れメッセージ表示用）
+    Event getCurrentDummyEvent() {
+        if (activeEvent != null && activeEvent.isDummy && 
+            activeEvent.missedMessage != null && !activeEvent.missedMessage.isEmpty()) {
             return activeEvent;
         }
         return null;

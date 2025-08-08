@@ -43,6 +43,9 @@ class Popup {
     case "news":
       drawNewsPopup();
       break;
+    case "missed":
+      drawMissedPopup();
+      break;
     default:
       // 何もしないか、エラーメッセージを表示
       break;
@@ -541,13 +544,13 @@ class Popup {
     text("イベントが発生しました！", (width * 0.3) + 460, 210);
     
     // イベント名
-    textAlign(LEFT, TOP);
-    text("【" + currentEvent.eventName + "】", (width * 0.3) + 150, 280);
+    textAlign(CENTER, TOP);
+    text("【" + currentEvent.eventName + "】", (width * 0.3) + 460, 280);
 
     // イベントの説明（なぜ起こったか）
     textSize(26);
     textAlign(LEFT, TOP);
-    text(currentEvent.effectDescription, (width * 0.3) + 150, 340, (width * 0.7) - 300, 200);
+    text(currentEvent.effectDescription, (width * 0.3) + 190, 340, (width * 0.7) - 350, 200);
     
     // 持続時間
     // if (currentEvent.duration > 1) {
@@ -606,12 +609,54 @@ class Popup {
     fill(0);
     textSize(28);
     textAlign(LEFT, TOP);
-    text(forecast.message, (width * 0.3) + 200, 290, (width * 0.7) - 320, 220);
+    text(forecast.message, (width * 0.3) + 200, 290, (width * 0.7) - 370, 220);
     
     textAlign(CENTER, CENTER);
 
     // 全ての予報を一巡したら閉じる
     if (elapsedTime >= displayTime * allForecasts.size()) {
+      yearPopupTimerSet = false;
+      closePopup();
+    }
+  }
+
+  // 予報外れポップアップの描画
+  void drawMissedPopup() {
+    if (!yearPopupTimerSet) {
+        yearPopupStartTime = millis();
+        yearPopupTimerSet = true;
+    }
+    int elapsedTime = millis() - yearPopupStartTime;
+
+    Event dummyEvent = eventManager.getCurrentDummyEvent();
+    if (dummyEvent == null) return;
+    
+    fill(240);
+    stroke(0);
+    strokeWeight(2);
+    rect((width * 0.3) + 110, 160, (width * 0.7) - 190, height - 320);
+    rect((width * 0.3) + 150, 200, (width * 0.7) - 270, height - 400);
+    
+    noStroke();
+    fill(240);
+    rect((width * 0.3) + 400, 180, 120, 40);
+    
+    fill(0);
+    textSize(44);
+    text("速報", (width * 0.3) + 460, 200);
+    
+    // 予報内容と外れメッセージを表示
+    fill(0);
+    textSize(24);
+    textAlign(LEFT, TOP);
+    // 予報内容を先に表示
+    String fullMessage = "【予報】" + dummyEvent.forecastMessage + "\n\n" + 
+                        "【結果】" + dummyEvent.missedMessage;
+    text(fullMessage, (width * 0.3) + 180, 270, (width * 0.7) - 300, 250);
+    
+    textAlign(CENTER, CENTER);
+
+    if (elapsedTime >= 4000) {  // 内容が増えたので表示時間を延長
       yearPopupTimerSet = false;
       closePopup();
     }
