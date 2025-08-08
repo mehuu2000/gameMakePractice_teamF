@@ -160,7 +160,7 @@ class Popup {
       fill(riceBrandsInfo[riceBrandRanking[i]].brandColor);
       text(riceBrandsInfo[riceBrandRanking[i]].name, (width * 0.3) + 270, 320 + (i*60));
       fill(0);
-      text(marketStockKeep[riceBrandRanking[i]] + "→" + market.marketStock[riceBrandRanking[i]], (width * 0.3) + 600, 320 + (i*60));
+      text(marketStockAfterShip[riceBrandRanking[i]] + "→" + market.marketStock[riceBrandRanking[i]], (width * 0.3) + 600, 320 + (i*60));
       
       //米を購入されたタイミングの価格を保存
       marketPriceKeep[riceBrandRanking[i]] = riceBrandsInfo[riceBrandRanking[i]].point;

@@ -113,15 +113,7 @@ class EventManager {
         ArrayList<Event> templates = new ArrayList<Event>();
         
         // 通常イベント（持続1ターン、予報なし）
-        templates.add(new Event("通常", new int[]{0, 1, 2, 3}, 0.4, 1, 0, "", 
-                 "通常の市場",
-                 "特別な効果なし",
-                 false,  // 1回限りではない 
-            () -> { /* 何もしない */ },
-            () -> { /* 何もしない */ }
-        ));
-
-        templates.add(new Event("通常", new int[]{0, 1, 2, 3}, 0.4, 1, 0, "", 
+        templates.add(new Event("通常", new int[]{0, 1, 2, 3}, 1.0, 1, 0, "", 
                  "通常の市場",
                  "特別な効果なし",
                  false,  // 1回限りではない 
@@ -254,7 +246,8 @@ class EventManager {
             }
         ));
 
-        templates.add(new Event("日本一決定戦", new int[]{0, 1, 2, 3}, 0.5, 1, 1, 
+        // 日本一決定戦（4ブランド分、どれか1つが選ばれると全て除外）
+        templates.add(new Event("日本一決定戦", new int[]{0, 1, 2, 3}, 1.0, 1, 1, 
                  "日本一のお米を決める大会が次の季節に開催されるようだ", 
                  "日本一のお米を決める大会が開催！今回はりょうおもいが日本一に輝き価値が上昇！",
                  "りょうおもい米の売値が次の季節だけ1.5倍になる",
@@ -267,6 +260,21 @@ class EventManager {
                 removeEventEffects("日本一決定戦（りょうおもい）");
             }
         ));
+        
+        templates.add(new Event("日本一決定戦", new int[]{0, 1, 2, 3}, 1.0, 1, 1, 
+                 "日本一のお米を決める大会が次の季節に開催されるようだ", 
+                 "日本一のお米を決める大会が開催！今回はほしひかりが日本一に輝き価値が上昇！",
+                 "ほしひかり米の売値が次の季節だけ1.5倍になる",
+                 true,  // 1回限り！ 
+            () -> {
+                applyChampionshipEvent("日本一決定戦（ほしひかり）", 1);
+                println("日本一決定戦！ほしひかりが優勝！");
+            },
+            () -> {
+                removeEventEffects("日本一決定戦（ほしひかり）");
+            }
+        ));
+        
         templates.add(new Event("日本一決定戦", new int[]{0, 1, 2, 3}, 1.0, 1, 1, 
                  "日本一のお米を決める大会が次の季節に開催されるようだ", 
                  "日本一のお米を決める大会が開催！今回はゆめごこちが日本一に輝き価値が上昇！",
@@ -278,6 +286,20 @@ class EventManager {
             },
             () -> {
                 removeEventEffects("日本一決定戦（ゆめごこち）");
+            }
+        ));
+        
+        templates.add(new Event("日本一決定戦", new int[]{0, 1, 2, 3}, 1.0, 1, 1, 
+                 "日本一のお米を決める大会が次の季節に開催されるようだ", 
+                 "日本一のお米を決める大会が開催！今回はつやおうじが日本一に輝き価値が上昇！",
+                 "つやおうじ米の売値が次の季節だけ1.5倍になる",
+                 true,  // 1回限り！ 
+            () -> {
+                applyChampionshipEvent("日本一決定戦（つやおうじ）", 3);
+                println("日本一決定戦！つやおうじが優勝！");
+            },
+            () -> {
+                removeEventEffects("日本一決定戦（つやおうじ）");
             }
         ));
 
@@ -419,15 +441,25 @@ class EventManager {
         eventSchedule = new Event[maxTurn];
         forecastSchedule = new ForecastInfo[maxTurn];
         
-        // 1ターン目（インデックス0）はスキップして、2ターン目から開始
+        // ターン0は何も設定しない（イベントなし）
+        // ターン1から開始
         for (int turn = 1; turn < maxTurn; turn++) {
             if (eventSchedule[turn] == null) {
-                Event selectedEvent = selectEventForTurn(turn);
+                Event selectedEvent;
+                if (turn == 1) {
+                    // 最初のターン（ターン1）は必ず通常イベント
+                    selectedEvent = eventTemplates[0]; // 通常イベント
+                } else {
+                    selectedEvent = selectEventForTurn(turn);
+                }
                 if (selectedEvent != null) {
                     placeEventWithForecast(selectedEvent, turn);
                 }
             }
         }
+        
+        // デバッグ用：全イベントスケジュールを出力
+        printDetailedEventSchedule();
     }
     
     // ターンに応じたイベントを抽選
@@ -442,6 +474,11 @@ class EventManager {
                 continue;
             }
             
+            // 米騒動は1年目と2シーズン（ターン6）以降のみ抽選対象
+            if (e.eventName.equals("米騒動") && turn < 6) {
+                continue; // ターン6未満では米騒動をスキップ
+            }
+            
             // triggerSeasonsに現在の季節が含まれているかチェック
             for (int s : e.triggerSeasons) {
                 if (s == season) {
@@ -451,20 +488,10 @@ class EventManager {
             }
         }
         
-        // 確率に基づいて抽選
-        float rand = random(1);
-        float cumulativeProbability = 0;
-        
-        for (Event e : candidates) {
-            cumulativeProbability += e.probability;
-            if (rand < cumulativeProbability) {
-                return e;
-            }
-        }
-        
-        // 候補がある場合は最初の候補を返す（通常は「通常」イベント）
+        // 候補から均等な確率でランダムに1つ選ぶ
         if (candidates.size() > 0) {
-            return candidates.get(0);
+            int randomIndex = int(random(candidates.size()));
+            return candidates.get(randomIndex);
         }
         
         // 候補がない場合は通常イベントを返す
@@ -482,6 +509,8 @@ class EventManager {
         // 予報がないイベントは通常配置
         if (event.forecastTiming == 0) {
             placeEvent(event, startTurn, false);
+            println("イベント設定: " + event.eventName + 
+                   " (ターン" + startTurn + "から" + event.duration + "ターン発生) [予報なし]");
             return;
         }
         

@@ -60,7 +60,7 @@ AudioPlayer[] bgms = new AudioPlayer[BGM_NAMES.length];
 
 // ========== ゲーム進行変数 ==========
 int currentTurn = 1;
-int maxTurn = 4 * 5 + 2; // 最大ターン数(5年 + 2シーズン(売却のため))
+int maxTurn = 4 * 3 + 2; // 最大ターン数(5年 + 2シーズン(売却のため))
 int[] currentYear_season = {1, 0}; // 年と季節を管理する配列。年, 季節(0:秋, 1:冬, 2:春, 3:夏, )
 
 // ========== UI状態変数 ==========
