@@ -131,67 +131,59 @@ class EventManager {
 
         // {"りょうおもい", "ほしひかり", "ゆめごこち", "つやおうじ"};
         // 豊作イベント（本来は2ターン持続、予報あり、70%で実際に発生）
-        templates.add(new Event("豊作", new int[]{0}, 0.7, 2, 1, 
+        templates.add(new Event("豊作（りょうおもい）", new int[]{0}, 0.7, 2, 1, 
                  "来季は豊作の予報！（2ターン持続予定）",  // 予報メッセージ
                  "今期は天候に恵まれ、各地でりょうおもいが豊作となりました", // 効果の理由
                  "供給増加・りょうおもいの買値が20%低下", // 効果の説明
                  false,  // 1回限りではない 
             () -> {
-                updateEventEffect(0.8);
-                // りょうおもいの買値を20%低下
-
-                println("豊作イベント発動！供給増加・価格低下（2ターン持続）");
+                applyHarvestEvent("豊作（りょうおもい）", 0);
+                println("豊作イベント発動！りょうおもいの供給増加・価格低下（2ターン持続）");
             },
             () -> {
-                resetEventEffect();
+                removeEventEffects("豊作（りょうおもい）");
                 println("豊作イベント終了");
             }
         ));
-        templates.add(new Event("豊作", new int[]{0}, 0.7, 2, 1, 
+        templates.add(new Event("豊作（ほしひかり）", new int[]{0}, 0.7, 2, 1, 
                  "来季は豊作の予報！（2ターン持続予定）", 
                  "今期は天候に恵まれ、各地でほしひかりが豊作となりました",
                  "供給増加・ほしひかりの買値が20%低下",
                  false,  // 1回限りではない 
             () -> {
-                updateEventEffect(0.8);
-                // ほしひかりの買値を20%低下
-                
-                println("豊作イベント発動！供給増加・価格低下（2ターン持続）");
+                applyHarvestEvent("豊作（ほしひかり）", 1);
+                println("豊作イベント発動！ほしひかりの供給増加・価格低下（2ターン持続）");
             },
             () -> {
-                resetEventEffect();
+                removeEventEffects("豊作（ほしひかり）");
                 println("豊作イベント終了");
             }
         ));
-        templates.add(new Event("豊作", new int[]{0}, 0.7, 2, 1, 
+        templates.add(new Event("豊作（ゆめごこち）", new int[]{0}, 0.7, 2, 1, 
                  "来季は豊作の予報！（2ターン持続予定）", 
                  "今期は天候に恵まれ、各地でゆめごこちが豊作となりました",
                  "供給増加・ゆめごこちの買値が20%低下",
                  false,  // 1回限りではない 
             () -> {
-                updateEventEffect(0.8);
-                // ゆめごこちの買値を20%低下
-                
-                println("豊作イベント発動！供給増加・価格低下（2ターン持続）");
+                applyHarvestEvent("豊作（ゆめごこち）", 2);
+                println("豊作イベント発動！ゆめごこちの供給増加・価格低下（2ターン持続）");
             },
             () -> {
-                resetEventEffect();
+                removeEventEffects("豊作（ゆめごこち）");
                 println("豊作イベント終了");
             }
         ));
-        templates.add(new Event("豊作", new int[]{0}, 0.7, 2, 1, 
+        templates.add(new Event("豊作（つやおうじ）", new int[]{0}, 0.7, 2, 1, 
                  "来季は豊作の予報！（2ターン持続予定）", 
                  "今期は天候に恵まれ、各地でつやおうじが豊作となりました",
                  "供給増加・つやおうじの買値が20%低下",
                  false,  // 1回限りではない 
             () -> {
-                updateEventEffect(0.8);
-                // つやおうじの買値を20%低下
-                
-                println("豊作イベント発動！供給増加・価格低下（2ターン持続）");
+                applyHarvestEvent("豊作（つやおうじ）", 3);
+                println("豊作イベント発動！つやおうじの供給増加・価格低下（2ターン持続）");
             },
             () -> {
-                resetEventEffect();
+                removeEventEffects("豊作（つやおうじ）");
                 println("豊作イベント終了");
             }
         ));
@@ -203,10 +195,12 @@ class EventManager {
                  "供給減少・農家さんから仕入れる米の量が20%減少",
                  false,  // 1回限りではない 
             () -> {
-                // 仕入れる米の量が20%減少させる
+                applyTyphoonEvent("台風接近！");
+                println("台風イベント発動！供給減少");
             },
             () -> {
-                // 仕入れる米の量を元に戻す
+                removeEventEffects("台風接近！");
+                println("台風イベント終了");
             }
         ));
         
@@ -217,12 +211,11 @@ class EventManager {
                  "輸送困難・買値20%上昇",
                  false,  // 1回限りではない 
             () -> {
-                updateEventEffect(1.2);
-                // 消費率を一時的に変更することはMarketクラスの構造上避ける
+                applySnowEvent("大雪");
                 println("大雪イベント発動！輸送困難");
             },
             () -> {
-                resetEventEffect();
+                removeEventEffects("大雪");
                 println("大雪イベント終了");
             }
         ));
@@ -234,10 +227,11 @@ class EventManager {
                  "古米、古古米の売値50%減少",
                  false,  // 1回限りではない 
             () -> {
+                applyHeatwaveEvent("猛暑");
                 println("猛暑イベント発動！古米の売値低下");
-                // 古米に対する特別な処理を後で追加可能
             },
             () -> {
+                removeEventEffects("猛暑");
                 println("猛暑イベント終了");
             }
         ));
@@ -249,13 +243,14 @@ class EventManager {
                  "全米の買値、売値2倍！経過後ゲーム終了",
                  true,  // 1回限り！ 
             () -> {
-                updateEventEffect(2.0);
+                applyRiceRiotEvent("米騒動");
                 println("米騒動発生！価格急騰！（2ターン持続）");
             },
             () -> {
-                resetEventEffect();
+                removeEventEffects("米騒動");
                 // 米騒動終了でゲーム強制終了
                 println("米騒動が収束しました");
+                // TODO: ゲーム終了処理
             }
         ));
 
@@ -265,24 +260,24 @@ class EventManager {
                  "りょうおもい米の売値が次の季節だけ1.5倍になる",
                  true,  // 1回限り！ 
             () -> {
-                // ゆめごこちの価格を1.5倍にする
+                applyChampionshipEvent("日本一決定戦（りょうおもい）", 0);
+                println("日本一決定戦！りょうおもいが優勝！");
             },
             () -> {
-                // りょうおもいの価格を元に戻す
-                resetEventEffect();
+                removeEventEffects("日本一決定戦（りょうおもい）");
             }
         ));
         templates.add(new Event("日本一決定戦", new int[]{0, 1, 2, 3}, 1.0, 1, 1, 
                  "日本一のお米を決める大会が次の季節に開催されるようだ", 
                  "日本一のお米を決める大会が開催！今回はゆめごこちが日本一に輝き価値が上昇！",
-                 "りょうおもい米の売値が次の季節だけ1.5倍になる",
+                 "ゆめごこち米の売値が次の季節だけ1.5倍になる",
                  true,  // 1回限り！ 
             () -> {
-                // ゆめごこちの価格を1.5倍にする
+                applyChampionshipEvent("日本一決定戦（ゆめごこち）", 2);
+                println("日本一決定戦！ゆめごこちが優勝！");
             },
             () -> {
-                // ゆめごこちの価格を元に戻す
-                resetEventEffect();
+                removeEventEffects("日本一決定戦（ゆめごこち）");
             }
         ));
 
@@ -292,33 +287,35 @@ class EventManager {
                  "買値が2.5倍になり、米の売値が2.5倍になる",
                  true,  // 1回限り！ 
             () -> {
-                // 買値を2.5倍にし、売値を2.5倍にする
+                applyProphecyEvent("オオカタ・ハズレールの大予言");
+                println("大予言が的中！価格が大幅に変動！");
             },
             () -> {
-                // ゆめごこちの価格を元に戻す
-                resetEventEffect();
+                removeEventEffects("オオカタ・ハズレールの大予言");
             }
         ));
 
-        templates.add(new Event("棚からぼたもち", new int[]{0, 1, 2, 3}, 1.0, 1, 0, 
+        templates.add(new Event("棚からぼたもち", new int[]{0, 1, 2, 3}, 1.0, 1, 0, "", 
                  "むかし作ったへそくりを見つけた！ラッキー！",
                  "所持金が2000pt増える(プレイヤーのみ)",
                  false,
             () -> {
-                // プレイヤーの所持金を2000pt増やす
+                applyBonusMoneyEvent("棚からぼたもち");
+                println("棚からぼたもち！プレイヤーに2000pt追加！");
             },
             () -> { /* 何もしない */ }
         ));
 
-        templates.add(new Event("大盤振米", new int[]{0}, 1.0, 1, 0, 
+        templates.add(new Event("大盤振米", new int[]{0}, 1.0, 1, 0, "", 
                  "農家さんからいつものお礼にお米を少し多くいただけた！",
                  "農家さんから買う米の量が1.2倍になる（小数点は切り上げ）",
                  false,
             () -> {
-                // 農家さんから買う米の量を1.2倍にする
+                applySupplyBonusEvent("大盤振米");
+                println("大盤振米！供給量1.2倍！");
             },
             () -> { 
-                // 農家さんから買う米の量を元に戻す
+                removeEventEffects("大盤振米");
              }
         ));
 
@@ -328,23 +325,25 @@ class EventManager {
                  "売値が1.5倍になる",
                  false,
             () -> {
-                // きりたんぽ鍋ブームでお米の売値を1.5倍にする
+                applyHotpotBoomEvent("きりたんぽ鍋ブーム");
+                println("きりたんぽ鍋ブーム！売値1.5倍！");
             },
             () -> { 
-                // きりたんぽ鍋ブーム終了でお米の売値を元に戻す
+                removeEventEffects("きりたんぽ鍋ブーム");
              }
         ));
 
         templates.add(new Event("不況", new int[]{1}, 0.8, 2, 2, 
-                 "有名インフルエンサーがきりたんぽ鍋を大絶賛、これは今年の冬にブームが到来するのでは...?",
+                 "経済指標の悪化が懸念される中...",
                  "やはり関税が原因で景気が悪化し、国民が節約を始めたため、米の価値が下がることに...",
                  "買値と売値が今年の間0.8倍になる",
                  true,
             () -> {
-                // 不況でお米の買値と売値を0.8倍にする
+                applyRecessionEvent("不況");
+                println("不況発生！価格が0.8倍に！");
             },
             () -> { 
-                // 不況終了でお米の買値と売値を元に戻す 
+                removeEventEffects("不況");
              }
         ));
 
@@ -354,22 +353,24 @@ class EventManager {
                  "消費量が1.5倍になる",
                  true,
             () -> {
-                // 消費量を1.5倍にする
+                applyHoardingEvent("買い占め");
+                println("買い占め発生！消費量1.5倍！");
             },
             () -> { 
-                // 消費量を元に戻す
+                removeEventEffects("買い占め");
              }
         ));
 
-        templates.add(new Event("海外からの安価な米の輸入", new int[]{0, 1, 2, 3}, 1.0, 1, 0, 
+        templates.add(new Event("海外からの安価な米の輸入", new int[]{0, 1, 2, 3}, 1.0, 1, 0, "", 
                  "政府が緊急経済対策として、海外から安価な米を大量に輸入した。市場には米が溢れ、国産米の価格も下落してしまった。",
                  "市場の消費が低下し、売値が0.9倍になる。買値が0.8倍になる",
                  true,
             () -> {
-                // 消費が低下し、売値を0.9倍、買値を0.8倍にする
+                applyImportEvent("海外からの安価な米の輸入");
+                println("安価な米の輸入！価格低下！");
             },
             () -> { 
-                // 市場の消費量を元に戻し、売値と買値を元に戻す
+                removeEventEffects("海外からの安価な米の輸入");
              }
         ));
 
@@ -379,23 +380,25 @@ class EventManager {
                  "ボランティアが増え、今年の米の収穫量が1割増加する。",
                  false,
             () -> {
-                // 今年の米の収穫量を1割増加させる
+                applyAgricultureBoomEvent("農業体験ブーム");
+                println("農業体験ブーム！収穫量1.1倍！");
             },
             () -> { 
-                // 今年の米の収穫量を元に戻す
+                removeEventEffects("農業体験ブーム");
              }
         ));
 
         templates.add(new Event("農家の後継者問題", new int[]{0}, 1.0, 1, 3, 
-                 "次の季節に農業体験イベントが開催されるようだ",
+                 "農家の高齢化が進む中...",
                  "お世話になっている農家さんが、高齢のため今年で引退することに…。後継者がおらず、来年から米を分けてもらえなくなってしまう。",
                  "来年から米を分けてくれる農家が1軒へり、今年の米の収穫量が1割減少する。",
                  false,
             () -> {
-                // 今年の米の収穫量を1割増加させる
+                applyFarmerRetirementEvent("農家の後継者問題");
+                println("農家の後継者問題！収穫量0.9倍！");
             },
             () -> { 
-                // 今年の米の収穫量を元に戻す
+                removeEventEffects("農家の後継者問題");
              }
         ));
 

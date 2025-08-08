@@ -54,12 +54,28 @@ class Broker {
   
   //米を買う関数　引数:米のid, 個数　返り値:購入成功->true 購入失敗->false
   boolean buyRice(int riceID, int count) {
-    int cost = int(riceBrandsInfo[riceID].point * RICE_BUY_RATIO) * count;
+    // EventEffectの効果を適用した買値を計算
+    float priceMultiplier = 1.0;
+    if (effectManager != null) {
+      priceMultiplier = effectManager.getBrandBuyPriceMultiplier(riceID);
+    }
+    int cost = int(riceBrandsInfo[riceID].point * RICE_BUY_RATIO * priceMultiplier) * count;
     if (cost > wallet) {
       return false;
     }else{
       wallet -= cost;
-      handRices[riceID][0] += count;
+      
+      // EventEffectの仕入れ量倍率を適用
+      float supplyMultiplier = 1.0;
+      if (effectManager != null) {
+        supplyMultiplier = effectManager.getSupplyMultiplier();
+      }
+      int actualCount = int(count * supplyMultiplier);
+      if (actualCount < count && supplyMultiplier > 1.0) {
+        actualCount = count + 1; // 切り上げ処理（大盤振米の「小数点は切り上げ」に対応）
+      }
+      
+      handRices[riceID][0] += actualCount;
       return true;
     }
   }

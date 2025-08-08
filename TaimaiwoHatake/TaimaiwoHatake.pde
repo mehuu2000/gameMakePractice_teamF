@@ -240,6 +240,7 @@ void initGame() {
   gameLogic = new GameLogic();
   player = new Player(PLAYER_POINT);
   ai = new AI(ENEMY_POINT);
+  effectManager = new EventEffectManager();  // イベント効果管理の初期化
   eventManager = new EventManager();
   gameState = new GameState();
   
@@ -311,12 +312,20 @@ void initButton() {
     brandMinus1Buttons[i] = new TriangleButton((width * 0.3) + 670, 216 + (i*60), true, () -> {
       if (selectedAmounts[riceBrandRanking[index]] > 0) {
         selectedAmounts[riceBrandRanking[index]]--;
-        totalPrice -= int(riceBrandsInfo[riceBrandRanking[index]].point * RICE_BUY_RATIO);
+        float effectMultiplier = 1.0;
+        if (effectManager != null) {
+          effectMultiplier = effectManager.getBrandBuyPriceMultiplier(riceBrandRanking[index]);
+        }
+        totalPrice -= int(riceBrandsInfo[riceBrandRanking[index]].point * RICE_BUY_RATIO * effectMultiplier);
       }
     });
     brandPlus1Buttons[i] = new TriangleButton((width * 0.3) + 730, 216 + (i*60), false, () -> {
       selectedAmounts[riceBrandRanking[index]]++;
-      totalPrice += int(riceBrandsInfo[riceBrandRanking[index]].point * RICE_BUY_RATIO);
+      float effectMultiplier = 1.0;
+      if (effectManager != null) {
+        effectMultiplier = effectManager.getBrandBuyPriceMultiplier(riceBrandRanking[index]);
+      }
+      totalPrice += int(riceBrandsInfo[riceBrandRanking[index]].point * RICE_BUY_RATIO * effectMultiplier);
     });
   }
 

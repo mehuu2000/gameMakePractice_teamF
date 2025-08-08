@@ -153,9 +153,13 @@ class Market {
         // 配列をシャッフル
         shuffleArray(brandIds);
 
-        // 消費数を決定
-        int startCount = int(getTotalStock() * CONSUME_MIN_RATIO);
-        int finishCount = int(getTotalStock() * CONSUME_MAX_RATIO);
+        // 消費数を決定（EventEffectの消費率倍率を適用）
+        float consumptionMultiplier = 1.0;
+        if (effectManager != null) {
+            consumptionMultiplier = effectManager.getConsumptionMultiplier();
+        }
+        int startCount = int(getTotalStock() * CONSUME_MIN_RATIO * consumptionMultiplier);
+        int finishCount = int(getTotalStock() * CONSUME_MAX_RATIO * consumptionMultiplier);
         int consumeCount = int(max(2, random(startCount, finishCount)));
         // consumeCountがbrandIds.lengthを超えないようにする
         consumeCount = min(consumeCount, brandIds.length);
@@ -198,9 +202,15 @@ class Market {
         float totalSupplyAdjustmentFactor = (this.supplyLimit / totalAmount); // 供給数補正係数
         for (int i=0; i<riceBrandsInfo.length; i++) {
             float rarityAdjustmentFactor = totalAmount / (marketStock[i]+2); // 希少性補正係数
+            
+            // EventEffectの売値倍率を取得
+            float sellPriceMultiplier = 1.0;
+            if (effectManager != null) {
+                sellPriceMultiplier = effectManager.getBrandSellPriceMultiplier(i);
+            }
 
-            // ブランドの価格を更新
-            riceBrandsInfo[i].point = int(BASE_CARD_POINTS[i] * (totalSupplyAdjustmentFactor * 0.8) * rarityAdjustmentFactor * 0.7 * eventEffect);
+            // ブランドの価格を更新（売値の計算）
+            riceBrandsInfo[i].point = int(BASE_CARD_POINTS[i] * (totalSupplyAdjustmentFactor * 0.8) * rarityAdjustmentFactor * 0.7 * sellPriceMultiplier);
             
             // 価格が0以下にならないように制御
             if (riceBrandsInfo[i].point <= LOWER_LIMIT_RICE_POINT) {

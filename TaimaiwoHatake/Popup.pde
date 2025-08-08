@@ -206,18 +206,43 @@ class Popup {
     fill(0);
     noStroke();
 
-    // 価格表示
+    // 価格表示（EventEffectの効果を適用）
     textAlign(RIGHT, CENTER);
     for (int i=0; i<riceBrandsInfo.length; i++) {
-      text(int(riceBrandsInfo[riceBrandRanking[i]].point * RICE_BUY_RATIO) + "pt", (width * 0.3) + 576, 230 + (i*60));
+      float effectMultiplier = 1.0;
+      if (effectManager != null) {
+        effectMultiplier = effectManager.getBrandBuyPriceMultiplier(riceBrandRanking[i]);
+      }
+      text(int(riceBrandsInfo[riceBrandRanking[i]].point * RICE_BUY_RATIO * effectMultiplier) + "pt", (width * 0.3) + 576, 230 + (i*60));
     }
 
     // 購入数表示
     textAlign(CENTER, CENTER);
     text("購入数", (width * 0.3) + 700, 170);
+    
+    // 仕入れ量倍率を取得
+    float supplyMultiplier = 1.0;
+    if (effectManager != null) {
+      supplyMultiplier = effectManager.getSupplyMultiplier();
+    }
+    
     for (int i=0; i<riceBrandsInfo.length; i++) {
         brandMinus1Buttons[i].display();
-        text(selectedAmounts[riceBrandRanking[i]], (width * 0.3) + 700, 230 + (i*60));
+        int displayAmount = selectedAmounts[riceBrandRanking[i]];
+        
+        // 仕入れ量倍率が1.0以外の場合は実際の取得量も表示
+        if (supplyMultiplier != 1.0 && displayAmount > 0) {
+          int actualAmount = int(displayAmount * supplyMultiplier);
+          if (actualAmount < displayAmount && supplyMultiplier > 1.0) {
+            actualAmount = displayAmount + 1; // 切り上げ
+          }
+          textSize(20);
+          text(displayAmount + "→" + actualAmount, (width * 0.3) + 700, 230 + (i*60));
+          textSize(36);
+        } else {
+          text(displayAmount, (width * 0.3) + 700, 230 + (i*60));
+        }
+        
         brandPlus1Buttons[i].display();
     }
 
