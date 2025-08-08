@@ -262,6 +262,7 @@ void initGame() {
   images[3] = loadImage("enemy.png");
   images[4] = loadImage("topview_car_truck_player.png");
   images[5] = loadImage("topview_car_truck_enemy.png");
+  images[6] = loadImage("background.png");
   
   
   
@@ -391,6 +392,10 @@ void draw() {
     ui.drawTitleScreen();
     break;
   case PLAYING:
+    background(100);
+    tint(255, 150);
+    image(images[6], 0, 0);
+    noTint();
     drawGameScreen();
     break;
   }

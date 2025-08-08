@@ -7,7 +7,7 @@ class RightPanel {
 
     // 背景
     fill(250);
-    rect(rightX, 0, rightWidth, height);
+    //rect(rightX, 0, rightWidth, height);
 
     textAlign(CENTER);
 
@@ -26,8 +26,9 @@ class RightPanel {
     drawHandCards();
     drawPlayerFieldCards();
     drawEnemyFieldCards();
+    drawEventName();
+    drawNewsName();
     drawButtons();
-    
   }
 
   /* 以下は実装例 */
@@ -172,7 +173,8 @@ class RightPanel {
     noStroke();
     fill(0);
   }
-
+  
+  // 写真の描画
   void drawPhoto() {
     // トラックの描画
     image(images[0], width - 180, height/2 + 110, 219, 137);
@@ -264,6 +266,33 @@ class RightPanel {
 
     return false;
   }
+    
+  // 効果名の描画
+  void drawEventName(){
+    fill(240);
+    stroke(5);
+    rect(width - 150, height/3 - 50, 160, 60, 10);
+    
+    fill(0);
+    textSize(40);
+    text("効果名", width - 75, height/3 - 20);
+    
+    noStroke();
+  }
+  
+    // 予報の描画
+  void drawNewsName(){
+    fill(240);
+    stroke(5);
+    rect(width - 150, height/3 + 50, 160, 60, 10);
+    
+    fill(0);
+    textSize(40);
+    text("予報", width - 75, height/3 + 80);
+    
+    noStroke();
+  }
+    
 
   void drawButtons() {
     playDescribeButton.display();
