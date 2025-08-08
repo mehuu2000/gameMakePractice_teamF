@@ -411,11 +411,13 @@ void mouseClicked() {
           } else if (brandMinus1Buttons[i].onClicked()) {
             // 内部で既に実行済み
             return;
-          } else if (buyButton.onClicked()) {
-            // 内部で既に実行済み
-          } else if (closeBuyPopupButton.onClicked()) {
-            // 内部で既に実行済み
           }
+        }
+        // 購入関連ボタンをループの外でチェック
+        if (buyButton.onClicked()) {
+          // 内部で既に実行済み
+        } else if (closeBuyPopupButton.onClicked()) {
+          // 内部で既に実行済み
         }
       } else if (popupType == "submit") {
         if (minus1SelectedButton.onClicked()) {
