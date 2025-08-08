@@ -96,7 +96,7 @@ final float LEFT_PANEL_WIDTH = 0.3;   // 左パネルの幅（30%）
 final float RIGHT_PANEL_WIDTH = 0.7;  // 右パネルの幅（70%）
 final int[] BASE_CARD_POINTS = {100, 110, 120, 130}; // 基本のカードポイントの係数
 final int LOWER_LIMIT_RICE_POINT= 10; // 米の下限価格
-final int PHOTO_SHEETS = 10; //画像の上限数
+final int PHOTO_SHEETS = 20; //画像の上限数
 
 // ========== 変数（変更可能） ==========
 RiceBrand[] riceBrandsInfo;
@@ -279,6 +279,8 @@ void initGame() {
   images[7] = loadImage("background_winter.jpeg");
   images[8] = loadImage("background_spring.jpeg");
   images[9] = loadImage("background_summer.jpeg");
+  images[10] = loadImage("win.png");
+  images[11] = loadImage("lose.png");
   
   
   
@@ -327,7 +329,12 @@ void initButton() {
     }
   });
   plus1SelectedButton = new TriangleButton(1150, 300, false, () -> {
-    selectedAmounts[selectedBrandId]++;
+    if (popupType == "submit" && selectedAmounts[selectedBrandId] < player.getSumHandRice(selectedBrandId)) {
+      selectedAmounts[selectedBrandId]++;
+    }
+    if (popupType == "return" && selectedAmounts[selectedBrandId] < player.getSumLoadRice(selectedBrandId)) {
+      selectedAmounts[selectedBrandId]++;
+    }
   });
 
   brandPlus1Buttons = new TriangleButton[riceBrandsInfo.length];
@@ -432,6 +439,9 @@ void draw() {
     }
     noTint();
     drawGameScreen();
+    break;
+  case FINISHED:
+    ui.drawResultScreen();
     break;
   }
 
