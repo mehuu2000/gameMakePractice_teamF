@@ -13,7 +13,8 @@ class AI extends Broker {
   void aiAction() {
     // 購入プロセス ランキング順に安い方から買っていく
     int[] ranking = market.getBrandRanking();
-    int eventbuyCount = 0;
+    int eventbuyCount;
+    println(eventManager.eventSchedule[currentTurn].eventName);
     switch (eventManager.eventSchedule[currentTurn].eventName) {
       case "台風":
       case "大雪":
