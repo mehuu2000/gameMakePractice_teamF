@@ -36,6 +36,27 @@ class GameState {
     }
     closePopup();
   }
+  
+  // 購入してから出荷する関数
+  void buyAndShip() {
+    if (player.wallet - totalPrice < 0) {
+      return; // 残金が足りない場合は何もしない
+    }
+    for (int i = 0; i < riceBrandsInfo.length; i++){
+      player.buyRice(i, selectedAmounts[i]);
+    }
+    
+    // ポップアップキューをクリアしてから閉じる
+    clearPopupQueue();
+    closePopup();
+    
+    // 出荷前の市場在庫を保存（fluctuationポップアップで使用）
+    marketStockKeep = market.marketStock.clone();
+    
+    player.shipRice();
+    
+    endTurn(); // 出荷後にターンを進める
+  }
 
   // 提出関数 ボタンでつかうよ
   void playerLoadRice() {
@@ -97,7 +118,8 @@ class GameState {
     
     // 注：marketStockKeepはplayerShipRIce()で既に保存済み
     
-    // 出荷処理
+    // AIの処理
+    ai.aiAction(); // 購入と出荷準備のみ
     ai.shipRice(); // AIの出荷処理
 
     // ブローカーの出荷状態を保存 (プレイヤーの利益表示ポップアップで使用)
