@@ -161,7 +161,7 @@ class RightPanel {
     
     if(player.getSumLoadRice(3) > 0){
       if (mouseX > (width * 0.3) + 625 && mouseX < (width * 0.3) + 695 &&
-      mouseY > height/2 + 65 && mouseY < height/2 + 45) {
+      mouseY > height/2 - 65 && mouseY < height/2 + 45) {
       println("a");
       gameState.selectBrandBack(3);
       return true;
