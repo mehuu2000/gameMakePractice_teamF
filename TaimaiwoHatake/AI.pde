@@ -35,10 +35,10 @@ class AI extends Broker {
         break;
       case "豊作":
       case "花見需要":
-        eventbuyCount = 3;
+        eventbuyCount = 4;
         break;
       default:
-        eventbuyCount = 2;
+        eventbuyCount = 3;
         break;
     }
     for (int i = 0; i < riceBrandsInfo.length; i++) {

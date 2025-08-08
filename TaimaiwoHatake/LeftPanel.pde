@@ -15,10 +15,11 @@ class LeftPanel {
     drawMarketInfo();
     drawSupply();
     drawEnvironment();
+    drawPieChart();
   }
 
   /* 以下は実装例 */
-
+  
   // 市場の情報を描画
   void drawMarketInfo() {
     fill(240);
@@ -81,7 +82,7 @@ class LeftPanel {
 
   // 環境の描画
   void drawEnvironment() {
-    fill(240);
+    /*fill(240);
     rect(10, height/2 + 20, (width * 0.3) - 20, height/2 - 30);
     
     // 現在のイベントを取得
@@ -135,6 +136,30 @@ class LeftPanel {
       text("残り " + remainingTurns + " ターン", (width*0.3)/2, height - 50);
     }
     
-    textAlign(CENTER, CENTER);
+    textAlign(CENTER, CENTER);*/
+  }
+  
+    
+  void drawPieChart() {
+    float sizeFactor = 300 / market.supplyLimit;
+    int totalStock = market.getTotalStock();
+    float sumRadian = 0;
+    for (int i = 0; i < riceBrandsInfo.length; i++) {
+      int riceID = riceBrandRanking[i];
+      fill(riceBrandsInfo[riceID].brandColor);
+      float radian = 1.0 * market.getBrandStock(riceID) / totalStock * TWO_PI;
+      arc(200, 550, totalStock*sizeFactor, totalStock*sizeFactor,
+          sumRadian-HALF_PI, sumRadian+radian-HALF_PI);
+      sumRadian += radian;
+    }
+    noFill();
+    stroke(255,0,0);
+    strokeWeight(10);
+    circle(200, 550, market.supplyLimit*sizeFactor);
+    strokeWeight(1);
+    stroke(0);
+    textSize(25);
+    fill(0,0,0);
+    text("SUPPLY LIMIT",100, 450);
   }
 }
