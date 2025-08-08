@@ -309,12 +309,12 @@ void initButton() {
     brandMinus1Buttons[i] = new TriangleButton((width * 0.3) + 670, 216 + (i*60), true, () -> {
       if (selectedAmounts[riceBrandRanking[index]] > 0) {
         selectedAmounts[riceBrandRanking[index]]--;
-        totalPrice -= riceBrandsInfo[riceBrandRanking[index]].point;
+        totalPrice -= int(riceBrandsInfo[riceBrandRanking[index]].point * RICE_BUY_RATIO);
       }
     });
     brandPlus1Buttons[i] = new TriangleButton((width * 0.3) + 730, 216 + (i*60), false, () -> {
       selectedAmounts[riceBrandRanking[index]]++;
-      totalPrice += riceBrandsInfo[riceBrandRanking[index]].point;
+      totalPrice += int(riceBrandsInfo[riceBrandRanking[index]].point * RICE_BUY_RATIO);
     });
   }
 
@@ -437,6 +437,10 @@ void mouseClicked() {
           // 内部で既に実行済み
         } else if (closePopupButton.onClicked()) {
           // 内部で既に実行済み
+        } else if (minus1SelectedButton.onClicked()) {
+          // 内部で既に実行済み
+        } else if (plus1SelectedButton.onClicked()) {
+          // 内部で既に実行済み
         }
       } else if (popupType == "turnEnd") {
         if (closeEndPopupButton.onClicked()) {
@@ -447,6 +451,8 @@ void mouseClicked() {
       }
     } else {
       if (rightPanel.onBrand1Clicked()) {
+        // 内部で既に実行済み
+      } else if (rightPanel.onLoadBrandClicked()) {
         // 内部で既に実行済み
       } else if (playDescribeButton.onClicked()) {
         // 内部で既に実行済み

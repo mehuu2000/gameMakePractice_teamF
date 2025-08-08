@@ -90,7 +90,7 @@ class GameState {
   // 場に出してる米をクリックした時(返却)
   void selectBrandBack(int brandId) {
     selectedBrandId = brandId;
-    showPopup("back");
+    showPopup("return");
   }
 
   // 選択した手札のブランドの枚数を返す(ポップアップの総数用)
