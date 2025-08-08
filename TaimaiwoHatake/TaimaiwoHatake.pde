@@ -125,7 +125,7 @@ void resetEventEffect() {
 int[] getCurrentYear() {
   int[] year_season = new int[currentYear_season.length];
   year_season[0] = int((currentTurn-1)/4) + 1; // 年
-  year_season[1] = currentTurn % 4; // 季節(0:秋, 1:冬, 2:春, 3:夏)
+  year_season[1] = (currentTurn - 1) % 4; // 季節(0:秋, 1:冬, 2:春, 3:夏)
   return year_season;
 }
 
