@@ -70,9 +70,24 @@ class Broker {
       if (effectManager != null) {
         supplyMultiplier = effectManager.getSupplyMultiplier();
       }
-      int actualCount = int(count * supplyMultiplier);
-      if (actualCount < count && supplyMultiplier > 1.0) {
-        actualCount = count + 1; // 切り上げ処理（大盤振米の「小数点は切り上げ」に対応）
+      
+      // 実際の仕入れ量を計算
+      float rawAmount = count * supplyMultiplier;
+      int actualCount;
+      
+      // 切り上げ・切り下げの判定
+      if (supplyMultiplier < 1.0) {
+        // 減少時（台風など）は切り上げ（最小1枚を保証）
+        actualCount = (int)Math.ceil(rawAmount);
+        if (actualCount < 1 && count > 0) {
+          actualCount = 1;  // 0枚にならないように
+        }
+      } else if (supplyMultiplier > 1.0) {
+        // 増加時（大盤振米など）も切り上げ
+        actualCount = (int)Math.ceil(rawAmount);
+      } else {
+        // 倍率1.0の場合はそのまま
+        actualCount = count;
       }
       
       handRices[riceID][0] += actualCount;

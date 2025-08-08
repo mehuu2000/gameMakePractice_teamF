@@ -97,13 +97,15 @@ class ForecastInfo {
 class EventManager {
     Event[] eventTemplates;
     Event[] eventSchedule;
-    ForecastInfo[] forecastSchedule;
+    ArrayList<ForecastInfo>[] forecastSchedule; // 各ターンに複数の予報を保持できるように変更
     Event activeEvent;
     int activeEventRemainingTurns;
     ArrayList<String> usedOnceOnlyEvents; // 使用済みの1回限りイベント名を記録
     
     EventManager() {
         usedOnceOnlyEvents = new ArrayList<String>();
+        activeEvent = null;  // 初期化
+        activeEventRemainingTurns = 0;  // 初期化
         initializeEventTemplates();
         generateEventSchedule();
     }
@@ -250,7 +252,7 @@ class EventManager {
         templates.add(new Event("日本一決定戦", new int[]{0, 1, 2, 3}, 1.0, 1, 1, 
                  "日本一のお米を決める大会が次の季節に開催されるようだ", 
                  "日本一のお米を決める大会が開催！今回はりょうおもいが日本一に輝き価値が上昇！",
-                 "りょうおもい米の売値が次の季節だけ1.5倍になる",
+                 "りょうおもい米の売値が1.5倍になる",
                  true,  // 1回限り！ 
             () -> {
                 applyChampionshipEvent("日本一決定戦（りょうおもい）", 0);
@@ -264,7 +266,7 @@ class EventManager {
         templates.add(new Event("日本一決定戦", new int[]{0, 1, 2, 3}, 1.0, 1, 1, 
                  "日本一のお米を決める大会が次の季節に開催されるようだ", 
                  "日本一のお米を決める大会が開催！今回はほしひかりが日本一に輝き価値が上昇！",
-                 "ほしひかり米の売値が次の季節だけ1.5倍になる",
+                 "ほしひかり米の売値が1.5倍になる",
                  true,  // 1回限り！ 
             () -> {
                 applyChampionshipEvent("日本一決定戦（ほしひかり）", 1);
@@ -278,7 +280,7 @@ class EventManager {
         templates.add(new Event("日本一決定戦", new int[]{0, 1, 2, 3}, 1.0, 1, 1, 
                  "日本一のお米を決める大会が次の季節に開催されるようだ", 
                  "日本一のお米を決める大会が開催！今回はゆめごこちが日本一に輝き価値が上昇！",
-                 "ゆめごこち米の売値が次の季節だけ1.5倍になる",
+                 "ゆめごこち米の売値が1.5倍になる",
                  true,  // 1回限り！ 
             () -> {
                 applyChampionshipEvent("日本一決定戦（ゆめごこち）", 2);
@@ -292,7 +294,7 @@ class EventManager {
         templates.add(new Event("日本一決定戦", new int[]{0, 1, 2, 3}, 1.0, 1, 1, 
                  "日本一のお米を決める大会が次の季節に開催されるようだ", 
                  "日本一のお米を決める大会が開催！今回はつやおうじが日本一に輝き価値が上昇！",
-                 "つやおうじ米の売値が次の季節だけ1.5倍になる",
+                 "つやおうじ米の売値が1.5倍になる",
                  true,  // 1回限り！ 
             () -> {
                 applyChampionshipEvent("日本一決定戦（つやおうじ）", 3);
@@ -330,7 +332,7 @@ class EventManager {
 
         templates.add(new Event("大盤振米", new int[]{0}, 1.0, 1, 0, "", 
                  "農家さんからいつものお礼にお米を少し多くいただけた！",
-                 "農家さんから買う米の量が1.2倍になる（小数点は切り上げ）",
+                 "農家さんから受け取る米の量が1.2倍になる（小数点は切り上げ）",
                  false,
             () -> {
                 applySupplyBonusEvent("大盤振米");
@@ -383,7 +385,7 @@ class EventManager {
              }
         ));
 
-        templates.add(new Event("海外からの安価な米の輸入", new int[]{0, 1, 2, 3}, 1.0, 1, 0, "", 
+        templates.add(new Event("外国米の大量輸入", new int[]{0, 1, 2, 3}, 1.0, 1, 0, "", 
                  "政府が緊急経済対策として、海外から安価な米を大量に輸入した。市場には米が溢れ、国産米の価格も下落してしまった。",
                  "市場の消費が低下し、売値が0.9倍になる。買値が0.8倍になる",
                  true,
@@ -439,7 +441,10 @@ class EventManager {
     // ゲーム開始時に全イベントを抽選
     void generateEventSchedule() {
         eventSchedule = new Event[maxTurn];
-        forecastSchedule = new ForecastInfo[maxTurn];
+        forecastSchedule = new ArrayList[maxTurn];
+        for (int i = 0; i < maxTurn; i++) {
+            forecastSchedule[i] = new ArrayList<ForecastInfo>();
+        }
         
         // ターン0は何も設定しない（イベントなし）
         // ターン1から開始
@@ -520,12 +525,13 @@ class EventManager {
         // 予報を配置（元の持続時間を伝える）
         int forecastTurn = startTurn - event.forecastTiming;
         if (forecastTurn >= 0 && forecastTurn < maxTurn) {
-            forecastSchedule[forecastTurn] = new ForecastInfo(
+            // 複数の予報を追加できるようにadd()を使用
+            forecastSchedule[forecastTurn].add(new ForecastInfo(
                 event.forecastMessage,
                 event.eventName,
                 willActuallyOccur,
                 event.originalDuration
-            );
+            ));
         }
         
         if (willActuallyOccur) {
@@ -570,44 +576,70 @@ class EventManager {
     
     // 現在のターンのイベント処理
     void processCurrentTurn() {
-        // 1ターン目（currentTurn == 1）は何もしない
-        if (currentTurn == 1) return;
-        
-        if (currentTurn >= eventSchedule.length) return;
-        
-        Event currentEvent = eventSchedule[currentTurn];
-        
-        // 新しいイベントの開始
-        if (currentEvent != null && currentEvent != activeEvent) {
-            // 前のイベントが残っていたら終了
-            if (activeEvent != null && !activeEvent.isDummy) {
-                activeEvent.end();
-            }
-            
-            // 新イベント開始
-            activeEvent = currentEvent;
-            activeEventRemainingTurns = currentEvent.duration;
-            
-            if (!currentEvent.isDummy) {
-                // 実際のイベント発動
-                activeEvent.start();
-                println("イベント「" + currentEvent.eventName + 
-                       "」が発動しました！（" + currentEvent.duration + "ターン持続）");
-            } else {
-                // ダミーイベントの場合
-                println("予報された「" + currentEvent.eventName + 
-                       "」は発生しませんでした。");
-            }
+        // 1ターン目（currentTurn == 1）は通常イベントのみ
+        if (currentTurn == 1) {
+            activeEvent = null;  // 念のため初期化
+            activeEventRemainingTurns = 0;
+            return;
         }
         
-        // イベント継続カウント
-        if (activeEvent != null) {
-            activeEventRemainingTurns--;
-            if (activeEventRemainingTurns <= 0) {
-                if (!activeEvent.isDummy) {
+        // currentTurnは1から始まるが、配列は0から始まるので-1する
+        int arrayIndex = currentTurn - 1;
+        if (arrayIndex >= eventSchedule.length) return;
+        
+        Event currentEvent = eventSchedule[arrayIndex];
+        
+        // 新しいイベントの開始（前のターンと異なるイベント、またはnullから始まる場合）
+        if (currentEvent != null) {
+            // 初回または違うイベントの場合のみ開始処理
+            if (activeEvent == null || activeEvent != currentEvent) {
+                // 前のイベントが残っていたら終了
+                if (activeEvent != null && !activeEvent.isDummy) {
                     activeEvent.end();
+                    println("イベント「" + activeEvent.eventName + "」が終了しました。");
                 }
+                
+                // 新イベント開始
+                activeEvent = currentEvent;
+                activeEventRemainingTurns = currentEvent.duration;
+                
+                if (!currentEvent.isDummy) {
+                    // 実際のイベント発動（初回のみ）
+                    activeEvent.start();
+                    println("イベント「" + currentEvent.eventName + 
+                           "」が発動しました！（" + currentEvent.duration + "ターン持続）");
+                } else {
+                    // ダミーイベントの場合
+                    println("予報された「" + currentEvent.eventName + 
+                           "」は発生しませんでした。");
+                    // ダミーイベントは即座に終了
+                    activeEvent = null;
+                    activeEventRemainingTurns = 0;
+                }
+            } else {
+                // 継続中のイベントの場合（activeEvent == currentEvent）
+                // 残りターン数を減らす
+                if (activeEventRemainingTurns > 0) {
+                    activeEventRemainingTurns--;
+                    println("イベント「" + activeEvent.eventName + 
+                           "」継続中（残り" + activeEventRemainingTurns + "ターン）");
+                    if (activeEventRemainingTurns <= 0) {
+                        // 持続ターンが終了したら終了処理
+                        if (!activeEvent.isDummy) {
+                            activeEvent.end();
+                            println("イベント「" + activeEvent.eventName + "」が終了しました。");
+                        }
+                        activeEvent = null;
+                    }
+                }
+            }
+        } else {
+            // currentEventがnullの場合、前のイベントを終了
+            if (activeEvent != null && !activeEvent.isDummy) {
+                activeEvent.end();
+                println("イベント「" + activeEvent.eventName + "」が終了しました。");
                 activeEvent = null;
+                activeEventRemainingTurns = 0;
             }
         }
     }
@@ -620,15 +652,31 @@ class EventManager {
         return null;
     }
     
-    // 現在の予報を取得
+    // 現在の予報を取得（複数の予報がある場合は最初の1つのみ返す）
     ForecastInfo getCurrentForecast() {
         // 1ターン目は予報なし
         if (currentTurn == 1) return null;
         
-        if (currentTurn < forecastSchedule.length) {
-            return forecastSchedule[currentTurn];
+        // currentTurnは1から始まるが、配列は0から始まるので-1する
+        int arrayIndex = currentTurn - 1;
+        if (arrayIndex < forecastSchedule.length && forecastSchedule[arrayIndex].size() > 0) {
+            return forecastSchedule[arrayIndex].get(0); // 最初の予報を返す
         }
         return null;
+    }
+    
+    // 現在の全ての予報を取得
+    ArrayList<ForecastInfo> getAllCurrentForecasts() {
+        if (currentTurn == 1) {
+            return new ArrayList<ForecastInfo>();
+        }
+        
+        // currentTurnは1から始まるが、配列は0から始まるので-1する
+        int arrayIndex = currentTurn - 1;
+        if (arrayIndex >= forecastSchedule.length) {
+            return new ArrayList<ForecastInfo>();
+        }
+        return forecastSchedule[arrayIndex];
     }
     
     // デバッグ用：イベントスケジュールを詳細出力
@@ -653,10 +701,12 @@ class EventManager {
                 println("イベントなし");
             }
             
-            if (forecastSchedule[i] != null) {
-                ForecastInfo f = forecastSchedule[i];
-                String occurStatus = f.willOccur ? " ✓" : " ✗";
-                println("  └ 予報: " + f.eventName + occurStatus);
+            // 複数の予報を表示
+            if (forecastSchedule[i] != null && forecastSchedule[i].size() > 0) {
+                for (ForecastInfo f : forecastSchedule[i]) {
+                    String occurStatus = f.willOccur ? " ✓" : " ✗";
+                    println("  └ 予報: " + f.eventName + occurStatus);
+                }
             }
         }
     }

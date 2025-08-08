@@ -232,9 +232,18 @@ class Popup {
         
         // 仕入れ量倍率が1.0以外の場合は実際の取得量も表示
         if (supplyMultiplier != 1.0 && displayAmount > 0) {
-          int actualAmount = int(displayAmount * supplyMultiplier);
-          if (actualAmount < displayAmount && supplyMultiplier > 1.0) {
-            actualAmount = displayAmount + 1; // 切り上げ
+          float rawAmount = displayAmount * supplyMultiplier;
+          int actualAmount;
+          
+          if (supplyMultiplier < 1.0) {
+            // 減少時（台風など）は切り上げ（最小1枚を保証）
+            actualAmount = (int)Math.ceil(rawAmount);
+            if (actualAmount < 1) {
+              actualAmount = 1;
+            }
+          } else {
+            // 増加時（大盤振米など）も切り上げ
+            actualAmount = (int)Math.ceil(rawAmount);
           }
           textSize(20);
           text(displayAmount + "→" + actualAmount, (width * 0.3) + 700, 230 + (i*60));
@@ -532,12 +541,13 @@ class Popup {
     text("イベントが発生しました！", (width * 0.3) + 460, 210);
     
     // イベント名
-    textAlign(LEFT, CENTER);
-    text("【" + currentEvent.eventName + "】", (width * 0.3) + 130, 320);
+    textAlign(LEFT, TOP);
+    text("【" + currentEvent.eventName + "】", (width * 0.3) + 150, 280);
 
     // イベントの説明（なぜ起こったか）
-    textSize(24);
-    text(currentEvent.effectDescription, (width * 0.3) + 150, 380, (width * 0.7) - 250, 100);
+    textSize(26);
+    textAlign(LEFT, TOP);
+    text(currentEvent.effectDescription, (width * 0.3) + 150, 340, (width * 0.7) - 300, 200);
     
     // 持続時間
     // if (currentEvent.duration > 1) {
@@ -546,6 +556,7 @@ class Popup {
     //   text("（" + currentEvent.duration + "ターン持続）", (width * 0.3) + 370, 430);
     // }
     
+    textAlign(CENTER, CENTER);  // 他の箇所のためにリセット
     noStroke();
     if (elapsedTime >= 5000) {
       yearPopupTimerSet = false;
@@ -561,8 +572,14 @@ class Popup {
     }
     int elapsedTime = millis() - yearPopupStartTime;
 
-    ForecastInfo forecast = eventManager.getCurrentForecast();
-    if (forecast == null) return;
+    // 全ての予報を取得
+    ArrayList<ForecastInfo> allForecasts = eventManager.getAllCurrentForecasts();
+    if (allForecasts == null || allForecasts.size() == 0) return;
+    
+    // どの予報を表示するか決定（時間経過で切り替え）
+    int displayTime = 3000; // 各予報を3秒表示
+    int currentForecastIndex = (elapsedTime / displayTime) % allForecasts.size();
+    ForecastInfo forecast = allForecasts.get(currentForecastIndex);
     
     fill(240);
     stroke(0);
@@ -578,13 +595,23 @@ class Popup {
     textSize(44);
     text("予報", (width * 0.3) + 460, 200);
     
+    // 複数予報がある場合は番号を表示
+    if (allForecasts.size() > 1) {
+      textSize(24);
+      fill(100);
+      text((currentForecastIndex + 1) + " / " + allForecasts.size(), (width * 0.3) + 460, 240);
+    }
+    
     // 予報の内容をここに記述
-    textAlign(LEFT, CENTER);
-    text(forecast.message, (width * 0.3) + 200, 340);
+    fill(0);
+    textSize(28);
+    textAlign(LEFT, TOP);
+    text(forecast.message, (width * 0.3) + 200, 290, (width * 0.7) - 320, 220);
     
     textAlign(CENTER, CENTER);
 
-    if (elapsedTime >= 5000) {
+    // 全ての予報を一巡したら閉じる
+    if (elapsedTime >= displayTime * allForecasts.size()) {
       yearPopupTimerSet = false;
       closePopup();
     }

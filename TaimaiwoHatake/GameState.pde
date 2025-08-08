@@ -186,9 +186,10 @@ class GameState {
     if (eventManager != null) {
       eventManager.processCurrentTurn();
       
-      // 予報確認
-      ForecastInfo forecast = eventManager.getCurrentForecast();
-      if (forecast != null && forecast.message != null && !forecast.message.isEmpty()) {
+      // 予報確認（複数の予報がある場合も対応）
+      ArrayList<ForecastInfo> allForecasts = eventManager.getAllCurrentForecasts();
+      if (allForecasts != null && allForecasts.size() > 0) {
+        // 予報がある場合は1つのnewsポップアップで全て表示
         showPopup("news"); // 予報をキューに追加
       }
       
