@@ -192,8 +192,10 @@ class GameState {
       // 予報確認（複数の予報がある場合も対応）
       ArrayList<ForecastInfo> allForecasts = eventManager.getAllCurrentForecasts();
       if (allForecasts != null && allForecasts.size() > 0) {
-        // 予報がある場合は1つのnewsポップアップで全て表示
-        showPopup("news"); // 予報をキューに追加
+        // 各予報を個別のポップアップとして追加
+        for (int i = 0; i < allForecasts.size(); i++) {
+          showPopup("news"); // 予報をキューに追加
+        }
       }
       
       // イベント確認

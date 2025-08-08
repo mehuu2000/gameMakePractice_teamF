@@ -148,6 +148,7 @@ void showPopup(String type) {
     popup.yearPopupTimerSet = false;
     popup.yearPopupStartTime = 0;
     popup.popupClosing = false;
+    popup.currentNewsIndex = 0;  // 予報のインデックスもリセット
   }
 }
 
