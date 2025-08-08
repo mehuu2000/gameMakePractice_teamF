@@ -13,29 +13,32 @@ interface EventEndAction {
 // イベントクラス
 class Event {
     String eventName;           
-    int triggerSeason;         
-    float probability;         
-    int duration;              // 持続ターン数（1 = 1ターンのみ、0は使用しない）
-    int originalDuration;      // 元の持続時間を保持（ダミー化前の値）
-    int forecastTiming;        
-    String forecastMessage;    
-    String effectDescription;  
-    boolean isDummy;           
+    int triggerSeason; // 発動季節（0:秋, 1:冬, 2:春, 3:夏, -1:全季節）   
+    float probability; // 発動確率（0.0 - 1.0）         
+    int duration; // 持続ターン数（1 = 1ターンのみ、0は使用しない）
+    int originalDuration; // 元の持続時間を保持（ダミー化前の値）
+    int forecastTiming; // 予報タイミング（0:なし, 1:1ターン前, 2:2ターン前）  
+    String forecastMessage; // 予報メッセージ（予報がある場合のみ使用）    
+    String effectDescription; // なぜそのようなことが起こったか（イベントポップアップで表示）
+    String effectMessage; // ゲームに与える効果（左下の画面で表示）
+    boolean isDummy; // ダミーイベントかどうか（予報のみで実際には発動しない）
     
     EventAction onStart;       
     EventEndAction onEnd;      
     
     // 通常のコンストラクタ
     Event(String name, int season, float prob, int dur, int forecast, 
-          String msg, String effect, EventAction startAction, EventEndAction endAction) {
+          String forecastMsg, String description, String message,
+          EventAction startAction, EventEndAction endAction) {
         eventName = name;
         triggerSeason = season;
         probability = prob;
         duration = dur;
         originalDuration = dur;  // 元の持続時間を保存
         forecastTiming = forecast;
-        forecastMessage = msg;
-        effectDescription = effect;
+        forecastMessage = forecastMsg;
+        effectDescription = description;
+        effectMessage = message;
         onStart = startAction;
         onEnd = endAction;
         isDummy = false;
@@ -51,6 +54,7 @@ class Event {
         this.forecastTiming = original.forecastTiming;
         this.forecastMessage = original.forecastMessage;
         this.effectDescription = original.effectDescription;
+        this.effectMessage = original.effectMessage;
         this.onStart = original.onStart;
         this.onEnd = original.onEnd;
         this.isDummy = dummy;
@@ -104,7 +108,9 @@ class EventManager {
         ArrayList<Event> templates = new ArrayList<Event>();
         
         // 通常イベント（持続1ターン、予報なし）
-        templates.add(new Event("通常", -1, 0.4, 1, 0, "", "通常の市場", 
+        templates.add(new Event("通常", -1, 0.4, 1, 0, "", 
+                 "通常の市場",
+                 "特別な効果なし", 
             () -> { /* 何もしない */ },
             () -> { /* 何もしない */ }
         ));
@@ -112,7 +118,8 @@ class EventManager {
         // 豊作イベント（本来は2ターン持続、予報あり、70%で実際に発生）
         templates.add(new Event("豊作", 0, 0.7, 2, 1, 
                  "来季は豊作の予報！（2ターン持続予定）", 
-                 "供給増加により価格が20%低下", 
+                 "今年は天候に恵まれ、各地で豊作となりました",
+                 "供給増加・価格20%低下", 
             () -> {
                 updateEventEffect(0.8);
                 for (int i = 0; i < riceBrandsInfo.length; i++) {
@@ -130,7 +137,8 @@ class EventManager {
         // 台風イベント（本来は1ターン持続、予報あり、60%で実際に発生）
         templates.add(new Event("台風", 0, 0.6, 1, 2, 
                  "台風接近中！備蓄推奨", 
-                 "供給減少により価格が30%上昇", 
+                 "大型台風が上陸し、各地の農作物に被害が出ました",
+                 "供給減少・価格30%上昇", 
             () -> {
                 updateEventEffect(1.3);
                 for (int i = 0; i < riceBrandsInfo.length; i++) {
@@ -148,7 +156,8 @@ class EventManager {
         // 大雪イベント（本来は2ターン持続、予報あり、80%で実際に発生）
         templates.add(new Event("大雪", 1, 0.8, 2, 1, 
                  "大雪警報発令", 
-                 "輸送困難により価格が20%上昇", 
+                 "記録的な大雪により物流が停滞しています",
+                 "輸送困難・価格20%上昇", 
             () -> {
                 updateEventEffect(1.2);
                 // 消費率を一時的に変更することはMarketクラスの構造上避ける
@@ -162,7 +171,8 @@ class EventManager {
         
         // 花見需要イベント（春、1ターン持続、予報なし）
         templates.add(new Event("花見需要", 2, 0.3, 1, 0, "", 
-                 "消費増加により価格が15%上昇", 
+                 "春の花見シーズンで米の需要が急増しています",
+                 "消費増加・価格15%上昇", 
             () -> {
                 updateEventEffect(1.15);
                 println("花見需要イベント発動！消費増加");
@@ -176,7 +186,8 @@ class EventManager {
         // 猛暑イベント（夏、2ターン持続、予報あり、75%で実際に発生）
         templates.add(new Event("猛暑", 3, 0.75, 2, 1, 
                  "記録的猛暑の予報", 
-                 "品質低下により古米の価値が50%減少", 
+                 "連日の猛暑により米の品質管理が困難になっています",
+                 "古米の価値50%減少", 
             () -> {
                 println("猛暑イベント発動！古米の価値低下");
                 // 古米に対する特別な処理を後で追加可能
@@ -189,7 +200,8 @@ class EventManager {
         // 米騒動イベント（全季節、3ターン持続、予報あり、50%で実際に発生）
         templates.add(new Event("米騒動", -1, 0.5, 3, 2, 
                  "市場に不穏な動き...（最大3ターン継続の可能性）", 
-                 "需要急増！全ての米価格が2倍に", 
+                 "市民の買い占めにより米不足が深刻化しています",
+                 "全米価格2倍！", 
             () -> {
                 updateEventEffect(2.0);
                 println("米騒動発生！価格急騰！（3ターン持続）");

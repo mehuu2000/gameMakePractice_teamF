@@ -505,12 +505,11 @@ class Popup {
     
     // イベント名
     textAlign(LEFT, CENTER);
-    text("・" + currentEvent.eventName, (width * 0.3) + 130, 320);
+    text("【" + currentEvent.eventName + "】", (width * 0.3) + 130, 320);
 
-    // イベント効果説明
-    textSize(36);
-    text(currentEvent.effectDescription, (width * 0.3) + 173, 380);
-    //text("米価格+5000兆!!!!!!", (width * 0.3) + 173, 430); //デモ説明
+    // イベントの説明（なぜ起こったか）
+    textSize(24);
+    text(currentEvent.effectDescription, (width * 0.3) + 150, 380, (width * 0.7) - 250, 100);
     
     // 持続時間
     // if (currentEvent.duration > 1) {
