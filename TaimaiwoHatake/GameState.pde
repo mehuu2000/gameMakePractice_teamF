@@ -166,6 +166,10 @@ class GameState {
     currentTurn++;
     currentYear_season = getCurrentYear(); // 年と季節の更新
     
+    if (currentTurn > maxTurn) {
+      gameState.changeState(State.FINISHED); // 状態をFINISHEDに変更
+      return; // 以降の処理は行わない
+    }
     // 次のターンの開始処理
     startNextTurn();
   }
