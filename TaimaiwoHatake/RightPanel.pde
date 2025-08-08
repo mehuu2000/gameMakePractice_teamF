@@ -30,11 +30,13 @@ class RightPanel {
     stroke(21, 96, 130);
     strokeWeight(3);
     fill(250);
+    rect(1200, -3, 150, 120, 0, 0, 0, 40);
     rect(1133, -3, 150, 60, 0, 0, 0, 40);
 
     fill(21, 96, 130);
     textSize(40);
-    text(currentTurn + "年目", 1213, 42);
+    text(currentYear_season[0] + "年目", 1213, 42);
+    text(SEASONS[currentYear_season[1]], 1240, 100);
 
     noStroke();
     fill(0);
@@ -67,6 +69,32 @@ class RightPanel {
   void drawAIShippingArea() {
     fill(255, 0, 0);
     rect(width * 0.3 + 100, 130, 710, 140);
+    strokeWeight(1);
+
+    // 場札の描画
+    for (int i=0; i<riceBrandsInfo.length; i++) {
+      fill(250);
+      stroke(0);
+      stroke(riceBrandsInfo[i].brandColor);
+
+      // 個数分重ねて描画(少しずらす)
+      if (player.getSumLoadRice(i) > 0) {
+        rect((width * 0.3) + 205 + (140 * i), height/2 - 65, 70, 105, 10);
+
+        // 個数を表示するための下地
+        noStroke();
+        fill(21, 96, 130);
+        ellipse((width * 0.3) + 160 + (140 * i) + 107, height/2 - 63, 30, 30);
+        textAlign(CENTER, CENTER);
+        fill(250);
+        textSize(20);
+        text(player.getSumLoadRice(i), (width * 0.3) + 163 + (140 * i) + 105, height/2 - 64);
+      }
+    }
+    
+    noStroke();
+    fill(0);
+    
   }
 
   // 手札の描画
@@ -82,10 +110,10 @@ class RightPanel {
       // 個数分重ねて描画(少しずらす)
       if (brandCount > 0) {
         for (int j=min(brandCount, 5); j>0; j--) {
-            rect((width * 0.3) + 160 + (140 * i) + (j * 3), height/2 + 120 - (j * 2), 120, 200, 10);
+          rect((width * 0.3) + 160 + (140 * i) + (j * 3), height/2 + 120 - (j * 2), 120, 180, 10);
         }
       } else {
-        rect((width * 0.3) + 160 + (140 * i), height/2 + 120, 120, 200, 10);
+        rect((width * 0.3) + 160 + (140 * i), height/2 + 120, 120, 180, 10);
       }
 
       // 個数を表示するための下地
@@ -102,22 +130,63 @@ class RightPanel {
     fill(0);
   }
 
+  boolean onLoadBrandClicked() {
+    // 当たり判定をチェック
+    if(player.getSumLoadRice(0) > 0){
+    if (mouseX > (width * 0.3) + 205 && mouseX < (width * 0.3) + 275 &&
+      mouseY > height/2 - 65 && mouseY < height/2 + 45) {
+      println("a");
+      gameState.selectBrandBack(0);
+      return true;
+      }
+    }
+    
+    if(player.getSumLoadRice(1) > 0){
+      if (mouseX > (width * 0.3) + 345 && mouseX < (width * 0.3) + 415 &&
+      mouseY > height/2 - 65 && mouseY < height/2 + 45) {
+      println("a");
+      gameState.selectBrandBack(1);
+      return true;
+      }
+    }
+    
+    if(player.getSumLoadRice(2) > 0){
+      if (mouseX > (width * 0.3) + 485 && mouseX < (width * 0.3) + 555 &&
+      mouseY > height/2 - 65 && mouseY < height/2 + 45) {
+      println("a");
+      gameState.selectBrandBack(2);
+      return true;
+      }
+    }
+    
+    if(player.getSumLoadRice(3) > 0){
+      if (mouseX > (width * 0.3) + 625 && mouseX < (width * 0.3) + 695 &&
+      mouseY > height/2 + 65 && mouseY < height/2 + 45) {
+      println("a");
+      gameState.selectBrandBack(3);
+      return true;
+      }
+    }
+
+    return false;
+  }
+  
   boolean onBrand1Clicked() {
     // 当たり判定をチェック
     if (mouseX > (width * 0.3) + 160 && mouseX < (width * 0.3) + 280 &&
-        mouseY > height/2 + 120 && mouseY < height/2 + 320) {
+      mouseY > height/2 + 120 && mouseY < height/2 + 320) {
       gameState.selectBrandSubmit(0);
       return true;
     } else if (mouseX > (width * 0.3) + 300 && mouseX < (width * 0.3) + 420 &&
-               mouseY > height/2 + 120 && mouseY < height/2 + 320) {
+      mouseY > height/2 + 120 && mouseY < height/2 + 320) {
       gameState.selectBrandSubmit(1);
       return true;
     } else if (mouseX > (width * 0.3) + 440 && mouseX < (width * 0.3) + 560 &&
-               mouseY > height/2 + 120 && mouseY < height/2 + 320) {
+      mouseY > height/2 + 120 && mouseY < height/2 + 320) {
       gameState.selectBrandSubmit(2);
       return true;
     } else if (mouseX > (width * 0.3) + 580 && mouseX < (width * 0.3) + 700 &&
-               mouseY > height/2 + 120 && mouseY < height/2 + 320) {
+      mouseY > height/2 + 120 && mouseY < height/2 + 320) {
       gameState.selectBrandSubmit(3);
       return true;
     }

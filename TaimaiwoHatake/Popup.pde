@@ -60,14 +60,17 @@ class Popup {
     int elapsedTime = millis() - yearPopupStartTime;
 
     fill(21, 96, 130);
-    rect(width/2 - 250, height/2 - 100, 500, 200);
+    stroke(0);
+    strokeWeight(2);
+    rect(width/2 - 280, height/2 - 100, 580, 200);
 
     textAlign(CENTER, CENTER);
     fill(250);
     textSize(120);
-    text(currentTurn + "年目", width/2, height/2);
+    text(currentYear_season[0] + "年目：" + SEASONS[currentYear_season[1]], width/2, height/2);
 
     fill(0);
+    noStroke();
 
     // 1ターン目の場合、表示してから2秒後にcarryポップアップを表示
     if (elapsedTime >= 2000) {
@@ -249,7 +252,7 @@ class Popup {
     fill(250);
     stroke(riceBrandsInfo[selectedBrandId].brandColor);
     strokeWeight(1);
-    rect((width * 0.3) + 190, 230, 100, 180); //デモカード
+    rect((width * 0.3) + 190, 230, 120, 180); //デモカード
 
     // ブランド名
     fill(riceBrandsInfo[selectedBrandId].brandColor);
