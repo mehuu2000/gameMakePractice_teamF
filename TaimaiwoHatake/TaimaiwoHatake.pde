@@ -43,8 +43,8 @@ EllipseButton buyPopupButton; // 購入ポップアップを表示するボタ�
 
 // ========== 音関係の変数 ==========
 Minim minim;
-String[] SE_NAMES = {"pon.wav", "titlecall.wav"};
-String[] BGM_NAMES = {"maou_bgm_fantasy06.mp3", "maou_bgm_fantasy15.mp3",};
+String[] SE_NAMES = {"button70.mp3", "titlecall.wav"};
+String[] BGM_NAMES = {"maou_bgm_fantasy06.mp3", "真剣勝負-ロング.mp3",};
 /*音の説明 / 0:ぽん-ボタン音
             1:たいまいをはたけ-タイトルコール
 */

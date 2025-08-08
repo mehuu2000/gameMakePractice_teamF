@@ -13,6 +13,23 @@ class AI extends Broker {
   void aiAction() {
     // 購入プロセス ランキング順に安い方から買っていく
     int[] ranking = market.getBrandRanking();
+    int eventbuyCount = 0;
+    switch (eventManager.eventSchedule[currentTurn].eventName) {
+      case "台風":
+      case "大雪":
+        eventbuyCount = 0;
+        break;
+      case "米騒動":
+        eventbuyCount = 1;
+        break;
+      case "豊作":
+      case "花見需要":
+        eventbuyCount = 3;
+        break;
+      default:
+        eventbuyCount = 2;
+        break;
+    }
     for (int i = 0; i < riceBrandsInfo.length; i++) {
       int riceID = ranking[i];
       int countRice = getSumHandRice(riceID);
@@ -20,10 +37,11 @@ class AI extends Broker {
       if (canBuyCount <= 0) {
         buyCostAverages[riceID] = 0;
       } else {
-        buyRice(riceID, canBuyCount/2);
+        int buyCount = min(canBuyCount/2, eventbuyCount);
+        buyRice(riceID, buyCount);
         buyCostAverages[riceID] = (countRice * buyCostAverages[riceID]
-                                          + riceBrandsInfo[riceID].point * RICE_BUY_RATIO * canBuyCount/2)
-                                          / float(countRice + canBuyCount/2);
+                                          + riceBrandsInfo[riceID].point * RICE_BUY_RATIO * buyCount)
+                                          / float(countRice + buyCount);
       }
       println(buyCostAverages[riceID]);
     }
