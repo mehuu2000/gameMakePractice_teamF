@@ -13,7 +13,7 @@ interface EventEndAction {
 // イベントクラス
 class Event {
     String eventName;           
-    int triggerSeason; // 発動季節（0:秋, 1:冬, 2:春, 3:夏, -1:全季節）   
+    int[] triggerSeasons; // 発動季節の配列（0:秋, 1:冬, 2:春, 3:夏）複数指定可能   
     float probability; // 発動確率（0.0 - 1.0）         
     int duration; // 持続ターン数（1 = 1ターンのみ、0は使用しない）
     int originalDuration; // 元の持続時間を保持（ダミー化前の値）
@@ -22,16 +22,17 @@ class Event {
     String effectDescription; // なぜそのようなことが起こったか（イベントポップアップで表示）
     String effectMessage; // ゲームに与える効果（左下の画面で表示）
     boolean isDummy; // ダミーイベントかどうか（予報のみで実際には発動しない）
+    boolean isOnceOnly; // このイベントがゲーム中1回だけ発生するか
     
     EventAction onStart;       
     EventEndAction onEnd;      
     
     // 通常のコンストラクタ
-    Event(String name, int season, float prob, int dur, int forecast, 
+    Event(String name, int[] seasons, float prob, int dur, int forecast, 
           String forecastMsg, String description, String message,
-          EventAction startAction, EventEndAction endAction) {
+          boolean onceOnly, EventAction startAction, EventEndAction endAction) {
         eventName = name;
-        triggerSeason = season;
+        triggerSeasons = seasons;
         probability = prob;
         duration = dur;
         originalDuration = dur;  // 元の持続時間を保存
@@ -39,6 +40,7 @@ class Event {
         forecastMessage = forecastMsg;
         effectDescription = description;
         effectMessage = message;
+        isOnceOnly = onceOnly;
         onStart = startAction;
         onEnd = endAction;
         isDummy = false;
@@ -47,7 +49,7 @@ class Event {
     // ダミーイベント用コンストラクタ
     Event(Event original, boolean dummy) {
         this.eventName = original.eventName;
-        this.triggerSeason = original.triggerSeason;
+        this.triggerSeasons = original.triggerSeasons;
         this.probability = original.probability;
         this.originalDuration = original.duration;  // 元の持続時間を保存
         this.duration = dummy ? 1 : original.duration;  // ダミーの場合は1ターンのみ
@@ -55,6 +57,7 @@ class Event {
         this.forecastMessage = original.forecastMessage;
         this.effectDescription = original.effectDescription;
         this.effectMessage = original.effectMessage;
+        this.isOnceOnly = original.isOnceOnly;
         this.onStart = original.onStart;
         this.onEnd = original.onEnd;
         this.isDummy = dummy;
@@ -97,8 +100,10 @@ class EventManager {
     ForecastInfo[] forecastSchedule;
     Event activeEvent;
     int activeEventRemainingTurns;
+    ArrayList<String> usedOnceOnlyEvents; // 使用済みの1回限りイベント名を記録
     
     EventManager() {
+        usedOnceOnlyEvents = new ArrayList<String>();
         initializeEventTemplates();
         generateEventSchedule();
     }
@@ -108,18 +113,28 @@ class EventManager {
         ArrayList<Event> templates = new ArrayList<Event>();
         
         // 通常イベント（持続1ターン、予報なし）
-        templates.add(new Event("通常", -1, 0.4, 1, 0, "", 
+        templates.add(new Event("通常", new int[]{0, 1, 2, 3}, 0.4, 1, 0, "", 
                  "通常の市場",
-                 "特別な効果なし", 
+                 "特別な効果なし",
+                 false,  // 1回限りではない 
+            () -> { /* 何もしない */ },
+            () -> { /* 何もしない */ }
+        ));
+
+        templates.add(new Event("通常", new int[]{0, 1, 2, 3}, 0.4, 1, 0, "", 
+                 "通常の市場",
+                 "特別な効果なし",
+                 false,  // 1回限りではない 
             () -> { /* 何もしない */ },
             () -> { /* 何もしない */ }
         ));
         
         // 豊作イベント（本来は2ターン持続、予報あり、70%で実際に発生）
-        templates.add(new Event("豊作", 0, 0.7, 2, 1, 
+        templates.add(new Event("豊作", new int[]{0}, 0.7, 2, 1, 
                  "来季は豊作の予報！（2ターン持続予定）", 
                  "今年は天候に恵まれ、各地で豊作となりました",
-                 "供給増加・価格20%低下", 
+                 "供給増加・価格20%低下",
+                 false,  // 1回限りではない 
             () -> {
                 updateEventEffect(0.8);
                 for (int i = 0; i < riceBrandsInfo.length; i++) {
@@ -135,10 +150,11 @@ class EventManager {
         ));
         
         // 台風イベント（本来は1ターン持続、予報あり、60%で実際に発生）
-        templates.add(new Event("台風", 0, 0.6, 1, 2, 
+        templates.add(new Event("台風", new int[]{0, 3}, 0.6, 1, 2, 
                  "台風接近中！備蓄推奨", 
                  "大型台風が上陸し、各地の農作物に被害が出ました",
-                 "供給減少・価格30%上昇", 
+                 "供給減少・価格30%上昇",
+                 false,  // 1回限りではない 
             () -> {
                 updateEventEffect(1.3);
                 for (int i = 0; i < riceBrandsInfo.length; i++) {
@@ -154,10 +170,11 @@ class EventManager {
         ));
         
         // 大雪イベント（本来は2ターン持続、予報あり、80%で実際に発生）
-        templates.add(new Event("大雪", 1, 0.8, 2, 1, 
+        templates.add(new Event("大雪", new int[]{1}, 0.8, 2, 1, 
                  "大雪警報発令", 
                  "記録的な大雪により物流が停滞しています",
-                 "輸送困難・価格20%上昇", 
+                 "輸送困難・価格20%上昇",
+                 false,  // 1回限りではない 
             () -> {
                 updateEventEffect(1.2);
                 // 消費率を一時的に変更することはMarketクラスの構造上避ける
@@ -170,9 +187,10 @@ class EventManager {
         ));
         
         // 花見需要イベント（春、1ターン持続、予報なし）
-        templates.add(new Event("花見需要", 2, 0.3, 1, 0, "", 
+        templates.add(new Event("花見需要", new int[]{2}, 0.3, 1, 0, "", 
                  "春の花見シーズンで米の需要が急増しています",
-                 "消費増加・価格15%上昇", 
+                 "消費増加・価格15%上昇",
+                 false,  // 1回限りではない 
             () -> {
                 updateEventEffect(1.15);
                 println("花見需要イベント発動！消費増加");
@@ -184,10 +202,11 @@ class EventManager {
         ));
         
         // 猛暑イベント（夏、2ターン持続、予報あり、75%で実際に発生）
-        templates.add(new Event("猛暑", 3, 0.75, 2, 1, 
+        templates.add(new Event("猛暑", new int[]{3}, 0.75, 2, 1, 
                  "記録的猛暑の予報", 
                  "連日の猛暑により米の品質管理が困難になっています",
-                 "古米の価値50%減少", 
+                 "古米の価値50%減少",
+                 false,  // 1回限りではない 
             () -> {
                 println("猛暑イベント発動！古米の価値低下");
                 // 古米に対する特別な処理を後で追加可能
@@ -197,11 +216,12 @@ class EventManager {
             }
         ));
         
-        // 米騒動イベント（全季節、3ターン持続、予報あり、50%で実際に発生）
-        templates.add(new Event("米騒動", -1, 0.5, 3, 2, 
+        // 米騒動イベント（全季節、3ターン持続、予報あり、50%で実隟に発生）
+        templates.add(new Event("米騒動", new int[]{0, 1, 2, 3}, 0.5, 3, 2, 
                  "市場に不穏な動き...（最大3ターン継続の可能性）", 
                  "市民の買い占めにより米不足が深刻化しています",
-                 "全米価格2倍！", 
+                 "全米価格2倍！",
+                 true,  // 1回限り！ 
             () -> {
                 updateEventEffect(2.0);
                 println("米騒動発生！価格急騰！（3ターン持続）");
@@ -237,10 +257,19 @@ class EventManager {
         int season = turn % 4; // 0:秋, 1:冬, 2:春, 3:夏
         ArrayList<Event> candidates = new ArrayList<Event>();
         
-        // 該当季節のイベントと全季節イベントを候補に追加
+        // 該当季節のイベントを候補に追加
         for (Event e : eventTemplates) {
-            if (e.triggerSeason == season || e.triggerSeason == -1) {
-                candidates.add(e);
+            // 1回限りイベントで既に使用済みの場合はスキップ
+            if (e.isOnceOnly && usedOnceOnlyEvents.contains(e.eventName)) {
+                continue;
+            }
+            
+            // triggerSeasonsに現在の季節が含まれているかチェック
+            for (int s : e.triggerSeasons) {
+                if (s == season) {
+                    candidates.add(e);
+                    break;
+                }
             }
         }
         
@@ -255,11 +284,23 @@ class EventManager {
             }
         }
         
-        return candidates.get(0); // デフォルトは通常イベント
+        // 候補がある場合は最初の候補を返す（通常は「通常」イベント）
+        if (candidates.size() > 0) {
+            return candidates.get(0);
+        }
+        
+        // 候補がない場合は通常イベントを返す
+        return eventTemplates[0]; // デフォルトは通常イベント
     }
     
     // イベントを予報付きで配置
     void placeEventWithForecast(Event event, int startTurn) {
+        // 1回限りイベントの場合、使用済みリストに追加
+        if (event.isOnceOnly && !usedOnceOnlyEvents.contains(event.eventName)) {
+            usedOnceOnlyEvents.add(event.eventName);
+            println("1回限りイベント「" + event.eventName + "」を使用済みリストに追加");
+        }
+        
         // 予報がないイベントは通常配置
         if (event.forecastTiming == 0) {
             placeEvent(event, startTurn, false);
