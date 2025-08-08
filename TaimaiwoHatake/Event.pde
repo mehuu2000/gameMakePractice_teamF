@@ -300,7 +300,7 @@ class EventManager {
             }
         ));
 
-        templates.add(new Event("棚からぼたもち", new int[]{0, 1, 2, 3}, 1.0, 1, 0, 
+        templates.add(new Event("棚からぼたもち", new int[]{0, 1, 2, 3}, 1.0, 1, 0, "",
                  "むかし作ったへそくりを見つけた！ラッキー！",
                  "所持金が2000pt増える(プレイヤーのみ)",
                  false,
@@ -310,7 +310,7 @@ class EventManager {
             () -> { /* 何もしない */ }
         ));
 
-        templates.add(new Event("大盤振米", new int[]{0}, 1.0, 1, 0, 
+        templates.add(new Event("大盤振米", new int[]{0}, 1.0, 1, 0, "",
                  "農家さんからいつものお礼にお米を少し多くいただけた！",
                  "農家さんから買う米の量が1.2倍になる（小数点は切り上げ）",
                  false,
@@ -361,7 +361,7 @@ class EventManager {
              }
         ));
 
-        templates.add(new Event("海外からの安価な米の輸入", new int[]{0, 1, 2, 3}, 1.0, 1, 0, 
+        templates.add(new Event("海外からの安価な米の輸入", new int[]{0, 1, 2, 3}, 1.0, 1, 0, "",
                  "政府が緊急経済対策として、海外から安価な米を大量に輸入した。市場には米が溢れ、国産米の価格も下落してしまった。",
                  "市場の消費が低下し、売値が0.9倍になる。買値が0.8倍になる",
                  true,
