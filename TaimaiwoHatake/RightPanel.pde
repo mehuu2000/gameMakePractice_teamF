@@ -107,18 +107,26 @@ class RightPanel {
     if (mouseX > (width * 0.3) + 160 && mouseX < (width * 0.3) + 280 &&
         mouseY > height/2 + 120 && mouseY < height/2 + 320) {
       gameState.selectBrandSubmit(0);
+      ses[3].play();
+      ses[3].rewind();
       return true;
     } else if (mouseX > (width * 0.3) + 300 && mouseX < (width * 0.3) + 420 &&
                mouseY > height/2 + 120 && mouseY < height/2 + 320) {
       gameState.selectBrandSubmit(1);
+      ses[3].play();
+      ses[3].rewind();
       return true;
     } else if (mouseX > (width * 0.3) + 440 && mouseX < (width * 0.3) + 560 &&
                mouseY > height/2 + 120 && mouseY < height/2 + 320) {
       gameState.selectBrandSubmit(2);
+      ses[3].play();
+      ses[3].rewind();
       return true;
     } else if (mouseX > (width * 0.3) + 580 && mouseX < (width * 0.3) + 700 &&
                mouseY > height/2 + 120 && mouseY < height/2 + 320) {
       gameState.selectBrandSubmit(3);
+      ses[3].play();
+      ses[3].rewind();
       return true;
     }
 

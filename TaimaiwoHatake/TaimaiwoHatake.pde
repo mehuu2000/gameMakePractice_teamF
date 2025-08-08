@@ -44,10 +44,13 @@ EllipseButton buyPopupButton; // 購入ポップアップを表示するボタ�
 
 // ========== 音関係の変数 ==========
 Minim minim;
-String[] SE_NAMES = {"button70.mp3", "titlecall.wav"};
+String[] SE_NAMES = {"button70.mp3", "titlecall.wav", "wood-block01.mp3", "カードを台の上に出す.mp3", "レジ.mp3"};
 String[] BGM_NAMES = {"maou_bgm_fantasy06.mp3", "真剣勝負-ロング.mp3",};
 /*音の説明 / 0:ぽん-ボタン音
             1:たいまいをはたけ-タイトルコール
+            2:ぽんーボタン音
+            3:シャーカード提出音
+            4:ジャキンーお金音
 */
 AudioPlayer[] ses =  new AudioPlayer[SE_NAMES.length];
 /*音の説明 / 0:荘厳め-タイトル
