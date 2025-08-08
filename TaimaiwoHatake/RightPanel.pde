@@ -17,11 +17,11 @@ class RightPanel {
 
     drawTurnInfo();
     drawPointInfo();
+    drawButtons();
+    drawPhoto();
     drawShippingArea();
     drawAIShippingArea();
     drawHandCards();
-    drawButtons();
-    drawPhoto();
     drawButtons();
   }
 
@@ -111,20 +111,20 @@ class RightPanel {
       // 個数分重ねて描画(少しずらす)
       if (brandCount > 0) {
         for (int j=min(brandCount, 5); j>0; j--) {
-          rect((width * 0.3) + 160 + (140 * i) + (j * 3), height/2 + 120 - (j * 2), 120, 180, 10);
+          rect((width * 0.3) + 160 + (140 * i) + (j * 3), height/2 + 160 - (j * 2), 120, 180, 10);
         }
       } else {
-        rect((width * 0.3) + 160 + (140 * i), height/2 + 120, 120, 180, 10);
+        rect((width * 0.3) + 160 + (140 * i), height/2 + 160, 120, 180, 10);
       }
 
       // 個数を表示するための下地
       noStroke();
       fill(21, 96, 130);
-      ellipse((width * 0.3) + 160 + (140 * i) + 120, height/2 + 120, 30, 30);
+      ellipse((width * 0.3) + 160 + (140 * i) + 120, height/2 + 160, 30, 30);
       textAlign(CENTER, CENTER);
       fill(250);
       textSize(20);
-      text(brandCount, (width * 0.3) + 160 + (140 * i) + 120, height/2 + 119);
+      text(brandCount, (width * 0.3) + 160 + (140 * i) + 120, height/2 + 159);
     }
 
     noStroke();
@@ -137,6 +137,12 @@ class RightPanel {
     
     //矢印の描画
     image(images[1], (width * 0.3) - 5, height/2 - 230, 200, 300);
+    
+    //倉庫の描画
+    image(images[2], width/2 - 130, height/2 + 50, 600, 388);
+    
+    //敵の描画
+    image(images[3], width/2 + 100, 0, 220, 160);
   }
 
   boolean onLoadBrandClicked() {
@@ -183,25 +189,25 @@ class RightPanel {
   boolean onBrand1Clicked() {
     // 当たり判定をチェック
     if (mouseX > (width * 0.3) + 160 && mouseX < (width * 0.3) + 280 &&
-      mouseY > height/2 + 120 && mouseY < height/2 + 320) {
+      mouseY > height/2 + 160 && mouseY < height/2 + 320) {
       gameState.selectBrandSubmit(0);
       ses[3].play();
       ses[3].rewind();
       return true;
     } else if (mouseX > (width * 0.3) + 300 && mouseX < (width * 0.3) + 420 &&
-      mouseY > height/2 + 120 && mouseY < height/2 + 320) {
+      mouseY > height/2 + 160 && mouseY < height/2 + 320) {
       gameState.selectBrandSubmit(1);
       ses[3].play();
       ses[3].rewind();
       return true;
     } else if (mouseX > (width * 0.3) + 440 && mouseX < (width * 0.3) + 560 &&
-      mouseY > height/2 + 120 && mouseY < height/2 + 320) {
+      mouseY > height/2 + 160 && mouseY < height/2 + 320) {
       gameState.selectBrandSubmit(2);
       ses[3].play();
       ses[3].rewind();
       return true;
     } else if (mouseX > (width * 0.3) + 580 && mouseX < (width * 0.3) + 700 &&
-      mouseY > height/2 + 120 && mouseY < height/2 + 320) {
+      mouseY > height/2 + 160 && mouseY < height/2 + 320) {
       gameState.selectBrandSubmit(3);
       ses[3].play();
       ses[3].rewind();
