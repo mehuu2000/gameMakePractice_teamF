@@ -26,6 +26,7 @@ NormalButton systemButton; // システム説明1へ移るボタン
 NormalButton system2Button; // システム説明2へ移るボタン
 NormalButton overviewButton; // 概要（説明の初期ページ）へ移るボタン
 NormalButton endButton; // 終了ボタン
+NormalButton nextButton; //次のポップアップに移動するボタン
 
 TriangleButton plus1SelectedButton; // 現在の選択ブランドの選択数を1増やす
 TriangleButton minus1SelectedButton; // 現在の選択ブランドの選択数を1減らす
@@ -147,16 +148,26 @@ void showPopup(String type) {
     popupType = popupQueue[0];
     currentPopupIndex = 0;
     resetSelectedAmounts();
+    // 新しいキューの開始時にタイマーをリセット
+    popup.yearPopupTimerSet = false;
+    popup.yearPopupStartTime = 0;
+    popup.popupClosing = false;
+    popup.currentNewsIndex = 0;  // 予報のインデックスもリセット
   }
 }
 
 void closePopup() {
+  // nextButtonを無効化（次のポップアップのため）
+  nextButton.isEnabled = false;
+  
   // 次のポップアップがあるかチェック
   currentPopupIndex++;
   if (currentPopupIndex < popupQueueSize) {
     // 次のポップアップを表示
     popupType = popupQueue[currentPopupIndex];
     popup.yearPopupTimerSet = false; // タイマーリセット
+    popup.yearPopupStartTime = 0; // タイマー開始時刻もリセット
+    popup.popupClosing = false; // 閉じる処理フラグもリセット
   } else {
     // 全てのポップアップが終了
     showingPopup = false;
@@ -168,6 +179,7 @@ void closePopup() {
     sumBrandCount = 0;
     isFirst = false;
     totalPrice = 0;
+    popup.popupClosing = false; // 閉じる処理フラグもリセット
     
     // 全ポップアップ終了後の処理
     if (popupQueue[0] != null && popupQueue[0].equals("countStart")) {
@@ -268,9 +280,11 @@ void initGame() {
   images[4] = loadImage("topview_car_truck_player.png");
   images[5] = loadImage("topview_car_truck_enemy.png");
   images[6] = loadImage("background.png");
+  images[7] = loadImage("background_winter.jpeg");
+  images[8] = loadImage("background_spring.jpeg");
+  images[9] = loadImage("background_summer.jpeg");
   images[10] = loadImage("win.png");
   images[11] = loadImage("lose.png");
-  
   
   
   
@@ -320,6 +334,9 @@ void initButton() {
   system2Button = new NormalButton(width - 280, 650, 235, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "システム説明[2]", 32, () -> {
     gameState.changeState(State.DESCRIBE3);
   });
+  nextButton = new NormalButton(0, 0, width, height, 0, color(0, 0, 0), color(0, 0, 0), color(0, 0, 0), "", 32, () -> {
+    closePopup();
+  });
 
   // ========== 三角形ボタンの初期化 ==========
   minus1SelectedButton = new TriangleButton(1090, 300, true, () -> {
@@ -328,7 +345,12 @@ void initButton() {
     }
   });
   plus1SelectedButton = new TriangleButton(1150, 300, false, () -> {
-    selectedAmounts[selectedBrandId]++;
+    if (popupType == "submit" && selectedAmounts[selectedBrandId] < player.getSumHandRice(selectedBrandId)) {
+      selectedAmounts[selectedBrandId]++;
+    }
+    if (popupType == "return" && selectedAmounts[selectedBrandId] < player.getSumLoadRice(selectedBrandId)) {
+      selectedAmounts[selectedBrandId]++;
+    }
   });
 
   brandPlus1Buttons = new TriangleButton[riceBrandsInfo.length];
@@ -428,7 +450,15 @@ void draw() {
   case PLAYING:
     background(100);
     tint(255, 150);
-    image(images[6], 0, 0);
+    if(currentYear_season[1] == 0){
+      image(images[6], 0, 0);
+    } else if(currentYear_season[1] == 1){
+      image(images[7], 0, 0, 1280, 720);
+    } else if(currentYear_season[1] == 2){
+      image(images[8], 0, 0, 1280, 720);
+    } else if(currentYear_season[1] == 3){
+      image(images[9], 0, 0, 1280, 720);
+    }
     noTint();
     drawGameScreen();
     break;
@@ -497,6 +527,34 @@ void mouseClicked() {
         if (closeEndPopupButton.onClicked()) {
           // 内部で既に実行済み
         } else if (turnEndButton.onClicked()) {
+          // 内部で既に実行済み
+        }
+      } else if (popupType == "carry") {
+        if (nextButton.onClicked()) {
+          // 内部で既に実行済み
+        }
+      } else if (popupType == "cell") {
+        if (nextButton.onClicked()) {
+          // 内部で既に実行済み
+        }
+      } else if (popupType == "fluctuation") {
+        if (nextButton.onClicked()) {
+          // 内部で既に実行済み
+        }
+      } else if (popupType == "profit") {
+        if (nextButton.onClicked()) {
+          // 内部で既に実行済み
+        }
+      } else if (popupType == "event") {
+        if (nextButton.onClicked()) {
+          // 内部で既に実行済み
+        }
+      } else if (popupType == "news") {
+        if (nextButton.onClicked()) {
+          // 内部で既に実行済み
+        }
+      } else if (popupType == "missed") {
+        if (nextButton.onClicked()) {
           // 内部で既に実行済み
         }
       }
