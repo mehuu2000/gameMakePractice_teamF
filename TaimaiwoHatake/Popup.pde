@@ -49,6 +49,7 @@ class Popup {
     }
 
     drawCloseButton();
+    cardVisual.loadCardImages();
   }
 
   // 年数ポップアップの描画
@@ -108,7 +109,7 @@ class Popup {
       textSize(44);
       textAlign(LEFT, CENTER);
       stroke(riceBrandsInfo[riceBrandRanking[i]].brandColor);
-      rect((width * 0.3) + 220, 320 + (i*60), 30, 45); // デモ用のカード
+      image(cardVisual.cardImages[riceBrandRanking[i]], (width * 0.3) + 220, 320 + (i*60), 30, 45); // デモ用のカード
       fill(riceBrandsInfo[riceBrandRanking[i]].brandColor);
       text(riceBrandsInfo[riceBrandRanking[i]].name, (width * 0.3) + 270, 340 + (i*60));
       fill(0);
@@ -156,7 +157,7 @@ class Popup {
       textSize(44);
       textAlign(LEFT, CENTER);
       stroke(riceBrandsInfo[riceBrandRanking[i]].brandColor);
-      rect((width * 0.3) + 220, 300 + (i*60), 30, 45); // デモ用のカード
+      image(cardVisual.cardImages[riceBrandRanking[i]], (width * 0.3) + 220, 300 + (i*60), 30, 45); // デモ用のカード
       fill(riceBrandsInfo[riceBrandRanking[i]].brandColor);
       text(riceBrandsInfo[riceBrandRanking[i]].name, (width * 0.3) + 270, 320 + (i*60));
       fill(0);
@@ -192,14 +193,14 @@ class Popup {
 
     fill(0);
     textSize(40);
-    text("どのお米を購入しますか？", (width * 0.3) + 350, 130);
+    text("どのお米を仕入れますか？", (width * 0.3) + 350, 130);
 
     // ブランド表示
     textAlign(LEFT, CENTER);
     for (int i=0; i<riceBrandsInfo.length; i++) {
       fill(255);
       stroke(riceBrandsInfo[riceBrandRanking[i]].brandColor);
-      rect((width * 0.3) + 120, 210 + (i*60), 30, 45); // デモ用のカード
+      image(cardVisual.cardImages[riceBrandRanking[i]],(width * 0.3) + 120, 210 + (i*60), 30, 45); // デモ用のカード
       fill(riceBrandsInfo[riceBrandRanking[i]].brandColor);
       text(riceBrandsInfo[riceBrandRanking[i]].name, (width * 0.3) + 170, 230 + (i*60));
     }
@@ -214,7 +215,7 @@ class Popup {
 
     // 購入数表示
     textAlign(CENTER, CENTER);
-    text("購入数", (width * 0.3) + 700, 170);
+    text("仕入数", (width * 0.3) + 700, 170);
     for (int i=0; i<riceBrandsInfo.length; i++) {
         brandMinus1Buttons[i].display();
         text(selectedAmounts[riceBrandRanking[i]], (width * 0.3) + 700, 230 + (i*60));
@@ -252,7 +253,7 @@ class Popup {
     fill(250);
     stroke(riceBrandsInfo[selectedBrandId].brandColor);
     strokeWeight(1);
-    rect((width * 0.3) + 190, 230, 120, 180); //デモカード
+    image(cardVisual.cardImages[selectedBrandId], (width * 0.3) + 190, 230, 120, 180); //デモカード
 
     // ブランド名
     fill(riceBrandsInfo[selectedBrandId].brandColor);
@@ -264,7 +265,7 @@ class Popup {
     textAlign(LEFT, CENTER);
     text(riceBrandsInfo[selectedBrandId].name, (width * 0.3) + 220, 140);
     fill(0);
-    text("を何枚提出しますか？", (width * 0.3) + 220, 190);
+    text("を何枚トラックに積みますか？", (width * 0.3) + 220, 190);
     textAlign(CENTER, CENTER);
 
     // 提出数の選択 + ボタン
@@ -276,7 +277,7 @@ class Popup {
 
     fill(0);
     textSize(36);
-    text("提出数", (width * 0.3) + 730, 250);
+    text("積載数", (width * 0.3) + 730, 250);
     for (int i=0; i<riceOldInfo.length; i++) {
       text(riceOldInfo[i], (width * 0.3) + 280+(i*150), height - 280);
       text(player.handRices[selectedBrandId][i], (width * 0.3) + 280+(i*150), height - 230);
@@ -304,7 +305,7 @@ class Popup {
     fill(250);
     stroke(riceBrandsInfo[selectedBrandId].brandColor);
     strokeWeight(1);
-    rect((width * 0.3) + 190, 230, 100, 180); //デモカード
+    image(cardVisual.cardImages[selectedBrandId], (width * 0.3) + 190, 230, 120, 180); //デモカード
 
     // ブランド名
     fill(riceBrandsInfo[selectedBrandId].brandColor);
@@ -400,7 +401,7 @@ class Popup {
       textSize(40);
       textAlign(LEFT, CENTER);
       stroke(riceBrandsInfo[riceBrandRanking[i]].brandColor);
-      rect((width * 0.3) + 220, 300 + (i*60), 30, 45); // デモ用のカード
+      image(cardVisual.cardImages[riceBrandRanking[i]], (width * 0.3) + 220, 300 + (i*60), 30, 45); // デモ用のカード
       fill(riceBrandsInfo[riceBrandRanking[i]].brandColor);
       text(riceBrandsInfo[riceBrandRanking[i]].name, (width * 0.3) + 270, 320 + (i*60));
       fill(0);
@@ -443,7 +444,7 @@ class Popup {
       textSize(40);
       textAlign(LEFT, CENTER);
       stroke(riceBrandsInfo[riceBrandRanking[i]].brandColor);
-      rect((width * 0.3) + 130, 300 + (i*60), 30, 45); // デモ用のカード
+      image(cardVisual.cardImages[riceBrandRanking[i]], (width * 0.3) + 130, 300 + (i*60), 30, 45); // デモ用のカード
       fill(riceBrandsInfo[riceBrandRanking[i]].brandColor);
       text(riceBrandsInfo[riceBrandRanking[i]].name, (width * 0.3) + 180, 320 + (i*60));
       fill(0);
