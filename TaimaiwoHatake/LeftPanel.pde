@@ -84,13 +84,57 @@ class LeftPanel {
     fill(240);
     rect(10, height/2 + 20, (width * 0.3) - 20, height/2 - 30);
     
-    fill(0);
-    textSize(56);
-    text("効果名", (width*0.3)/2, 410);
+    // 現在のイベントを取得
+    Event currentEvent = null;
+    String eventName = "通常";
+    String eventMessage = "";
+    int remainingTurns = 0;
     
-    rect(20, height/2 + 80, (width * 0.3) - 40, height/2 - 100);
+    if (eventManager != null) {
+      currentEvent = eventManager.getCurrentEvent();
+      if (currentEvent != null) {
+        eventName = currentEvent.eventName;
+        eventMessage = currentEvent.effectMessage;
+        remainingTurns = eventManager.activeEventRemainingTurns;
+      }
+    }
+    
+    // イベント名の表示
+    fill(0);
+    if (currentEvent != null && !eventName.equals("通常")) {
+      fill(200, 0, 0); // イベント発動中は赤色
+    } else {
+      fill(0);
+    }
+
+    textSize(36);
+    text(eventName, (width*0.3)/2, 420);
+    
+    // 効果説明のエリア
+    fill(0);
+    rect(20, height/2 + 100, (width * 0.3) - 40, height/2 - 120);
     
     fill(240);
-    rect(23, height/2 + 83, (width * 0.3) - 46, height/2 - 106);
+    rect(23, height/2 + 103, (width * 0.3) - 46, height/2 - 126);
+    
+    // 効果の説明文（ゲームへの影響）
+    fill(0);
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    if (!eventMessage.isEmpty()) {
+      text(eventMessage, (width*0.3)/2, height - 130);
+    } else {
+      text("特別な効果なし", (width*0.3)/2, height - 130);
+    }
+    
+    // 残りターン数の表示（イベントが有効な場合）
+    if (currentEvent != null && remainingTurns > 0 && !eventName.equals("通常")) {
+      textAlign(CENTER, CENTER);
+      textSize(20);
+      fill(100);
+      text("残り " + remainingTurns + " ターン", (width*0.3)/2, height - 50);
+    }
+    
+    textAlign(CENTER, CENTER);
   }
 }

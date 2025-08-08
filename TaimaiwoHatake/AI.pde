@@ -13,9 +13,19 @@ class AI extends Broker {
   void aiAction() {
     // 購入プロセス ランキング順に安い方から買っていく
     int[] ranking = market.getBrandRanking();
-    int eventbuyCount;
-    println(eventManager.eventSchedule[currentTurn].eventName);
-    switch (eventManager.eventSchedule[currentTurn].eventName) {
+    int eventbuyCount = 2; // デフォルト値
+    
+    // イベントを確認（nullチェック付き）
+    String eventName = "通常";
+    if (eventManager != null && 
+        eventManager.eventSchedule != null && 
+        currentTurn < eventManager.eventSchedule.length && 
+        eventManager.eventSchedule[currentTurn] != null) {
+      eventName = eventManager.eventSchedule[currentTurn].eventName;
+      println(eventName);
+    }
+    
+    switch (eventName) {
       case "台風":
       case "大雪":
         eventbuyCount = 0;
@@ -35,14 +45,24 @@ class AI extends Broker {
       int riceID = ranking[i];
       int countRice = getSumHandRice(riceID);
       int canBuyCount = wallet / riceBrandsInfo[riceID].point; // 全額使ったら買える個数
-      if (canBuyCount <= 0) {
-        buyCostAverages[riceID] = 0;
+      if (canBuyCount <= 0 || eventbuyCount <= 0) {
+        // 購入しない場合は前の値を保持（初期値0の場合は現在の価格を設定）
+        if (buyCostAverages[riceID] == 0) {
+          buyCostAverages[riceID] = riceBrandsInfo[riceID].point * RICE_BUY_RATIO;
+        }
       } else {
         int buyCount = min(canBuyCount/2, eventbuyCount);
-        buyRice(riceID, buyCount);
-        buyCostAverages[riceID] = (countRice * buyCostAverages[riceID]
-                                          + riceBrandsInfo[riceID].point * RICE_BUY_RATIO * buyCount)
-                                          / float(countRice + buyCount);
+        if (buyCount > 0) {
+          buyRice(riceID, buyCount);
+          // 初回購入時または0除算を防ぐ処理
+          if (countRice == 0) {
+            buyCostAverages[riceID] = riceBrandsInfo[riceID].point * RICE_BUY_RATIO;
+          } else {
+            buyCostAverages[riceID] = (countRice * buyCostAverages[riceID]
+                                              + riceBrandsInfo[riceID].point * RICE_BUY_RATIO * buyCount)
+                                              / float(countRice + buyCount);
+          }
+        }
       }
       println(buyCostAverages[riceID]);
     }
