@@ -305,7 +305,7 @@ void applyBonusMoneyEvent(String eventName) {
   EventEffectItem effect = new EventEffectItem(
     EffectType.PLAYER_MONEY,
     1.0,
-    2000,
+    1000,
     -1,
     eventName
   );

@@ -29,11 +29,9 @@ class TriangleButton {
 
   // ボタンを描画する
   void display() {
-    if (isMouseOver()) {
-      currentColor = hoverColor;
-    } else {
-      currentColor = backgroundColor;
-    }
+    // ホバー状態を一度だけ計算
+    boolean hovered = isMouseOver();
+    currentColor = hovered ? hoverColor : backgroundColor;
 
     fill(currentColor);
     noStroke();
@@ -112,11 +110,9 @@ class NormalButton {
 
   // ボタンを描画する
   void display() {
-    if (isMouseOver()) {
-      currentColor = hoverColor;
-    } else {
-      currentColor = backgroundColor;
-    }
+    // ホバー状態を一度だけ計算
+    boolean hovered = isMouseOver();
+    currentColor = hovered ? hoverColor : backgroundColor;
 
     fill(currentColor);
     noStroke();

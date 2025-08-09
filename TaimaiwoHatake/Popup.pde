@@ -5,7 +5,7 @@ class Popup {
   boolean yearPopupTimerSet = false;
   boolean popupClosing = false;  // ポップアップが閉じる処理中フラグ
   int currentNewsIndex = 0;  // 現在表示中の予報のインデックス
-  int seconds = 300;
+  int seconds = 10;
 
   // ポップアップの種類を定義
   void drawPopup(String type) {
@@ -61,7 +61,7 @@ class Popup {
     }
 
     drawCloseButton();
-    cardVisual.loadCardImages();
+    // cardVisual.loadCardImages(); // 削除：初期化時に一度だけ読み込むようになった
   }
 
   // 年数ポップアップの描画
@@ -212,6 +212,9 @@ class Popup {
     fill(0);
     textSize(40);
     text("どのお米を仕入れますか？", (width * 0.3) + 350, 130);
+    textSize(16);
+    text("*(市場の8割、環境で変動あり)", (width * 0.3) + 470, 165);
+    textSize(40);
 
     // ブランド表示
     textAlign(LEFT, CENTER);
@@ -514,7 +517,7 @@ class Popup {
       if((marketPriceKeep[riceBrandRanking[i]] - riceBrandsInfo[riceBrandRanking[i]].point) > 0){
         fill(255, 0, 0); // 価値が下がったら赤字にする
       }
-      text(riceBrandsInfo[riceBrandRanking[i]].point + "pt", (width * 0.3) + 550, 320 + (i*60));
+      text(riceBrandKeepPrice[riceBrandRanking[i]] + "pt", (width * 0.3) + 550, 320 + (i*60));
       fill(0);
     }
     
@@ -528,6 +531,8 @@ class Popup {
     text("集計結果", (width * 0.3) + 370, 210);
     text("合計", (width * 0.3) + 420, 570);
     
+    textSize(12);
+    text("※(出荷後・消費前の価値)", (width * 0.3) + 325, 268);
     textSize(32);
     text("価値", (width * 0.3) + 470, 260);
     

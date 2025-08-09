@@ -30,32 +30,81 @@ class GameState {
 
   // 米購入関数 
   void forBuyRice() {
+    println("forBuyRice開始");
     if (player.wallet - totalPrice < 0) {
+      println("forBuyRice: 残金不足");
       return; // 残金が足りない場合は何もしない
     }
     for (int i = 0; i < riceBrandsInfo.length; i++){
-      player.buyRice(i, selectedAmounts[i]);
+      if (selectedAmounts[i] > 0) {
+        println("ブランド" + i + "を" + selectedAmounts[i] + "枚購入");
+        player.buyRice(i, selectedAmounts[i]);
+      }
     }
-    closePopup();
+    // confirmBuyAndShip()から呼ばれた場合は既に閉じているので、ここでは閉じない
+    if (!isFromBuyScreen) {
+      closePopup();
+    }
   }
   
-  // 購入してから出荷する関数
+  // 購入してから出荷する関数（確認画面を表示）
   void buyAndShip() {
     if (player.wallet - totalPrice < 0) {
       return; // 残金が足りない場合は何もしない
     }
+    
+    // 選択した購入数とtotalPriceを一時的に保存
+    println("buyAndShip: 購入数を保存");
     for (int i = 0; i < riceBrandsInfo.length; i++){
-      player.buyRice(i, selectedAmounts[i]);
+      tempSelectedAmounts[i] = selectedAmounts[i]; // 一時保存配列にコピー
+      if (selectedAmounts[i] > 0) {
+        println("ブランド" + i + ": " + selectedAmounts[i] + "枚");
+      }
+    }
+    tempTotalPrice = totalPrice; // 合計金額も保存
+    println("合計金額: " + totalPrice);
+    
+    // フラグを設定して確認画面を表示（closePopupの前に設定）
+    isFromBuyScreen = true;
+    
+    // 購入ポップアップを閉じる
+    closePopup();
+    
+    // 確認画面を表示
+    showPopup("turnEnd");
+  }
+  
+  // 購入を確定してターンを終了する
+  void confirmBuyAndShip() {
+    println("confirmBuyAndShip開始");
+    println("isFromBuyScreen: " + isFromBuyScreen);
+    
+    // 確認画面を閉じる
+    closePopup();
+    
+    // 購入処理を実行
+    println("購入処理前の所持金: " + player.wallet);
+    
+    // 各ブランドの購入処理
+    for (int i = 0; i < riceBrandsInfo.length; i++){
+      if (tempSelectedAmounts[i] > 0) {
+        println("ブランド" + i + "を" + tempSelectedAmounts[i] + "枚購入");
+        player.buyRice(i, tempSelectedAmounts[i]);
+      }
     }
     
-    // ポップアップキューをクリアしてから閉じる
-    clearPopupQueue();
-    closePopup();
+    println("購入処理後の所持金: " + player.wallet);
     
     // 出荷前の市場在庫を保存（fluctuationポップアップで使用）
     marketStockKeep = market.marketStock.clone();
     
     player.shipRice();
+    
+    // 一時保存をクリア
+    for (int i = 0; i < tempSelectedAmounts.length; i++) {
+      tempSelectedAmounts[i] = 0;
+    }
+    tempTotalPrice = 0;
     
     endTurn(); // 出荷後にターンを進める
   }
@@ -72,8 +121,15 @@ class GameState {
     closePopup();
   }
 
-  // 出荷関数 ボタンでつかうよ
+  // 出荷関数 ボタンでつかうよ（確認画面を表示）
   void playerShipRIce() {
+    // フラグを設定して確認画面を表示
+    isFromBuyScreen = false;
+    showPopup("turnEnd");
+  }
+  
+  // 出荷を確定してターンを終了する
+  void confirmShipOnly() {
     // 出荷前の市場在庫を保存（fluctuationポップアップで使用）
     marketStockKeep = market.marketStock.clone();
     
@@ -134,6 +190,9 @@ class GameState {
     marketStockAfterShip = market.marketStock.clone();
     
     market.updateBrandPoint(); // 市場のブランドポイントを更新
+    for (int i=0; i<riceBrandsInfo.length; i++) {
+      riceBrandKeepPrice[i] = riceBrandsInfo[i].point; // ブランドの価値を保存
+    }
     riceBrandRanking = market.getBrandRanking(); // ブランドの価値ランキングを更新
 
     // 利益処理 (プレイヤーの利益表示ポップアップでも使用される)

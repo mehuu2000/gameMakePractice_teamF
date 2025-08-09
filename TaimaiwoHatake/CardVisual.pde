@@ -5,14 +5,18 @@ class CardVisual {
     /* 以下は実装例 */
     // カードの画像を格納する配列
     PImage[] cardImages;
+    boolean imagesLoaded = false; // 画像が読み込まれたかのフラグ
     
-    // 画像読み込み
+    // 画像読み込み（一度だけ実行される）
     void loadCardImages() {
-      cardImages = new PImage[4];
-      cardImages[0] = loadImage("rice_card_ryouomoi.png");
-      cardImages[1] = loadImage("rice_card_hoshihikari.png");
-      cardImages[2] = loadImage("rice_card_yumegogochi.png");
-      cardImages[3] = loadImage("rice_card_tsuyaouji.png");
+      if (!imagesLoaded) {
+        cardImages = new PImage[4];
+        cardImages[0] = loadImage("rice_card_ryouomoi.png");
+        cardImages[1] = loadImage("rice_card_hoshihikari.png");
+        cardImages[2] = loadImage("rice_card_yumegogochi.png");
+        cardImages[3] = loadImage("rice_card_tsuyaouji.png");
+        imagesLoaded = true;
+      }
     }
 
     // カードの描画

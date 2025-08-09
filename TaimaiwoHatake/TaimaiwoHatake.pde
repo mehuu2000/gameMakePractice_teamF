@@ -78,6 +78,11 @@ int popupQueueSize = 0; // キューに入っているポップアップの数
 int currentPopupIndex = 0; // 現在表示中のポップアップのインデックス
 int selectedBrandId = 0; // 選択されたブランド(買い付けフェーズなど)
 int totalPrice = 0; // 購入合計金額
+boolean isFromBuyScreen = false; // 購入画面から確認画面へ遷移したか
+
+// 購入確認用の一時保存変数
+int[] tempSelectedAmounts; // 購入数の一時保存
+int tempTotalPrice = 0; // 合計金額の一時保存
 
 // 集計結果で使用する変数
 int playerProfit = 0; // プレイヤーの利益
@@ -87,6 +92,7 @@ int[] aiLoadedRices; // AIが前シーズンで出荷した米の数
 int[] marketStockKeep; // 出荷前の在庫を保持するための配列
 int[] marketStockAfterShip; // 出荷直後（消費前）の在庫を保持するための配列
 int[] marketPriceKeep; // 出荷直前の価値を保持するための配列
+int[] riceBrandKeepPrice; // 各ブランドの価値を保持するための配列
 
 
 // ========== 定数 ==========
@@ -101,7 +107,7 @@ final int ENEMY_POINT = 5000; // AI初期所持金
 final float LEFT_PANEL_WIDTH = 0.3;   // 左パネルの幅（30%）
 final float RIGHT_PANEL_WIDTH = 0.7;  // 右パネルの幅（70%）
 final int[] BASE_CARD_POINTS = {100, 110, 120, 130}; // 基本のカードポイントの係数
-final int LOWER_LIMIT_RICE_POINT= 10; // 米の下限価格
+final int LOWER_LIMIT_RICE_POINT= 100; // 米の下限価格
 final int PHOTO_SHEETS = 20; //画像の上限数
 
 // ========== 変数（変更可能） ==========
@@ -116,6 +122,10 @@ boolean isSupplyOver = false; // 供給数が上限を超えたかどうかの�
 
 int baseEventEffect = 1; // イベント効果の基本値
 int eventEffect = 1; // イベント効果の倍率
+
+// パフォーマンス最適化用変数
+int lastSeasonDrawn = -1; // 最後に描画した季節
+PGraphics backgroundBuffer; // 背景バッファ
 
 // ========== 変数管理 ==========
 // イベントの倍率を更新
@@ -251,8 +261,10 @@ void initGame() {
   marketStockKeep = new int[riceBrandsInfo.length];
   marketStockAfterShip = new int[riceBrandsInfo.length];
   marketPriceKeep = new int[riceBrandsInfo.length];
+  riceBrandKeepPrice = new int[riceBrandsInfo.length];
 
   selectedAmounts = new int[riceBrandsInfo.length];
+  tempSelectedAmounts = new int[riceBrandsInfo.length]; // 一時保存配列の初期化
   riceBrandRanking = new int[riceBrandsInfo.length];
   market = new Market();
   cardVisual = new CardVisual();
@@ -272,7 +284,9 @@ void initGame() {
   rightPanel = new RightPanel();
   popup = new Popup();
   cardVisual = new CardVisual();
+  cardVisual.loadCardImages(); // 初期化時に一度だけ画像を読み込む
   images = new PImage[PHOTO_SHEETS]; // 画像配列を初期化
+  backgroundBuffer = createGraphics(WINDOW_WIDTH, WINDOW_HEIGHT); // 背景バッファを作成
   
   //ここに images[x] = loadImage("〇〇.png");  の形で画像を指定してください
   images[0] = loadImage("truck.png");
@@ -410,7 +424,12 @@ void initButton() {
     gameState.playerBackRice();
   });
   turnEndButton = new EllipseButton((width * 0.3) + 650, height - 280, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "御意", 32, () -> {
-    // 提出処理をここに追加
+    // 購入画面からか出荷のみかで処理を分岐
+    if (isFromBuyScreen) {
+      gameState.confirmBuyAndShip();
+    } else {
+      gameState.confirmShipOnly();
+    }
   });
 
   buyButton = new EllipseButton((width * 0.3) + 760, height - 170, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "購入", 32, () -> {
@@ -464,18 +483,26 @@ void draw() {
     ui.drawSystem2Instructions();
     break;
   case PLAYING:
-    background(100);
-    tint(255, 150);
-    if(currentYear_season[1] == 0){
-      image(images[6], 0, 0);
-    } else if(currentYear_season[1] == 1){
-      image(images[7], 0, 0, 1280, 720);
-    } else if(currentYear_season[1] == 2){
-      image(images[8], 0, 0, 1280, 720);
-    } else if(currentYear_season[1] == 3){
-      image(images[9], 0, 0, 1280, 720);
+    // 季節が変わった時のみ背景を再描画
+    if (lastSeasonDrawn != currentYear_season[1]) {
+      backgroundBuffer.beginDraw();
+      backgroundBuffer.background(100);
+      backgroundBuffer.tint(255, 150);
+      if(currentYear_season[1] == 0){
+        backgroundBuffer.image(images[6], 0, 0);
+      } else if(currentYear_season[1] == 1){
+        backgroundBuffer.image(images[7], 0, 0, 1280, 720);
+      } else if(currentYear_season[1] == 2){
+        backgroundBuffer.image(images[8], 0, 0, 1280, 720);
+      } else if(currentYear_season[1] == 3){
+        backgroundBuffer.image(images[9], 0, 0, 1280, 720);
+      }
+      backgroundBuffer.noTint();
+      backgroundBuffer.endDraw();
+      lastSeasonDrawn = currentYear_season[1];
     }
-    noTint();
+    // キャッシュされた背景を描画
+    image(backgroundBuffer, 0, 0);
     drawGameScreen();
     break;
   case FINISHED:
@@ -597,20 +624,23 @@ void mouseClicked() {
         }
       }
     } else {
-      if (rightPanel.onEventBoxClicked()) {
-        // 内部で既に実行済み
-      } else if (rightPanel.onNewsBoxClicked()) {
-        // 内部で既に実行済み
-      } else if (rightPanel.onBrand1Clicked()) {
-        // 内部で既に実行済み
-      } else if (rightPanel.onLoadBrandClicked()) {
-        // 内部で既に実行済み
-      } else if (playDescribeButton.onClicked()) {
-        // 内部で既に実行済み
-      } else if (submitButton.onClicked()) {
-        // 内部で既に実行済み
-      } else if (buyPopupButton.onClicked()) {
-        // 内部で既に実行済み
+      // ポップアップが表示されていない時のみ通常のボタンが反応
+      if (!showingPopup) {
+        if (rightPanel.onEventBoxClicked()) {
+          // 内部で既に実行済み
+        } else if (rightPanel.onNewsBoxClicked()) {
+          // 内部で既に実行済み
+        } else if (rightPanel.onBrand1Clicked()) {
+          // 内部で既に実行済み
+        } else if (rightPanel.onLoadBrandClicked()) {
+          // 内部で既に実行済み
+        } else if (playDescribeButton.onClicked()) {
+          // 内部で既に実行済み
+        } else if (submitButton.onClicked()) {
+          // 内部で既に実行済み
+        } else if (buyPopupButton.onClicked()) {
+          // 内部で既に実行済み
+        }
       }
     }
   } else if (gameState.currentState == State.TITLE) {

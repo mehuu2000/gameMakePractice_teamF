@@ -15,12 +15,12 @@ class Market {
     final int MAX_SUPPLY_LIMIT = 100;
 
     // 初期在庫生成の割合
-    final float INIT_STOCK_MIN_RATIO = 0.25;  // 供給上限の1/4
-    final float INIT_STOCK_MAX_RATIO = 0.5;  // 供給上限の1/2
+    final float INIT_STOCK_MIN_RATIO = 0.5;  // 供給上限の1/2
+    final float INIT_STOCK_MAX_RATIO = 0.6;  // 供給上限の3/5
 
     // 消費率
-    final float CONSUME_MIN_RATIO = 0.2;  // 最小20%消費
-    final float CONSUME_MAX_RATIO = 0.4;  // 最大40%消費
+    final float CONSUME_MIN_RATIO = 5;  // 最小5枚消費
+    final float CONSUME_MAX_RATIO = 10;  // 最大10枚消費
 
     // コンストラクタ
     Market() {
@@ -158,8 +158,8 @@ class Market {
         if (effectManager != null) {
             consumptionMultiplier = effectManager.getConsumptionMultiplier();
         }
-        int startCount = int(getTotalStock() * CONSUME_MIN_RATIO * consumptionMultiplier);
-        int finishCount = int(getTotalStock() * CONSUME_MAX_RATIO * consumptionMultiplier);
+        int startCount = int(CONSUME_MIN_RATIO * consumptionMultiplier);
+        int finishCount = int(CONSUME_MAX_RATIO * consumptionMultiplier);
         int consumeCount = int(max(2, random(startCount, finishCount)));
         // consumeCountがbrandIds.lengthを超えないようにする
         consumeCount = min(consumeCount, brandIds.length);
@@ -200,6 +200,14 @@ class Market {
     void updateBrandPoint() {
         float totalAmount =  getTotalStock()+1; 
         float totalSupplyAdjustmentFactor = (this.supplyLimit / totalAmount); // 供給数補正係数
+        
+        // 供給過多チェック（市場在庫が供給上限を超えている場合）
+        float oversupplyPenalty = 1.0;
+        if (getTotalStock() > supplyLimit) {
+            oversupplyPenalty = 0.5; // 価値を半減させる
+            println("供給過多！価値が半減します。");
+        }
+        
         for (int i=0; i<riceBrandsInfo.length; i++) {
             float rarityAdjustmentFactor = totalAmount / (marketStock[i]+2); // 希少性補正係数
             
@@ -209,8 +217,8 @@ class Market {
                 sellPriceMultiplier = effectManager.getBrandSellPriceMultiplier(i);
             }
 
-            // ブランドの価格を更新（売値の計算）
-            riceBrandsInfo[i].point = int(BASE_CARD_POINTS[i] * (totalSupplyAdjustmentFactor * 0.8) * rarityAdjustmentFactor * 0.7 * sellPriceMultiplier);
+            // ブランドの価格を更新（売値の計算）- 供給過多ペナルティを適用
+            riceBrandsInfo[i].point = int(BASE_CARD_POINTS[i] * (totalSupplyAdjustmentFactor * 0.8) * rarityAdjustmentFactor * 0.7 * sellPriceMultiplier * oversupplyPenalty);
             
             // 価格が0以下にならないように制御
             if (riceBrandsInfo[i].point <= LOWER_LIMIT_RICE_POINT) {
