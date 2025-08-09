@@ -254,6 +254,10 @@ class RightPanel {
 
   // 効果名ボックスのクリック判定
   boolean onEventBoxClicked() {
+    // ポップアップ表示中は反応しない
+    if (showingPopup) {
+      return false;
+    }
     // rect(width - 155, height/3 - 50, 160, 60, 10) の範囲をチェック
     if (mouseX >= width - 155 && mouseX <= width - 155 + 160 &&
         mouseY >= height/3 - 50 && mouseY <= height/3 - 50 + 60) {
@@ -342,6 +346,11 @@ class RightPanel {
   
   // イベントボックスのホバー状態をチェック
   void checkEventHover() {
+    // ポップアップ表示中はホバー状態をfalseにする
+    if (showingPopup) {
+      isHoveringEventBox = false;
+      return;
+    }
     // rect(width - 155, height/3 - 50, 160, 60, 10) の範囲をチェック
     if (mouseX >= width - 155 && mouseX <= width - 155 + 160 &&
         mouseY >= height/3 - 50 && mouseY <= height/3 - 50 + 60) {
@@ -399,6 +408,11 @@ class RightPanel {
   
   // 予報ボックスのホバー状態をチェック
   void checkNewsHover() {
+    // ポップアップ表示中はホバー状態をfalseにする
+    if (showingPopup) {
+      isHoveringNewsBox = false;
+      return;
+    }
     // rect(width - 155, height/3 + 50, 160, 60, 10) の範囲をチェック
     if (mouseX >= width - 155 && mouseX <= width - 155 + 160 &&
         mouseY >= height/3 + 50 && mouseY <= height/3 + 50 + 60) {
@@ -459,6 +473,10 @@ class RightPanel {
   
   // 予報ボックスのクリック判定
   boolean onNewsBoxClicked() {
+    // ポップアップ表示中は反応しない
+    if (showingPopup) {
+      return false;
+    }
     // rect(width - 155, height/3 + 50, 160, 60, 10) の範囲をチェック
     if (mouseX >= width - 155 && mouseX <= width - 155 + 160 &&
         mouseY >= height/3 + 50 && mouseY <= height/3 + 50 + 60) {
