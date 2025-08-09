@@ -19,7 +19,7 @@ class RightPanel {
     strokeWeight(5);
     line(width * 0.3 + 5, 0, width * 0.3 + 5, height);
 
-    cardVisual.loadCardImages();
+    // cardVisual.loadCardImages(); // 削除：初期化時に一度だけ読み込むようになった
 
     drawTurnInfo();
     drawPointInfo();

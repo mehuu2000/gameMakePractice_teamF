@@ -61,7 +61,7 @@ class Popup {
     }
 
     drawCloseButton();
-    cardVisual.loadCardImages();
+    // cardVisual.loadCardImages(); // 削除：初期化時に一度だけ読み込むようになった
   }
 
   // 年数ポップアップの描画

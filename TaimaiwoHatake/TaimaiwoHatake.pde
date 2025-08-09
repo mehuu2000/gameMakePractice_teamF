@@ -121,6 +121,10 @@ boolean isSupplyOver = false; // 供給数が上限を超えたかどうかの�
 int baseEventEffect = 1; // イベント効果の基本値
 int eventEffect = 1; // イベント効果の倍率
 
+// パフォーマンス最適化用変数
+int lastSeasonDrawn = -1; // 最後に描画した季節
+PGraphics backgroundBuffer; // 背景バッファ
+
 // ========== 変数管理 ==========
 // イベントの倍率を更新
 void updateEventEffect(float effect) {
@@ -278,7 +282,9 @@ void initGame() {
   rightPanel = new RightPanel();
   popup = new Popup();
   cardVisual = new CardVisual();
+  cardVisual.loadCardImages(); // 初期化時に一度だけ画像を読み込む
   images = new PImage[PHOTO_SHEETS]; // 画像配列を初期化
+  backgroundBuffer = createGraphics(WINDOW_WIDTH, WINDOW_HEIGHT); // 背景バッファを作成
   
   //ここに images[x] = loadImage("〇〇.png");  の形で画像を指定してください
   images[0] = loadImage("truck.png");
@@ -461,18 +467,26 @@ void draw() {
     ui.drawSystem2Instructions();
     break;
   case PLAYING:
-    background(100);
-    tint(255, 150);
-    if(currentYear_season[1] == 0){
-      image(images[6], 0, 0);
-    } else if(currentYear_season[1] == 1){
-      image(images[7], 0, 0, 1280, 720);
-    } else if(currentYear_season[1] == 2){
-      image(images[8], 0, 0, 1280, 720);
-    } else if(currentYear_season[1] == 3){
-      image(images[9], 0, 0, 1280, 720);
+    // 季節が変わった時のみ背景を再描画
+    if (lastSeasonDrawn != currentYear_season[1]) {
+      backgroundBuffer.beginDraw();
+      backgroundBuffer.background(100);
+      backgroundBuffer.tint(255, 150);
+      if(currentYear_season[1] == 0){
+        backgroundBuffer.image(images[6], 0, 0);
+      } else if(currentYear_season[1] == 1){
+        backgroundBuffer.image(images[7], 0, 0, 1280, 720);
+      } else if(currentYear_season[1] == 2){
+        backgroundBuffer.image(images[8], 0, 0, 1280, 720);
+      } else if(currentYear_season[1] == 3){
+        backgroundBuffer.image(images[9], 0, 0, 1280, 720);
+      }
+      backgroundBuffer.noTint();
+      backgroundBuffer.endDraw();
+      lastSeasonDrawn = currentYear_season[1];
     }
-    noTint();
+    // キャッシュされた背景を描画
+    image(backgroundBuffer, 0, 0);
     drawGameScreen();
     break;
   case FINISHED:
