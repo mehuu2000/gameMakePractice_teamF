@@ -608,20 +608,23 @@ void mouseClicked() {
         }
       }
     } else {
-      if (rightPanel.onEventBoxClicked()) {
-        // 内部で既に実行済み
-      } else if (rightPanel.onNewsBoxClicked()) {
-        // 内部で既に実行済み
-      } else if (rightPanel.onBrand1Clicked()) {
-        // 内部で既に実行済み
-      } else if (rightPanel.onLoadBrandClicked()) {
-        // 内部で既に実行済み
-      } else if (playDescribeButton.onClicked()) {
-        // 内部で既に実行済み
-      } else if (submitButton.onClicked()) {
-        // 内部で既に実行済み
-      } else if (buyPopupButton.onClicked()) {
-        // 内部で既に実行済み
+      // ポップアップが表示されていない時のみ通常のボタンが反応
+      if (!showingPopup) {
+        if (rightPanel.onEventBoxClicked()) {
+          // 内部で既に実行済み
+        } else if (rightPanel.onNewsBoxClicked()) {
+          // 内部で既に実行済み
+        } else if (rightPanel.onBrand1Clicked()) {
+          // 内部で既に実行済み
+        } else if (rightPanel.onLoadBrandClicked()) {
+          // 内部で既に実行済み
+        } else if (playDescribeButton.onClicked()) {
+          // 内部で既に実行済み
+        } else if (submitButton.onClicked()) {
+          // 内部で既に実行済み
+        } else if (buyPopupButton.onClicked()) {
+          // 内部で既に実行済み
+        }
       }
     }
   } else if (gameState.currentState == State.TITLE) {
