@@ -106,25 +106,11 @@ class AI extends Broker {
       if (oldestRice > 0)
         loadRice(i, oldestRice);
     }
-    /*//価値の高い方から1/2, 3/8, 1/4, 1/8の順に出荷場に出す
-    for (int i = 0; i < riceBrandsInfo.length; i++) {
-      int riceID = ranking[i];
-      int countRice = getSumHandRice(riceID);
-      switch(4 - i) {
-        case 1:
-          loadRice(riceID, countRice/2);
-          break;
-        case 2:
-          loadRice(riceID, countRice*3/8);
-          break;
-        case 3:
-          loadRice(riceID, countRice/4);
-          break;
-        case 4:
-          loadRice(riceID, countRice/8);
-          break;
+    if (currentTurn == maxTurn) {
+      for (int i = 0; i < riceBrandsInfo.length; i++) {
+        loadRice(i, ai.getSumHandRice(i));
       }
-    }*/
+    }
     int[] loadCount = predCount();
     for (int i = 0; i < riceBrandsInfo.length; i++) {
       loadRice(i, loadCount[i]);
@@ -177,7 +163,7 @@ class AI extends Broker {
         }
       }
     }
-    println("AIの手札"+ getSumHandRice(0)+ getSumHandRice(1)+ getSumHandRice(2)+ getSumHandRice(3) +"AIの行動："+bestCombi[0]+bestCombi[1]+bestCombi[2]+bestCombi[3]);
+    println("AIの手札"+getSumHandRice(0)+getSumHandRice(1)+getSumHandRice(2)+getSumHandRice(3)+"AIの行動："+bestCombi[0]+bestCombi[1]+bestCombi[2]+bestCombi[3]);
     return bestCombi;
   }
 }
