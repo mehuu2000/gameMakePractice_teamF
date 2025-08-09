@@ -257,9 +257,9 @@ class EventManager {
             },
             () -> {
                 removeEventEffects("米騒動");
-                // 米騒動終了でゲーム強制終了
                 println("米騒動が収束しました");
-                // TODO: ゲーム終了処理
+                gameState.changeState(State.FINISHED); // 状態をFINISHEDに変更
+                return; // 以降の処理は行わない
             }
         ));
 
