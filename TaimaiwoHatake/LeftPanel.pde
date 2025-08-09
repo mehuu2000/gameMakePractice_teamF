@@ -63,10 +63,12 @@ class LeftPanel {
     // ブランド名の描画
     text("品種名", 205, 100);
     for (int i=0; i<riceBrandsInfo.length; i++) {
+        fill(riceBrandsInfo[riceBrandRanking[i]].brandColor);
         text(riceBrandsInfo[riceBrandRanking[i]].name, 205, 152 + (i * 60));
     }
 
     // ブランドの価値の描画
+    fill(0);
     textSize(24);
     text("価値", (width * 0.3) - 50, 100);
     textAlign(RIGHT, CENTER);
@@ -161,10 +163,13 @@ class LeftPanel {
     stroke(255,0,0);
     strokeWeight(10);
     circle(200, 550, market.supplyLimit*sizeFactor);
+    line(20, 400, 30, 400);
     strokeWeight(1);
     stroke(0);
-    textSize(25);
+    textSize(20);
     fill(255,0,0);
-    text("市場限界",80, 420);
+    textAlign(LEFT, CENTER);
+    text(":市場限界", 35, 400);
+    textAlign(CENTER, CENTER);
   }
 }

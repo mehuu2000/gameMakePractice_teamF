@@ -239,10 +239,10 @@ void setup() {
 // ここでゲームの初期状態を設定
 void initGame() {
   riceBrandsInfo = new RiceBrand[] {
-    new RiceBrand("りょうおもい", color(80, 220, 80), BASE_CARD_POINTS[0]),
-    new RiceBrand("ほしひかり", color(80, 80, 220), BASE_CARD_POINTS[1]),
-    new RiceBrand("ゆめごこち", color(220, 80, 80), BASE_CARD_POINTS[2]),
-    new RiceBrand("つやおうじ", color(220, 220, 80), BASE_CARD_POINTS[3])
+    new RiceBrand("りょうおもい", color(30, 233, 80), BASE_CARD_POINTS[0]),
+    new RiceBrand("ほしひかり", color(170, 131, 255), BASE_CARD_POINTS[1]),
+    new RiceBrand("ゆめごこち", color(234, 80, 255), BASE_CARD_POINTS[2]),
+    new RiceBrand("つやおうじ", color(182, 144, 30), BASE_CARD_POINTS[3])
   };
   playerLoadedRices = new int[riceBrandsInfo.length];
   aiLoadedRices = new int[riceBrandsInfo.length];
