@@ -76,6 +76,11 @@ int popupQueueSize = 0; // キューに入っているポップアップの数
 int currentPopupIndex = 0; // 現在表示中のポップアップのインデックス
 int selectedBrandId = 0; // 選択されたブランド(買い付けフェーズなど)
 int totalPrice = 0; // 購入合計金額
+boolean isFromBuyScreen = false; // 購入画面から確認画面へ遷移したか
+
+// 購入確認用の一時保存変数
+int[] tempSelectedAmounts; // 購入数の一時保存
+int tempTotalPrice = 0; // 合計金額の一時保存
 
 // 集計結果で使用する変数
 int playerProfit = 0; // プレイヤーの利益
@@ -253,6 +258,7 @@ void initGame() {
   riceBrandKeepPrice = new int[riceBrandsInfo.length];
 
   selectedAmounts = new int[riceBrandsInfo.length];
+  tempSelectedAmounts = new int[riceBrandsInfo.length]; // 一時保存配列の初期化
   riceBrandRanking = new int[riceBrandsInfo.length];
   market = new Market();
   cardVisual = new CardVisual();
@@ -397,7 +403,12 @@ void initButton() {
     gameState.playerBackRice();
   });
   turnEndButton = new EllipseButton((width * 0.3) + 650, height - 280, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "御意", 32, () -> {
-    // 提出処理をここに追加
+    // 購入画面からか出荷のみかで処理を分岐
+    if (isFromBuyScreen) {
+      gameState.confirmBuyAndShip();
+    } else {
+      gameState.confirmShipOnly();
+    }
   });
 
   buyButton = new EllipseButton((width * 0.3) + 760, height - 170, 150, 70, color(0), color(230, 150, 100), color(215, 130, 85), "購入", 32, () -> {
