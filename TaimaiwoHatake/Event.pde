@@ -112,9 +112,13 @@ class EventManager {
     Event activeEvent;
     int activeEventRemainingTurns;
     ArrayList<String> usedOnceOnlyEvents; // 使用済みの1回限りイベント名を記録
+    ArrayList<Event> eventHistory; // 発動したイベントの履歴
+    ArrayList<ForecastInfo> forecastHistory; // 通知された予報の履歴
     
     EventManager() {
         usedOnceOnlyEvents = new ArrayList<String>();
+        eventHistory = new ArrayList<Event>(); // 履歴の初期化
+        forecastHistory = new ArrayList<ForecastInfo>(); // 予報履歴の初期化
         activeEvent = null;  // 初期化
         activeEventRemainingTurns = 0;  // 初期化
         initializeEventTemplates();
@@ -257,9 +261,9 @@ class EventManager {
             },
             () -> {
                 removeEventEffects("米騒動");
-                // 米騒動終了でゲーム強制終了
                 println("米騒動が収束しました");
-                // TODO: ゲーム終了処理
+                gameState.changeState(State.FINISHED); // 状態をFINISHEDに変更
+                return; // 以降の処理は行わない
             }
         ));
 
@@ -401,7 +405,7 @@ class EventManager {
              }
         ));
 
-        templates.add(new Event("安価な外国米の大量輸入", new int[]{0, 1, 2, 3}, 1.0, 1, 0, "", 
+        templates.add(new Event("外国米の大量輸入", new int[]{0, 1, 2, 3}, 1.0, 1, 0, "", 
                  "政府が緊急経済対策として、海外から安価な米を大量に輸入した。市場には米が溢れ、国産米の価格も下落してしまった。",
                  "市場の消費が低下し、売値が10%減少し、買値が20%減少する",
                  true,
@@ -429,7 +433,7 @@ class EventManager {
         ));
 
         templates.add(new Event("農家の後継者問題", new int[]{0}, 1.0, 1, 3, 
-                 "農家の高齢化が進む中...",
+                 "農家の高齢化が進んでいるらしい...",
                  "お世話になっている農家さんが、高齢のため今年で引退することに…。後継者がおらず、来年からこの農家の米を仕入れられない。",
                  "契約農家が1軒減り、仕入れる米の量が10%減少する。",
                  false,
@@ -614,6 +618,10 @@ class EventManager {
                 if (!currentEvent.isDummy) {
                     // 実際のイベント発動（初回のみ）
                     activeEvent.start();
+                    // イベント履歴に追加（通常イベント以外）
+                    if (!currentEvent.eventName.equals("通常")) {
+                        eventHistory.add(currentEvent);
+                    }
                     println("イベント「" + currentEvent.eventName + 
                            "」が発動しました！（" + currentEvent.duration + "ターン持続）");
                 } else {
@@ -672,6 +680,16 @@ class EventManager {
         return null;
     }
     
+    // イベント履歴を取得
+    ArrayList<Event> getEventHistory() {
+        return eventHistory;
+    }
+    
+    // 予報履歴を取得
+    ArrayList<ForecastInfo> getForecastHistory() {
+        return forecastHistory;
+    }
+    
     // 現在の予報を取得（複数の予報がある場合は最初の1つのみ返す）
     ForecastInfo getCurrentForecast() {
         // 1ターン目は予報なし
@@ -696,6 +714,17 @@ class EventManager {
         if (arrayIndex >= forecastSchedule.length) {
             return new ArrayList<ForecastInfo>();
         }
+        
+        // 予報を履歴に追加（まだ追加されていない場合）
+        ArrayList<ForecastInfo> currentForecasts = forecastSchedule[arrayIndex];
+        if (currentForecasts != null) {
+            for (ForecastInfo forecast : currentForecasts) {
+                if (!forecastHistory.contains(forecast)) {
+                    forecastHistory.add(forecast);
+                }
+            }
+        }
+        
         return forecastSchedule[arrayIndex];
     }
     

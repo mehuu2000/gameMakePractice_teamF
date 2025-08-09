@@ -17,10 +17,11 @@ class LeftPanel {
     drawMarketInfo();
     drawSupply();
     drawEnvironment();
+    drawPieChart();
   }
 
   /* 以下は実装例 */
-
+  
   // 市場の情報を描画
   void drawMarketInfo() {
     fill(240);
@@ -29,10 +30,6 @@ class LeftPanel {
     fill(0);
     textSize(48);
     text("市場", 90, 50);
-    
-    textSize(48);
-    fill(255, 0, 0);
-    text(ui.supplyLimitX + " ～ " + (ui.supplyLimitX + 10), 250, 50);
   }
 
   // 供給量の描画
@@ -66,10 +63,12 @@ class LeftPanel {
     // ブランド名の描画
     text("品種名", 205, 100);
     for (int i=0; i<riceBrandsInfo.length; i++) {
+        fill(riceBrandsInfo[riceBrandRanking[i]].brandColor);
         text(riceBrandsInfo[riceBrandRanking[i]].name, 205, 152 + (i * 60));
     }
 
     // ブランドの価値の描画
+    fill(0);
     textSize(24);
     text("価値", (width * 0.3) - 50, 100);
     textAlign(RIGHT, CENTER);
@@ -83,7 +82,7 @@ class LeftPanel {
 
   // 環境の描画
   void drawEnvironment() {
-    fill(240);
+    /*fill(240);
     rect(10, height/2 + 20, (width * 0.3) - 20, height/2 - 30);
     
     // 現在のイベントを取得
@@ -138,6 +137,39 @@ class LeftPanel {
       text("残り " + remainingTurns + " ターン", (width*0.3)/2, height - 50);
     }
     
+    textAlign(CENTER, CENTER);*/
+  }
+  
+    
+  void drawPieChart() {
+    fill(240);
+    rect(10, height/2 + 20, (width * 0.3) - 20, height/2 - 30);
+     //最大サイズを市場サイズに問わない形にするための係数
+    float sizeFactor = 300 / market.supplyLimit;
+    // 円グラフの大きさのために全体数取得
+    int totalStock = market.getTotalStock();
+    // 円グラフの始点を変えるため
+    float sumRadian = 0;
+    // 円グラフをランキング順に上から表示
+    for (int i = 0; i < riceBrandsInfo.length; i++) {
+      int riceID = riceBrandRanking[i];
+      fill(riceBrandsInfo[riceID].brandColor);
+      float radian = 1.0 * market.getBrandStock(riceID) / totalStock * TWO_PI;
+      arc(200, 550, totalStock*sizeFactor, totalStock*sizeFactor,
+          sumRadian-HALF_PI, sumRadian+radian-HALF_PI);
+      sumRadian += radian;
+    }
+    noFill();
+    stroke(255,0,0);
+    strokeWeight(10);
+    circle(200, 550, market.supplyLimit*sizeFactor);
+    line(20, 400, 30, 400);
+    strokeWeight(1);
+    stroke(0);
+    textSize(20);
+    fill(255,0,0);
+    textAlign(LEFT, CENTER);
+    text(":市場限界", 35, 400);
     textAlign(CENTER, CENTER);
   }
 }

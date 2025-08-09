@@ -1,5 +1,9 @@
 // 右側のパネルを描画するクラス
 class RightPanel {
+  // ホバー状態の管理
+  boolean isHoveringEventBox = false;
+  boolean isHoveringNewsBox = false;
+  
   // 右側のパネル全体管理
   void drawRightPanel() {
     float rightX = width * 0.3;
@@ -29,6 +33,18 @@ class RightPanel {
     drawEventName();
     drawNewsName();
     drawButtons();
+    
+    // ホバー時のイベント効果表示
+    checkEventHover();
+    if (isHoveringEventBox) {
+      drawEventEffectTooltip();
+    }
+    
+    // ホバー時の予報表示
+    checkNewsHover();
+    if (isHoveringNewsBox) {
+      drawNewsTooltip();
+    }
   }
 
   /* 以下は実装例 */
@@ -236,6 +252,18 @@ class RightPanel {
     return false;
   }
 
+  // 効果名ボックスのクリック判定
+  boolean onEventBoxClicked() {
+    // rect(width - 155, height/3 - 50, 160, 60, 10) の範囲をチェック
+    if (mouseX >= width - 155 && mouseX <= width - 155 + 160 &&
+        mouseY >= height/3 - 50 && mouseY <= height/3 - 50 + 60) {
+      // イベント履歴ポップアップを表示
+      showPopup("eventHistory");
+      return true;
+    }
+    return false;
+  }
+
   boolean onBrand1Clicked() {
     // 当たり判定をチェック
     if (mouseX > (width * 0.3) + 160 && mouseX < (width * 0.3) + 280 &&
@@ -271,11 +299,23 @@ class RightPanel {
   void drawEventName(){
     fill(240);
     stroke(5);
-    rect(width - 150, height/3 - 50, 160, 60, 10);
+    rect(width - 155, height/3 - 50, 160, 60, 10);
+    
+    // 現在のイベント名を表示
+    Event currentEvent = null;
+    if (eventManager != null) {
+      currentEvent = eventManager.getCurrentEvent();
+    }
     
     fill(0);
-    textSize(40);
-    text("効果名", width - 75, height/3 - 20);
+    if (currentEvent != null && !currentEvent.eventName.equals("通常")) {
+      // イベント名のサイズを調整して表示
+      textSize(20);
+      text(currentEvent.eventName, width - 70, height/3 - 20);
+    } else {
+      textSize(20);
+      text("なし", width - 75, height/3 - 20);
+    }
     
     noStroke();
   }
@@ -284,10 +324,10 @@ class RightPanel {
   void drawNewsName(){
     fill(240);
     stroke(5);
-    rect(width - 150, height/3 + 50, 160, 60, 10);
+    rect(width - 155, height/3 + 50, 160, 60, 10);
     
     fill(0);
-    textSize(40);
+    textSize(20);
     text("予報", width - 75, height/3 + 80);
     
     noStroke();
@@ -298,5 +338,134 @@ class RightPanel {
     playDescribeButton.display();
     buyPopupButton.display();
     submitButton.display();
+  }
+  
+  // イベントボックスのホバー状態をチェック
+  void checkEventHover() {
+    // rect(width - 155, height/3 - 50, 160, 60, 10) の範囲をチェック
+    if (mouseX >= width - 155 && mouseX <= width - 155 + 160 &&
+        mouseY >= height/3 - 50 && mouseY <= height/3 - 50 + 60) {
+      isHoveringEventBox = true;
+    } else {
+      isHoveringEventBox = false;
+    }
+  }
+  
+  // イベント効果のツールチップを表示
+  void drawEventEffectTooltip() {
+    Event currentEvent = null;
+    if (eventManager != null) {
+      currentEvent = eventManager.getCurrentEvent();
+    }
+    
+    // イベントが存在し、通常イベントでない場合のみ表示
+    if (currentEvent != null && !currentEvent.eventName.equals("通常")) {
+      // ツールチップの位置（イベントボックスの少し下）
+      float tooltipX = width - 280;
+      float tooltipY = height/3 + 20;
+      float tooltipWidth = 280;
+      float tooltipHeight = 100;
+      
+      // ツールチップの背景
+      fill(255, 255, 240);
+      stroke(100);
+      strokeWeight(2);
+      rect(tooltipX, tooltipY, tooltipWidth, tooltipHeight, 10);
+      
+      // イベント名
+      fill(0);
+      textAlign(CENTER, TOP);
+      textSize(20);
+      text("【" + currentEvent.eventName + "】", tooltipX + tooltipWidth/2, tooltipY + 10);
+      
+      // イベントの説明
+      textSize(14);
+      textAlign(LEFT, TOP);
+      text(currentEvent.effectMessage, tooltipX + 10, tooltipY + 40, tooltipWidth - 20, tooltipHeight - 50);
+      
+      // 持続時間（残りターン数）
+      if (currentEvent.duration > 1) {
+        textSize(12);
+        fill(100);
+        textAlign(RIGHT, BOTTOM);
+        text("残り" + currentEvent.duration + "ターン", tooltipX + tooltipWidth - 10, tooltipY + tooltipHeight - 5);
+      }
+      
+      // テキスト配置をリセット
+      textAlign(CENTER, CENTER);
+      noStroke();
+    }
+  }
+  
+  // 予報ボックスのホバー状態をチェック
+  void checkNewsHover() {
+    // rect(width - 155, height/3 + 50, 160, 60, 10) の範囲をチェック
+    if (mouseX >= width - 155 && mouseX <= width - 155 + 160 &&
+        mouseY >= height/3 + 50 && mouseY <= height/3 + 50 + 60) {
+      isHoveringNewsBox = true;
+    } else {
+      isHoveringNewsBox = false;
+    }
+  }
+  
+  // 予報のツールチップを表示
+  void drawNewsTooltip() {
+    ArrayList<ForecastInfo> currentForecasts = null;
+    if (eventManager != null) {
+      currentForecasts = eventManager.getAllCurrentForecasts();
+    }
+    
+    // 予報が存在する場合のみ表示
+    if (currentForecasts != null && currentForecasts.size() > 0) {
+      // ツールチップの位置（予報ボックスの少し下）
+      float tooltipX = width - 350;
+      float tooltipY = height/3 + 120;
+      float tooltipWidth = 350;
+      float tooltipHeight = 150;
+      
+      // ツールチップの背景
+      fill(255, 255, 240);
+      stroke(100);
+      strokeWeight(2);
+      rect(tooltipX, tooltipY, tooltipWidth, tooltipHeight, 10);
+      
+      // タイトル
+      fill(0);
+      textAlign(CENTER, TOP);
+      textSize(20);
+      text("【今回の予報】", tooltipX + tooltipWidth/2, tooltipY + 10);
+      
+      // 予報内容
+      textSize(16);
+      textAlign(LEFT, TOP);
+      int yOffset = 40;
+      for (int i = 0; i < currentForecasts.size(); i++) {
+        ForecastInfo forecast = currentForecasts.get(i);
+        text((i+1) + ". " + forecast.message, tooltipX + 10, tooltipY + yOffset, tooltipWidth - 20, 40);
+        yOffset += 45;
+        
+        // 表示しきれない場合は省略
+        if (yOffset > tooltipHeight - 20) {
+          text("...", tooltipX + tooltipWidth/2, tooltipY + yOffset);
+          break;
+        }
+      }
+      
+      // テキスト配置をリセット
+      textAlign(CENTER, CENTER);
+      noStroke();
+    }
+  }
+  
+  // 予報ボックスのクリック判定
+  boolean onNewsBoxClicked() {
+    // rect(width - 155, height/3 + 50, 160, 60, 10) の範囲をチェック
+    if (mouseX >= width - 155 && mouseX <= width - 155 + 160 &&
+        mouseY >= height/3 + 50 && mouseY <= height/3 + 50 + 60) {
+      // 予報履歴ポップアップを表示
+      showPopup("forecastHistory");
+      return true;
+    }
+    return false;
   }
 }

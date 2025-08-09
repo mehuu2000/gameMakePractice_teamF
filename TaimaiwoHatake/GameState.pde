@@ -7,6 +7,8 @@
 enum State {
   TITLE,
   DESCRIBE,
+  DESCRIBE2,
+  DESCRIBE3,
   START,
   PLAYING,
   FINISHED
@@ -166,6 +168,10 @@ class GameState {
     currentTurn++;
     currentYear_season = getCurrentYear(); // 年と季節の更新
     
+    if (currentTurn > maxTurn) {
+      gameState.changeState(State.FINISHED); // 状態をFINISHEDに変更
+      return; // 以降の処理は行わない
+    }
     // 次のターンの開始処理
     startNextTurn();
   }
@@ -181,6 +187,9 @@ class GameState {
     
     // ポップアップをキューに追加
     showPopup("year"); // 年のポップアップを表示
+    if (currentTurn == 1) {
+      showPopup("carry"); // 1ターン目は市場への持ち運びも表示
+    }
     
     // イベント処理（eventManagerが初期化されている場合のみ）
     if (eventManager != null) {
@@ -189,8 +198,10 @@ class GameState {
       // 予報確認（複数の予報がある場合も対応）
       ArrayList<ForecastInfo> allForecasts = eventManager.getAllCurrentForecasts();
       if (allForecasts != null && allForecasts.size() > 0) {
-        // 予報がある場合は1つのnewsポップアップで全て表示
-        showPopup("news"); // 予報をキューに追加
+        // 各予報を個別のポップアップとして追加
+        for (int i = 0; i < allForecasts.size(); i++) {
+          showPopup("news"); // 予報をキューに追加
+        }
       }
       
       // イベント確認

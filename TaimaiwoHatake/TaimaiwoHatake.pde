@@ -21,7 +21,13 @@ CardVisual cardVisual;
 // ボタン系オブジェクト
 NormalButton startButton; // スタートボタン
 NormalButton describeButton; // 説明ボタン
+NormalButton titleButton; // タイトルへ戻るボタン
+NormalButton systemButton; // システム説明1へ移るボタン
+NormalButton system2Button; // システム説明2へ移るボタン
+NormalButton overviewButton; // 概要（説明の初期ページ）へ移るボタン
 NormalButton endButton; // 終了ボタン
+NormalButton nextButton; //次のポップアップに移動するボタン
+NormalButton closeDescribeButton; //説明画面を閉じるボタン
 
 TriangleButton plus1SelectedButton; // 現在の選択ブランドの選択数を1増やす
 TriangleButton minus1SelectedButton; // 現在の選択ブランドの選択数を1減らす
@@ -65,6 +71,7 @@ int[] currentYear_season = {1, 0}; // 年と季節を管理する配列。年, �
 
 // ========== UI状態変数 ==========
 boolean showingPopup = false; // ポップアップ表示フラグ
+boolean isPlayingDescribe = false; // 説明ボタンフラグ
 String popupType = ""; // ポップアップの種類
 String[] popupQueue = new String[10]; // ポップアップのキュー（最大10個）
 int popupQueueSize = 0; // キューに入っているポップアップの数
@@ -95,7 +102,7 @@ final float LEFT_PANEL_WIDTH = 0.3;   // 左パネルの幅（30%）
 final float RIGHT_PANEL_WIDTH = 0.7;  // 右パネルの幅（70%）
 final int[] BASE_CARD_POINTS = {100, 110, 120, 130}; // 基本のカードポイントの係数
 final int LOWER_LIMIT_RICE_POINT= 10; // 米の下限価格
-final int PHOTO_SHEETS = 10; //画像の上限数
+final int PHOTO_SHEETS = 20; //画像の上限数
 
 // ========== 変数（変更可能） ==========
 RiceBrand[] riceBrandsInfo;
@@ -143,16 +150,26 @@ void showPopup(String type) {
     popupType = popupQueue[0];
     currentPopupIndex = 0;
     resetSelectedAmounts();
+    // 新しいキューの開始時にタイマーをリセット
+    popup.yearPopupTimerSet = false;
+    popup.yearPopupStartTime = 0;
+    popup.popupClosing = false;
+    popup.currentNewsIndex = 0;  // 予報のインデックスもリセット
   }
 }
 
 void closePopup() {
+  // nextButtonを無効化（次のポップアップのため）
+  nextButton.isEnabled = false;
+  
   // 次のポップアップがあるかチェック
   currentPopupIndex++;
   if (currentPopupIndex < popupQueueSize) {
     // 次のポップアップを表示
     popupType = popupQueue[currentPopupIndex];
     popup.yearPopupTimerSet = false; // タイマーリセット
+    popup.yearPopupStartTime = 0; // タイマー開始時刻もリセット
+    popup.popupClosing = false; // 閉じる処理フラグもリセット
   } else {
     // 全てのポップアップが終了
     showingPopup = false;
@@ -164,6 +181,7 @@ void closePopup() {
     sumBrandCount = 0;
     isFirst = false;
     totalPrice = 0;
+    popup.popupClosing = false; // 閉じる処理フラグもリセット
     
     // 全ポップアップ終了後の処理
     if (popupQueue[0] != null && popupQueue[0].equals("countStart")) {
@@ -223,10 +241,10 @@ void setup() {
 // ここでゲームの初期状態を設定
 void initGame() {
   riceBrandsInfo = new RiceBrand[] {
-    new RiceBrand("りょうおもい", color(80, 220, 80), BASE_CARD_POINTS[0]),
-    new RiceBrand("ほしひかり", color(80, 80, 220), BASE_CARD_POINTS[1]),
-    new RiceBrand("ゆめごこち", color(220, 80, 80), BASE_CARD_POINTS[2]),
-    new RiceBrand("つやおうじ", color(220, 220, 80), BASE_CARD_POINTS[3])
+    new RiceBrand("りょうおもい", color(30, 233, 80), BASE_CARD_POINTS[0]),
+    new RiceBrand("ほしひかり", color(170, 131, 255), BASE_CARD_POINTS[1]),
+    new RiceBrand("ゆめごこち", color(234, 80, 255), BASE_CARD_POINTS[2]),
+    new RiceBrand("つやおうじ", color(182, 144, 30), BASE_CARD_POINTS[3])
   };
   playerLoadedRices = new int[riceBrandsInfo.length];
   aiLoadedRices = new int[riceBrandsInfo.length];
@@ -264,6 +282,13 @@ void initGame() {
   images[4] = loadImage("topview_car_truck_player.png");
   images[5] = loadImage("topview_car_truck_enemy.png");
   images[6] = loadImage("background.png");
+  images[7] = loadImage("background_winter.jpeg");
+  images[8] = loadImage("background_spring.jpeg");
+  images[9] = loadImage("background_summer.jpeg");
+  images[10] = loadImage("win.png");
+  images[11] = loadImage("lose.png");
+  images[12] = loadImage("leftPanel_system.jpg");
+  images[13] = loadImage("RightPanel_system.jpg");
   
   
   
@@ -292,14 +317,39 @@ void initButton() {
     bgms[1].rewind();
   });
   describeButton = new NormalButton(width/2 - 50, 350, 100, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "説明", 32, () -> {
-    bgms[0].pause();
-    bgms[1].loop();
-    bgms[1].rewind();
-    gameState.changeState(State.PLAYING);
+    //bgms[0].pause();
+    //bgms[1].loop();
+    //bgms[1].rewind();
+    gameState.changeState(State.DESCRIBE);
   });
   endButton = new NormalButton(width/2 - 50, 400, 100, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "終わる", 32, () -> {
     stop(); // ゲーム終了前の処理
     exit(); // ゲーム終了
+  });
+  titleButton = new NormalButton(10, 650, 160, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "タイトルへ", 32, () -> {
+    if(!isPlayingDescribe){
+    gameState.changeState(State.TITLE);
+    }
+    println("A");
+  });
+  closeDescribeButton = new NormalButton(180, 650, 200, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "ゲームに戻る", 32, () -> {
+    if(isPlayingDescribe){
+    gameState.changeState(State.PLAYING);
+    }
+    println("B");
+    isPlayingDescribe = false;
+  });
+  overviewButton = new NormalButton(width/2 - 180, 650, 190, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "ゲーム概要へ", 32, () -> {
+    gameState.changeState(State.DESCRIBE);
+  });
+  systemButton = new NormalButton(width/2 + 70, 650, 235, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "システム説明[1]", 32, () -> {
+    gameState.changeState(State.DESCRIBE2);
+  });
+  system2Button = new NormalButton(width - 280, 650, 235, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "システム説明[2]", 32, () -> {
+    gameState.changeState(State.DESCRIBE3);
+  });
+  nextButton = new NormalButton(0, 0, width, height, 0, color(0, 0, 0), color(0, 0, 0), color(0, 0, 0), "", 32, () -> {
+    closePopup();
   });
 
   // ========== 三角形ボタンの初期化 ==========
@@ -309,7 +359,12 @@ void initButton() {
     }
   });
   plus1SelectedButton = new TriangleButton(1150, 300, false, () -> {
-    selectedAmounts[selectedBrandId]++;
+    if (popupType == "submit" && selectedAmounts[selectedBrandId] < player.getSumHandRice(selectedBrandId)) {
+      selectedAmounts[selectedBrandId]++;
+    }
+    if (popupType == "return" && selectedAmounts[selectedBrandId] < player.getSumLoadRice(selectedBrandId)) {
+      selectedAmounts[selectedBrandId]++;
+    }
   });
 
   brandPlus1Buttons = new TriangleButton[riceBrandsInfo.length];
@@ -364,6 +419,7 @@ void initButton() {
   playDescribeButton = new EllipseButton(width - 100, height - 40, 105, 49, color(0), color(100, 150, 230), color(85, 130, 215), "説明", 28, () -> {
     // 説明画面の表示処理をここに追加
     gameState.changeState(State.DESCRIBE);
+    isPlayingDescribe = true;
   });
   buyPopupButton = new EllipseButton(width - 95, height - 150, 150, 70, color(0), color(100, 230, 150), color(85, 215, 130), "仕入れ", 32, () -> {
    showPopup("buy");
@@ -381,7 +437,7 @@ void initSound(){
   for(int i = 0; i < ses.length; i++)
     ses[i] = minim.loadFile("sounds/ses/" + SE_NAMES[i]);
     
-  bgms[0].setGain(-5);
+  bgms[0].setGain(-10);
   bgms[1].setGain(-7);
 }
 
@@ -398,14 +454,31 @@ void draw() {
     ui.drawStartScreen(market.supplyLimit);
     break;
   case DESCRIBE:
-    ui.drawTitleScreen();
+    ui.drawInstructions();
+    break;
+  case DESCRIBE2:
+    ui.drawSystemInstructions();
+    break;
+  case DESCRIBE3:
+    ui.drawSystem2Instructions();
     break;
   case PLAYING:
     background(100);
     tint(255, 150);
-    image(images[6], 0, 0);
+    if(currentYear_season[1] == 0){
+      image(images[6], 0, 0);
+    } else if(currentYear_season[1] == 1){
+      image(images[7], 0, 0, 1280, 720);
+    } else if(currentYear_season[1] == 2){
+      image(images[8], 0, 0, 1280, 720);
+    } else if(currentYear_season[1] == 3){
+      image(images[9], 0, 0, 1280, 720);
+    }
     noTint();
     drawGameScreen();
+    break;
+  case FINISHED:
+    ui.drawResultScreen();
     break;
   }
 
@@ -471,9 +544,63 @@ void mouseClicked() {
         } else if (turnEndButton.onClicked()) {
           // 内部で既に実行済み
         }
+      } else if (popupType == "carry") {
+        if (nextButton.onClicked()) {
+          // 内部で既に実行済み
+        }
+      } else if (popupType == "cell") {
+        if (nextButton.onClicked()) {
+          // 内部で既に実行済み
+        }
+      } else if (popupType == "fluctuation") {
+        if (nextButton.onClicked()) {
+          // 内部で既に実行済み
+        }
+      } else if (popupType == "profit") {
+        if (nextButton.onClicked()) {
+          // 内部で既に実行済み
+        }
+      } else if (popupType == "event") {
+        if (nextButton.onClicked()) {
+          // 内部で既に実行済み
+        }
+      } else if (popupType == "news") {
+        if (nextButton.onClicked()) {
+          // 内部で既に実行済み
+        }
+      } else if (popupType == "missed") {
+        if (nextButton.onClicked()) {
+          // 内部で既に実行済み
+        }
+      } else if (popupType == "eventHistory") {
+        // イベント履歴ポップアップ用の戻るボタンのクリック判定（右側配置）
+        float buttonX = width - 280;
+        float buttonY = height - 150;
+        float buttonWidth = 150;
+        float buttonHeight = 60;
+        
+        if (mouseX >= buttonX - buttonWidth/2 && mouseX <= buttonX + buttonWidth/2 &&
+            mouseY >= buttonY - buttonHeight/2 && mouseY <= buttonY + buttonHeight/2) {
+          closePopup();
+        }
+      } else if (popupType == "forecastHistory") {
+        // 予報履歴ポップアップ用の戻るボタンのクリック判定（右側配置）
+        float buttonX = width - 280;
+        float buttonY = height - 150;
+        float buttonWidth = 150;
+        float buttonHeight = 60;
+        
+        if (mouseX >= buttonX - buttonWidth/2 && mouseX <= buttonX + buttonWidth/2 &&
+            mouseY >= buttonY - buttonHeight/2 && mouseY <= buttonY + buttonHeight/2) {
+          closePopup();
+        }
       }
     } else {
-      if (rightPanel.onBrand1Clicked()) {
+      if (rightPanel.onEventBoxClicked()) {
+        // 内部で既に実行済み
+      } else if (rightPanel.onNewsBoxClicked()) {
+        // 内部で既に実行済み
+      } else if (rightPanel.onBrand1Clicked()) {
         // 内部で既に実行済み
       } else if (rightPanel.onLoadBrandClicked()) {
         // 内部で既に実行済み
@@ -493,7 +620,43 @@ void mouseClicked() {
     } else if (endButton.onClicked()) {
       // 内部で既に実行済み
     }
-  }
+  } else if (gameState.currentState == State.DESCRIBE) {
+    if (titleButton.onClicked()) {
+      // 内部で既に実行済み
+    } else if (overviewButton.onClicked()) {
+      // 内部で既に実行済み
+    } else if (systemButton.onClicked()) {
+      // 内部で既に実行済み
+    } else if (system2Button.onClicked()) {
+      // 内部で既に実行済み
+    } else if (closeDescribeButton.onClicked()) {
+      // 内部で既に実行済み
+    }
+  } else if (gameState.currentState == State.DESCRIBE2) {
+    if (titleButton.onClicked()) {
+      // 内部で既に実行済み
+    } else if (overviewButton.onClicked()) {
+      // 内部で既に実行済み
+    } else if (systemButton.onClicked()) {
+      // 内部で既に実行済み
+    } else if (system2Button.onClicked()) {
+      // 内部で既に実行済み
+    } else if (closeDescribeButton.onClicked()) {
+      // 内部で既に実行済み
+    }
+  } else if (gameState.currentState == State.DESCRIBE3) {
+    if (titleButton.onClicked()) {
+      // 内部で既に実行済み
+    } else if (overviewButton.onClicked()) {
+      // 内部で既に実行済み
+    } else if (systemButton.onClicked()) {
+      // 内部で既に実行済み
+    } else if (system2Button.onClicked()) {
+      // 内部で既に実行済み
+    } else if (closeDescribeButton.onClicked()) {
+      // 内部で既に実行済み
+    }
+  } 
 }
 
 //スケッチが正常に終了した時に実行される関数
