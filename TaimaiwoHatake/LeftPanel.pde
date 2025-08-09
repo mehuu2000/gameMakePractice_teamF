@@ -161,10 +161,13 @@ class LeftPanel {
     stroke(255,0,0);
     strokeWeight(10);
     circle(200, 550, market.supplyLimit*sizeFactor);
+    line(20, 400, 30, 400);
     strokeWeight(1);
     stroke(0);
-    textSize(25);
+    textSize(20);
     fill(255,0,0);
-    text("市場限界",80, 420);
+    textAlign(LEFT, CENTER);
+    text(":市場限界", 35, 400);
+    textAlign(CENTER, CENTER);
   }
 }
