@@ -27,6 +27,7 @@ NormalButton system2Button; // システム説明2へ移るボタン
 NormalButton overviewButton; // 概要（説明の初期ページ）へ移るボタン
 NormalButton endButton; // 終了ボタン
 NormalButton nextButton; //次のポップアップに移動するボタン
+NormalButton closeDescribeButton; //説明画面を閉じるボタン
 
 TriangleButton plus1SelectedButton; // 現在の選択ブランドの選択数を1増やす
 TriangleButton minus1SelectedButton; // 現在の選択ブランドの選択数を1減らす
@@ -70,6 +71,7 @@ int[] currentYear_season = {1, 0}; // 年と季節を管理する配列。年, �
 
 // ========== UI状態変数 ==========
 boolean showingPopup = false; // ポップアップ表示フラグ
+boolean isPlayingDescribe = false; // 説明ボタンフラグ
 String popupType = ""; // ポップアップの種類
 String[] popupQueue = new String[10]; // ポップアップのキュー（最大10個）
 int popupQueueSize = 0; // キューに入っているポップアップの数
@@ -285,6 +287,8 @@ void initGame() {
   images[9] = loadImage("background_summer.jpeg");
   images[10] = loadImage("win.png");
   images[11] = loadImage("lose.png");
+  images[12] = loadImage("leftPanel_system.jpg");
+  images[13] = loadImage("RightPanel_system.jpg");
   
   
   
@@ -322,8 +326,18 @@ void initButton() {
     stop(); // ゲーム終了前の処理
     exit(); // ゲーム終了
   });
-  titleButton = new NormalButton(50, 650, 160, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "タイトルへ", 32, () -> {
+  titleButton = new NormalButton(10, 650, 160, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "タイトルへ", 32, () -> {
+    if(!isPlayingDescribe){
     gameState.changeState(State.TITLE);
+    }
+    println("A");
+  });
+  closeDescribeButton = new NormalButton(180, 650, 200, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "ゲームに戻る", 32, () -> {
+    if(isPlayingDescribe){
+    gameState.changeState(State.PLAYING);
+    }
+    println("B");
+    isPlayingDescribe = false;
   });
   overviewButton = new NormalButton(width/2 - 180, 650, 190, 50, 20, color(0, 0, 0), color(240, 240, 240), color(220, 220, 220), "ゲーム概要へ", 32, () -> {
     gameState.changeState(State.DESCRIBE);
@@ -405,6 +419,7 @@ void initButton() {
   playDescribeButton = new EllipseButton(width - 100, height - 40, 105, 49, color(0), color(100, 150, 230), color(85, 130, 215), "説明", 28, () -> {
     // 説明画面の表示処理をここに追加
     gameState.changeState(State.DESCRIBE);
+    isPlayingDescribe = true;
   });
   buyPopupButton = new EllipseButton(width - 95, height - 150, 150, 70, color(0), color(100, 230, 150), color(85, 215, 130), "仕入れ", 32, () -> {
    showPopup("buy");
@@ -614,6 +629,8 @@ void mouseClicked() {
       // 内部で既に実行済み
     } else if (system2Button.onClicked()) {
       // 内部で既に実行済み
+    } else if (closeDescribeButton.onClicked()) {
+      // 内部で既に実行済み
     }
   } else if (gameState.currentState == State.DESCRIBE2) {
     if (titleButton.onClicked()) {
@@ -624,6 +641,8 @@ void mouseClicked() {
       // 内部で既に実行済み
     } else if (system2Button.onClicked()) {
       // 内部で既に実行済み
+    } else if (closeDescribeButton.onClicked()) {
+      // 内部で既に実行済み
     }
   } else if (gameState.currentState == State.DESCRIBE3) {
     if (titleButton.onClicked()) {
@@ -633,6 +652,8 @@ void mouseClicked() {
     } else if (systemButton.onClicked()) {
       // 内部で既に実行済み
     } else if (system2Button.onClicked()) {
+      // 内部で既に実行済み
+    } else if (closeDescribeButton.onClicked()) {
       // 内部で既に実行済み
     }
   } 

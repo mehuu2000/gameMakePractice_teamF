@@ -136,52 +136,82 @@ class UI {
     text("米を出荷しなければならないほか、ランダムで発生する様々なイベントに", 90, 470);
     text("対応できる柔軟性も必要である。", 90, 520);
     
-    titleButton.display();
+    if(!isPlayingDescribe){
+      titleButton.display();
+    } else {
+      closeDescribeButton.display();
+    }
     //overviewButton.display(); //デバッグ用
     systemButton.display();
     system2Button.display();
   }
   
   void drawSystemInstructions() {
+    // 説明画像の挿入
+    image(images[12], width - 280, 10, 276, 520);
+    
     fill(0);
     textSize(40);
     textAlign(LEFT, CENTER);
     text("[システム説明1]", 50, 50);
-    text("・大米をはたけ！とは", 50, 120);
+    text("①市場", 50, 120);
+    text("②市場限界グラフ", 50, 420);
     
     textSize(32);
-    text("チーム「飯だ」が提供する、「令和の米騒動」をテーマとした", 90, 170);
-    text("米取引シミュレーションカードゲーム。", 90, 220);
-    text("ポイントを使用して米を買い、出荷する一連の流れを繰り返し", 90, 270);
-    text("ゲーム終了時により多くのポイントを所持しているプレイヤーが勝者となる。", 90, 320);
+    text("流通している米の価格や枚数が表示される画面。", 90, 170);
+    text("枚数が少ない米ほど価値が高くなり、", 90, 220);
+    text("枚数が多い米ほど価値が低くなる。", 90, 270);
+    text("ゲームの根幹を担う重要な場所。", 90, 320);
     
-    text("プレイヤーは各ターンごとに市場を確認し、利益が大きくなるように", 90, 420);
-    text("米を出荷しなければならないほか、ランダムで発生する様々なイベントに", 90, 470);
-    text("対応できる柔軟性も必要である。", 90, 520);
+    text("各米の枚数が市場に占める割合を色で、市場の米の合計枚数を", 90, 470);
+    text("大きさ表した円グラフ。円が赤いライン（市場限界）", 90, 520);
+    text("を超えると供給過多が発生し、市場の米の価値が暴落する。", 90, 570);
     
-    titleButton.display();
+    if(!isPlayingDescribe){
+      titleButton.display();
+    } else {
+      closeDescribeButton.display();
+    }
     overviewButton.display();
     system2Button.display();
   }
   
   void drawSystem2Instructions() {
+    // 説明画像の挿入
+    image(images[13], width -650, 10, 647, 521);
+    
     fill(0);
-    textSize(40);
+    textSize(32);
     textAlign(LEFT, CENTER);
     text("[システム説明2]", 50, 50);
-    text("・大米をはたけ！とは", 50, 120);
+    text("①所持金", 50, 90);
+    text("②倉庫（手札）", 50, 170);
+    text("③仕入れ・説明ボタン", 50, 250);
+    text("④出荷ボタン", 50, 330);
+    text("⑤トラック（場札）", 50, 410);
+    text("⑥効果・予報", 50, 490);
+    text("⑦年度・季節", 50, 570);
     
+    textSize(24);
+    text("自分が手前、相手が奥。", 90, 130);
+    text("右上が枚数。クリックでトラックに積める。", 90, 210);
+    text("仕入れボタンで米を農家から購入する。", 90, 290);
+    text("トラックに積んだ米を出荷する。", 90, 370);
+    text("倉庫から出した手札を置く場所。", 90, 450);
+    text("クリックすると過去の履歴も表示される。", 90, 530);
+    text("残り時間の確認は慎重に。", 90, 610);
+    
+    fill(240, 0, 0);
     textSize(32);
-    text("チーム「飯だ」が提供する、「令和の米騒動」をテーマとした", 90, 170);
-    text("米取引シミュレーションカードゲーム。", 90, 220);
-    text("ポイントを使用して米を買い、出荷する一連の流れを繰り返し", 90, 270);
-    text("ゲーム終了時により多くのポイントを所持しているプレイヤーが勝者となる。", 90, 320);
+    text("(※)仕入れと出荷は実行時にターンが終了します", 570, 570);
+    text("(※)", 520, 290);
+    text("(※)", 450, 370);
     
-    text("プレイヤーは各ターンごとに市場を確認し、利益が大きくなるように", 90, 420);
-    text("米を出荷しなければならないほか、ランダムで発生する様々なイベントに", 90, 470);
-    text("対応できる柔軟性も必要である。", 90, 520);
-    
-    titleButton.display();
+    if(!isPlayingDescribe){
+      titleButton.display();
+    } else {
+      closeDescribeButton.display();
+    }
     overviewButton.display();
     systemButton.display();
   }
