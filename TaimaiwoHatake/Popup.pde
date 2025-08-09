@@ -5,7 +5,7 @@ class Popup {
   boolean yearPopupTimerSet = false;
   boolean popupClosing = false;  // ポップアップが閉じる処理中フラグ
   int currentNewsIndex = 0;  // 現在表示中の予報のインデックス
-  int secons = 300;
+  int seconds = 300;
 
   // ポップアップの種類を定義
   void drawPopup(String type) {
