@@ -30,10 +30,6 @@ class LeftPanel {
     fill(0);
     textSize(48);
     text("市場", 90, 50);
-    
-    textSize(48);
-    fill(255, 0, 0);
-    text(ui.supplyLimitX + " ～ " + (ui.supplyLimitX + 10), 250, 50);
   }
 
   // 供給量の描画
@@ -144,6 +140,8 @@ class LeftPanel {
   
     
   void drawPieChart() {
+    fill(240);
+    rect(10, height/2 + 20, (width * 0.3) - 20, height/2 - 30);
      //最大サイズを市場サイズに問わない形にするための係数
     float sizeFactor = 300 / market.supplyLimit;
     // 円グラフの大きさのために全体数取得
@@ -166,7 +164,7 @@ class LeftPanel {
     strokeWeight(1);
     stroke(0);
     textSize(25);
-    fill(0,0,0);
-    text("SUPPLY LIMIT",100, 450);
+    fill(255,0,0);
+    text("市場限界",80, 420);
   }
 }
