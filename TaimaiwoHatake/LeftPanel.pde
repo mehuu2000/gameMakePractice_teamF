@@ -63,10 +63,12 @@ class LeftPanel {
     // ブランド名の描画
     text("品種名", 205, 100);
     for (int i=0; i<riceBrandsInfo.length; i++) {
+        fill(riceBrandsInfo[riceBrandRanking[i]].brandColor);
         text(riceBrandsInfo[riceBrandRanking[i]].name, 205, 152 + (i * 60));
     }
 
     // ブランドの価値の描画
+    fill(0);
     textSize(24);
     text("価値", (width * 0.3) - 50, 100);
     textAlign(RIGHT, CENTER);
