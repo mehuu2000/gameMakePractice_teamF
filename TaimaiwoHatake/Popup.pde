@@ -5,6 +5,7 @@ class Popup {
   boolean yearPopupTimerSet = false;
   boolean popupClosing = false;  // ポップアップが閉じる処理中フラグ
   int currentNewsIndex = 0;  // 現在表示中の予報のインデックス
+  int secons = 300;
 
   // ポップアップの種類を定義
   void drawPopup(String type) {
@@ -47,6 +48,12 @@ class Popup {
       break;
     case "missed":
       drawMissedPopup();
+      break;
+    case "eventHistory":
+      drawEventHistoryPopup();
+      break;
+    case "forecastHistory":
+      drawForecastHistoryPopup();
       break;
     default:
       // 何もしないか、エラーメッセージを表示
@@ -133,7 +140,7 @@ class Popup {
     nextButton.display();
     
     // 1秒後にボタンを有効化
-    if (elapsedTime >= 1000) {
+    if (elapsedTime >= secons) {
       nextButton.isEnabled = true;
     }
   }
@@ -185,7 +192,7 @@ class Popup {
     nextButton.display();
     
     // 1秒後にボタンを有効化
-    if (elapsedTime >= 1000) {
+    if (elapsedTime >= secons) {
       nextButton.isEnabled = true;
     }
   }
@@ -469,7 +476,7 @@ class Popup {
     nextButton.display();
     
     // 1秒後にボタンを有効化
-    if (elapsedTime >= 1000) {
+    if (elapsedTime >= secons) {
       nextButton.isEnabled = true;
     }
   }
@@ -537,7 +544,7 @@ class Popup {
     nextButton.display();
     
     // 1秒後にボタンを有効化
-    if (elapsedTime >= 1000) {
+    if (elapsedTime >= secons) {
       nextButton.isEnabled = true;
     }
   }
@@ -581,7 +588,7 @@ class Popup {
     
     textAlign(CENTER, CENTER);  // 他の箇所のためにリセット
     noStroke();
-    if (elapsedTime >= 1000) {
+    if (elapsedTime >= secons) {
       nextButton.isEnabled = true;  // ボタンを有効化
       nextButton.display();
     }
@@ -643,7 +650,7 @@ class Popup {
     nextButton.display();
     
     // 1秒後にボタンを有効化
-    if (elapsedTime >= 1000) {
+    if (elapsedTime >= secons) {
       nextButton.isEnabled = true;
     }
   }
@@ -685,10 +692,190 @@ class Popup {
     
     textAlign(CENTER, CENTER);
 
-    if (elapsedTime >= 1000) {
+    if (elapsedTime >= secons) {
       nextButton.isEnabled = true;  // ボタンを有効化
       nextButton.display();
     }
+  }
+
+  // イベント履歴ポップアップの描画
+  void drawEventHistoryPopup() {
+    fill(240);
+    stroke(0);
+    strokeWeight(2);
+    rect((width * 0.3) + 110, 100, (width * 0.7) - 190, height - 200);
+    
+    // タイトル
+    fill(0);
+    textSize(36);
+    textAlign(CENTER, TOP);
+    text("イベント履歴", width/2 + 100, 120);
+    
+    // イベント履歴を取得
+    ArrayList<Event> history = eventManager.getEventHistory();
+    
+    if (history == null || history.size() == 0) {
+      textSize(24);
+      text("まだイベントは発生していません", width/2 + 100, height/2);
+    } else {
+      // イベント一覧を表示
+      textAlign(LEFT, TOP);
+      textSize(20);
+      int yOffset = 180;
+      int lineHeight = 35;
+      
+      for (int i = 0; i < history.size(); i++) {
+        Event evt = history.get(i);
+        
+        // イベント名
+        fill(0);
+        text((i + 1) + ". " + evt.eventName, (width * 0.3) + 150, yOffset);
+        
+        // 効果説明（小さめのフォント）
+        textSize(16);
+        fill(80);
+        text("   " + evt.effectMessage, (width * 0.3) + 150, yOffset + 20);
+        
+        yOffset += lineHeight + 15;
+        textSize(20);
+        
+        // 画面から出そうな場合は省略
+        if (yOffset > height - 150) {
+          fill(100);
+          textAlign(CENTER, TOP);
+          text("...", width/2 + 100, yOffset);
+          break;
+        }
+      }
+    }
+    
+    // 閉じるボタン（ポップアップ内の右側に表示）
+    textAlign(CENTER, CENTER);
+    // 一時的にボタンを作成して表示
+    fill(100, 150, 230);
+    stroke(0);
+    strokeWeight(2);
+    float buttonX = width - 280;  // ポップアップの右端から内側に配置
+    float buttonY = height - 150;
+    ellipse(buttonX, buttonY, 150, 60);
+    fill(0);
+    textSize(28);
+    text("戻る", buttonX, buttonY);
+    noStroke();
+  }
+
+  // 予報履歴ポップアップの描画
+  void drawForecastHistoryPopup() {
+    fill(240);
+    stroke(0);
+    strokeWeight(2);
+    rect((width * 0.3) + 110, 100, (width * 0.7) - 190, height - 200);
+    
+    // タイトル
+    fill(0);
+    textSize(36);
+    textAlign(CENTER, TOP);
+    text("予報履歴", width/2 + 100, 120);
+    
+    // 予報履歴を取得
+    ArrayList<ForecastInfo> history = eventManager.getForecastHistory();
+    
+    if (history == null || history.size() == 0) {
+      textSize(24);
+      text("まだ予報は発表されていません", width/2 + 100, height/2);
+    } else {
+      // 予報一覧を表示
+      textAlign(LEFT, TOP);
+      textSize(18);
+      int yOffset = 180;
+      int lineHeight = 30;
+      
+      for (int i = 0; i < history.size(); i++) {
+        ForecastInfo forecast = history.get(i);
+        
+        // 予報メッセージ
+        fill(0);
+        text((i + 1) + ". 【予報】", (width * 0.3) + 150, yOffset);
+        
+        // 予報内容
+        textSize(16);
+        fill(50);
+        text("   " + forecast.message, (width * 0.3) + 150, yOffset + 20);
+        
+        // 結果（イベントが既に発生または外れが確定した場合のみ表示）
+        // 予報から実際のイベント発生までのタイムラグを考慮
+        boolean resultKnown = false;
+        
+        // イベント履歴を確認して、このイベントが既に発生したか確認
+        ArrayList<Event> eventHistory = eventManager.getEventHistory();
+        for (Event evt : eventHistory) {
+          if (evt.eventName.equals(forecast.eventName)) {
+            // イベントが発生した
+            fill(50, 100, 50);
+            text("   【結果】発生しました", (width * 0.3) + 150, yOffset + 40);
+            yOffset += 20;
+            resultKnown = true;
+            break;
+          }
+        }
+        
+        // イベントが発生していない場合、外れメッセージがあるかチェック
+        if (!resultKnown) {
+          // 現在のターンと予報のタイミングを比較して、十分な時間が経過したか確認
+          // （予報から2ターン以上経過した場合のみ外れと判定）
+          if (!forecast.willOccur && currentTurn > i + 3) {  // 予報履歴のインデックス + 猶予期間
+            Event relatedEvent = findEventByName(forecast.eventName);
+            if (relatedEvent != null && relatedEvent.missedMessage != null && !relatedEvent.missedMessage.isEmpty()) {
+              fill(100, 50, 50);
+              text("   【結果】" + relatedEvent.missedMessage, (width * 0.3) + 150, yOffset + 40);
+              yOffset += 20;
+            }
+          } else {
+            // まだ結果が分からない場合は何も表示しない
+            fill(100);
+            text("   【結果】---", (width * 0.3) + 150, yOffset + 40);
+            yOffset += 20;
+          }
+        }
+        
+        yOffset += lineHeight + 25;
+        textSize(18);
+        
+        // 画面から出そうな場合は省略
+        if (yOffset > height - 150) {
+          fill(100);
+          textAlign(CENTER, TOP);
+          text("...", width/2 + 100, yOffset);
+          break;
+        }
+      }
+    }
+    
+    // 閉じるボタン（ポップアップ内の右側に表示）
+    textAlign(CENTER, CENTER);
+    fill(100, 150, 230);
+    stroke(0);
+    strokeWeight(2);
+    float buttonX = width - 280;  // ポップアップの右端から内側に配置
+    float buttonY = height - 150;
+    ellipse(buttonX, buttonY, 150, 60);
+    fill(0);
+    textSize(28);
+    text("戻る", buttonX, buttonY);
+    noStroke();
+  }
+  
+  // イベント名からイベントを検索するヘルパーメソッド
+  Event findEventByName(String eventName) {
+    if (eventManager == null || eventManager.eventTemplates == null) {
+      return null;
+    }
+    for (Event evt : eventManager.eventTemplates) {
+      if (evt != null && evt.eventName.equals(eventName)) {
+        return evt;
+      }
+    }
+    return null;
   }
 
   // ポップアップを閉じるためのボタン描画

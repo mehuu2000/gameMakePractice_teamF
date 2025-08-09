@@ -535,9 +535,35 @@ void mouseClicked() {
         if (nextButton.onClicked()) {
           // 内部で既に実行済み
         }
+      } else if (popupType == "eventHistory") {
+        // イベント履歴ポップアップ用の戻るボタンのクリック判定（右側配置）
+        float buttonX = width - 280;
+        float buttonY = height - 150;
+        float buttonWidth = 150;
+        float buttonHeight = 60;
+        
+        if (mouseX >= buttonX - buttonWidth/2 && mouseX <= buttonX + buttonWidth/2 &&
+            mouseY >= buttonY - buttonHeight/2 && mouseY <= buttonY + buttonHeight/2) {
+          closePopup();
+        }
+      } else if (popupType == "forecastHistory") {
+        // 予報履歴ポップアップ用の戻るボタンのクリック判定（右側配置）
+        float buttonX = width - 280;
+        float buttonY = height - 150;
+        float buttonWidth = 150;
+        float buttonHeight = 60;
+        
+        if (mouseX >= buttonX - buttonWidth/2 && mouseX <= buttonX + buttonWidth/2 &&
+            mouseY >= buttonY - buttonHeight/2 && mouseY <= buttonY + buttonHeight/2) {
+          closePopup();
+        }
       }
     } else {
-      if (rightPanel.onBrand1Clicked()) {
+      if (rightPanel.onEventBoxClicked()) {
+        // 内部で既に実行済み
+      } else if (rightPanel.onNewsBoxClicked()) {
+        // 内部で既に実行済み
+      } else if (rightPanel.onBrand1Clicked()) {
         // 内部で既に実行済み
       } else if (rightPanel.onLoadBrandClicked()) {
         // 内部で既に実行済み
