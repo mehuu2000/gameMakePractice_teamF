@@ -289,6 +289,7 @@ void initGame() {
   images[11] = loadImage("lose.png");
   images[12] = loadImage("leftPanel_system.jpg");
   images[13] = loadImage("RightPanel_system.jpg");
+  images[14] = loadImage("titleBackgroound.jpg");
   
   
   
