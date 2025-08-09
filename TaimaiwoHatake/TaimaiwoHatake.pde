@@ -85,6 +85,7 @@ int[] aiLoadedRices; // AIが前シーズンで出荷した米の数
 int[] marketStockKeep; // 出荷前の在庫を保持するための配列
 int[] marketStockAfterShip; // 出荷直後（消費前）の在庫を保持するための配列
 int[] marketPriceKeep; // 出荷直前の価値を保持するための配列
+int[] riceBrandKeepPrice; // 各ブランドの価値を保持するための配列
 
 
 // ========== 定数 ==========
@@ -99,7 +100,7 @@ final int ENEMY_POINT = 5000; // AI初期所持金
 final float LEFT_PANEL_WIDTH = 0.3;   // 左パネルの幅（30%）
 final float RIGHT_PANEL_WIDTH = 0.7;  // 右パネルの幅（70%）
 final int[] BASE_CARD_POINTS = {100, 110, 120, 130}; // 基本のカードポイントの係数
-final int LOWER_LIMIT_RICE_POINT= 10; // 米の下限価格
+final int LOWER_LIMIT_RICE_POINT= 100; // 米の下限価格
 final int PHOTO_SHEETS = 20; //画像の上限数
 
 // ========== 変数（変更可能） ==========
@@ -249,6 +250,7 @@ void initGame() {
   marketStockKeep = new int[riceBrandsInfo.length];
   marketStockAfterShip = new int[riceBrandsInfo.length];
   marketPriceKeep = new int[riceBrandsInfo.length];
+  riceBrandKeepPrice = new int[riceBrandsInfo.length];
 
   selectedAmounts = new int[riceBrandsInfo.length];
   riceBrandRanking = new int[riceBrandsInfo.length];

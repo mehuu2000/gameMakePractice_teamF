@@ -341,7 +341,7 @@ class EventManager {
 
         templates.add(new Event("棚からぼたもち", new int[]{0, 1, 2, 3}, 1.0, 1, 0, "", 
                  "むかし作ったへそくりを見つけた！ラッキー！",
-                 "所持金が2000pt増える(プレイヤーのみ)",
+                 "所持金が1000pt増える(プレイヤーのみ)",
                  false,
             () -> {
                 applyBonusMoneyEvent("棚からぼたもち");

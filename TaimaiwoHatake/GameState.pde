@@ -134,6 +134,9 @@ class GameState {
     marketStockAfterShip = market.marketStock.clone();
     
     market.updateBrandPoint(); // 市場のブランドポイントを更新
+    for (int i=0; i<riceBrandsInfo.length; i++) {
+      riceBrandKeepPrice[i] = riceBrandsInfo[i].point; // ブランドの価値を保存
+    }
     riceBrandRanking = market.getBrandRanking(); // ブランドの価値ランキングを更新
 
     // 利益処理 (プレイヤーの利益表示ポップアップでも使用される)
