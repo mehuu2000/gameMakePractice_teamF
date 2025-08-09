@@ -69,7 +69,7 @@ class AI extends Broker {
         giveMulti = 1.2;
         break;
       default:
-        eventbuyCount = 2;
+        eventbuyCount = 3;
         break;
     }
     for (int i = 0; i < riceBrandsInfo.length; i++) {
