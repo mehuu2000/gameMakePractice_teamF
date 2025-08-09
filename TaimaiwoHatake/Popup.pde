@@ -140,7 +140,7 @@ class Popup {
     nextButton.display();
     
     // 1秒後にボタンを有効化
-    if (elapsedTime >= secons) {
+    if (elapsedTime >= seconds) {
       nextButton.isEnabled = true;
     }
   }
@@ -192,7 +192,7 @@ class Popup {
     nextButton.display();
     
     // 1秒後にボタンを有効化
-    if (elapsedTime >= secons) {
+    if (elapsedTime >= seconds) {
       nextButton.isEnabled = true;
     }
   }
@@ -476,7 +476,7 @@ class Popup {
     nextButton.display();
     
     // 1秒後にボタンを有効化
-    if (elapsedTime >= secons) {
+    if (elapsedTime >= seconds) {
       nextButton.isEnabled = true;
     }
   }
@@ -544,7 +544,7 @@ class Popup {
     nextButton.display();
     
     // 1秒後にボタンを有効化
-    if (elapsedTime >= secons) {
+    if (elapsedTime >= seconds) {
       nextButton.isEnabled = true;
     }
   }
@@ -588,7 +588,7 @@ class Popup {
     
     textAlign(CENTER, CENTER);  // 他の箇所のためにリセット
     noStroke();
-    if (elapsedTime >= secons) {
+    if (elapsedTime >= seconds) {
       nextButton.isEnabled = true;  // ボタンを有効化
       nextButton.display();
     }
@@ -650,7 +650,7 @@ class Popup {
     nextButton.display();
     
     // 1秒後にボタンを有効化
-    if (elapsedTime >= secons) {
+    if (elapsedTime >= seconds) {
       nextButton.isEnabled = true;
     }
   }
@@ -692,7 +692,7 @@ class Popup {
     
     textAlign(CENTER, CENTER);
 
-    if (elapsedTime >= secons) {
+    if (elapsedTime >= seconds) {
       nextButton.isEnabled = true;  // ボタンを有効化
       nextButton.display();
     }
